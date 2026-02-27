@@ -1338,6 +1338,9 @@ function FullSubscription() {
         </div>
       )}
 
+      {/* Purchase / Renewal CTA */}
+      <PurchaseCTAButton subscription={subscription} />
+
       {/* Additional Options (Buy Devices) */}
       {subscription && subscription.is_active && !subscription.is_trial && (
         <div
@@ -1639,7 +1642,6 @@ function FullSubscription() {
           )}
         </div>
       )}
-
       {/* Purchase/Extend Section - Classic Mode */}
       {classicOptions && classicOptions.periods.length > 0 && (
         <div
