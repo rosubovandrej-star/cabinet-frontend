@@ -457,6 +457,8 @@
       "activateTrialOnDashboard": "Activate trial on dashboard",
       "goChooseTariff": "Choose a tariff",
       "goTopUp": "Top up balance",
+      "qrTitle": "Subscription QR Code",
+      "qrScanHint": "Scan to connect",
       "trialStep2": {
         "title": "Step 2: add subscription to app",
         "description": "After trial activation, finish setup using the steps below.",

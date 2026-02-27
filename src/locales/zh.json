@@ -346,6 +346,8 @@
       "activateTrialOnDashboard": "在首页激活试用",
       "goChooseTariff": "前往选择套餐",
       "goTopUp": "前往充值余额",
+      "qrTitle": "订阅二维码",
+      "qrScanHint": "扫码连接",
       "trialStep2": {
         "title": "第2步：将订阅添加到应用",
         "description": "激活试用后，请按以下步骤完成连接设置。",

@@ -15,6 +15,7 @@ const Polls = lazy(() => import('../Polls'));
 const Info = lazy(() => import('../Info'));
 const Wheel = lazy(() => import('../Wheel'));
 const Connection = lazy(() => import('../Connection'));
+const ConnectionQR = lazy(() => import('../ConnectionQR'));
 const TopUpMethodSelect = lazy(() => import('../TopUpMethodSelect'));
 const TopUpAmount = lazy(() => import('../TopUpAmount'));
 const ReferralPartnerApply = lazy(() => import('../ReferralPartnerApply'));
@@ -167,6 +168,16 @@ export const protectedRoutes: RouteConfig[] = [
       <ProtectedRoute>
         <LazyPage>
           <Wheel />
+        </LazyPage>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/connection/qr',
+    element: (
+      <ProtectedRoute>
+        <LazyPage>
+          <ConnectionQR />
         </LazyPage>
       </ProtectedRoute>
     ),
