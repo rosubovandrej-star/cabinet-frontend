@@ -117,6 +117,14 @@ export default function AdminWithdrawalDetail() {
       <div className="space-y-6">
         {/* User Info Section */}
         <AdminSectionCard title={t('admin.withdrawals.detail.userInfo')}>
+          <div className="mb-3 rounded-lg border border-accent-500/30 bg-accent-500/10 p-3">
+            <div className="mb-1 text-sm text-dark-400">
+              {t('admin.withdrawals.detail.requestedAmount')}
+            </div>
+            <div className="text-lg font-bold text-accent-400">
+              {formatWithCurrency(detail.amount_kopeks / 100, 0)}
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <AdminInfoTile
               label={t('admin.withdrawals.detail.username')}
