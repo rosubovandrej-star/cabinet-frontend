@@ -434,6 +434,13 @@ export default function AdminPanel() {
           description: t('admin.panel.trafficUsageDesc'),
           permission: 'traffic:read',
         },
+        {
+          to: '/admin/sales-stats',
+          icon: <ChartBarIcon />,
+          title: t('admin.nav.salesStats'),
+          description: t('admin.panel.salesStatsDesc'),
+          permission: 'sales_stats:read',
+        },
       ],
     },
     {
