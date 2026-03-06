@@ -26,7 +26,6 @@ import { BackgroundRenderer } from '@/components/backgrounds/BackgroundRenderer'
 import { SubscriptionIcon } from '@/components/icons';
 
 import { MobileBottomNav } from './MobileBottomNav';
-import { LiteMobileBottomNav } from './LiteMobileBottomNav';
 import { AppHeader } from './AppHeader';
 import { LiteModeHeader } from './LiteModeHeader';
 
@@ -496,7 +495,7 @@ export function AppShell({ children }: AppShellProps) {
       <main
         className={cn(
           'mx-auto max-w-6xl px-4 lg:px-6 lg:pb-8',
-          isLiteMode ? 'pb-[calc(6rem+env(safe-area-inset-bottom,0px))]' : 'pb-28',
+          isLiteMode ? 'pb-8' : 'pb-28',
           isLiteMainPage ? 'pt-0 sm:pt-1' : isLiteMode ? 'pt-2 sm:pt-3' : 'pt-6',
         )}
       >
@@ -525,9 +524,6 @@ export function AppShell({ children }: AppShellProps) {
           wheelEnabled={wheelEnabled}
         />
       )}
-
-      {/* Mobile Bottom Navigation (Lite mode) */}
-      {isLiteModeReady && isLiteMode && <LiteMobileBottomNav isKeyboardOpen={isKeyboardOpen} />}
     </div>
   );
 }
