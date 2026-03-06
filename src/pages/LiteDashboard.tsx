@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router';
+import { AnimatePresence, motion } from 'framer-motion';
 import { subscriptionApi } from '@/api/subscription';
 import { referralApi } from '@/api/referral';
 import { authApi } from '@/api/auth';
@@ -55,6 +56,9 @@ const ShareIcon = () => (
 const LITE_ONBOARDING_KEY = 'lite_onboarding_completed';
 const LITE_TRIAL_SETUP_HINT_DISMISSED_KEY = 'lite_trial_setup_hint_dismissed';
 const TRIAL_ACTIVATE_CLICK_COOLDOWN_MS = 1500;
+const CARD_LAYOUT_TRANSITION = {
+  layout: { type: 'spring', stiffness: 320, damping: 30, mass: 0.9 },
+} as const;
 
 function useLiteOnboarding(userId?: number | null) {
   const storageKey = userId ? `${LITE_ONBOARDING_KEY}_${userId}` : LITE_ONBOARDING_KEY;
@@ -355,138 +359,161 @@ export function LiteDashboard() {
           className="mx-auto flex min-h-[calc(100vh-120px)] w-full max-w-6xl flex-col px-3 py-4 min-[360px]:px-4 min-[360px]:py-6 lg:px-6 xl:px-8 2xl:py-8"
           style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom, 24px))' }}
         >
-          <div className="flex flex-1 flex-col gap-4 min-[360px]:gap-5">
-            <section className="space-y-4 min-[360px]:space-y-5">
+          <div className="flex flex-1 flex-col gap-5 min-[360px]:gap-6">
+            <section className="space-y-5 min-[360px]:space-y-6">
               {/* Subscription status or Trial card */}
-              <div data-onboarding="lite-subscription">
-                {subscription && (
-                  <div data-testid="lite-subscription-active-card">
-                    <LiteSubscriptionCard
-                      subscription={subscription}
-                      deviceLimit={deviceLimitFromTariff}
-                    />
-                  </div>
-                )}
-
-                {isTrialInfoPending && (
-                  <div
-                    data-testid="lite-trial-loading-card"
-                    className="rounded-2xl border border-dark-600 bg-dark-800/80 p-3 text-center min-[360px]:p-4"
-                  >
-                    <p className="text-dark-300">{t('lite.connectAvailabilityLoading')}</p>
-                  </div>
-                )}
-
-                {hasNoSubscription && !isTrialInfoPending && !showTrial && (
-                  <div
-                    data-testid="lite-no-subscription-card"
-                    className="rounded-2xl border border-dark-600 bg-dark-800/80 p-3 text-center min-[360px]:p-4"
-                  >
-                    <p className="text-dark-300">{t('lite.noSubscription')}</p>
-                  </div>
-                )}
-
-                {showTrialFlow &&
-                  (showIncompleteTrialSetupHint ? (
-                    <div
-                      data-testid="lite-incomplete-setup-hint"
-                      className="rounded-2xl border border-warning-500/35 bg-warning-500/10 p-3 min-[360px]:p-4"
+              <motion.div layout {...CARD_LAYOUT_TRANSITION} data-onboarding="lite-subscription">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  {subscription && (
+                    <motion.div
+                      key="subscription-card"
+                      layout
+                      {...CARD_LAYOUT_TRANSITION}
+                      data-testid="lite-subscription-active-card"
                     >
-                      <p className="text-base font-semibold text-warning-300">
-                        {t('lite.incompleteSetup.title', 'Вы не завершили настройку')}
-                      </p>
-                      <p className="mt-1 text-xs text-dark-200">
-                        {t(
-                          'lite.incompleteSetup.description',
-                          'Чтобы VPN заработал, необходимо добавить подписку в приложение Happ.',
+                      <LiteSubscriptionCard
+                        subscription={subscription}
+                        deviceLimit={deviceLimitFromTariff}
+                      />
+                    </motion.div>
+                  )}
+
+                  {isTrialInfoPending && (
+                    <motion.div
+                      key="trial-loading-card"
+                      layout
+                      {...CARD_LAYOUT_TRANSITION}
+                      data-testid="lite-trial-loading-card"
+                      className="rounded-2xl border border-dark-600 bg-dark-800/80 p-3 text-center min-[360px]:p-4"
+                    >
+                      <p className="text-dark-300">{t('lite.connectAvailabilityLoading')}</p>
+                    </motion.div>
+                  )}
+
+                  {hasNoSubscription && !isTrialInfoPending && !showTrial && (
+                    <motion.div
+                      key="no-subscription-card"
+                      layout
+                      {...CARD_LAYOUT_TRANSITION}
+                      data-testid="lite-no-subscription-card"
+                      className="rounded-2xl border border-dark-600 bg-dark-800/80 p-3 text-center min-[360px]:p-4"
+                    >
+                      <p className="text-dark-300">{t('lite.noSubscription')}</p>
+                    </motion.div>
+                  )}
+
+                  {showTrialFlow &&
+                    (showIncompleteTrialSetupHint ? (
+                      <motion.div
+                        key="incomplete-setup-hint"
+                        layout
+                        {...CARD_LAYOUT_TRANSITION}
+                        data-testid="lite-incomplete-setup-hint"
+                        className="rounded-2xl border border-warning-500/35 bg-warning-500/10 p-3 min-[360px]:p-4"
+                      >
+                        <p className="text-base font-semibold text-warning-300">
+                          {t('lite.incompleteSetup.title', 'Вы не завершили настройку')}
+                        </p>
+                        <p className="mt-1 text-xs text-dark-200">
+                          {t(
+                            'lite.incompleteSetup.description',
+                            'Чтобы VPN заработал, необходимо добавить подписку в приложение Happ.',
+                          )}
+                        </p>
+                        <div className="mt-3 flex flex-col gap-2">
+                          <button
+                            type="button"
+                            onClick={() => navigate('/connection?guide=trial&step=2')}
+                            className="w-full rounded-xl border border-accent-400/60 bg-accent-500 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70"
+                          >
+                            {t('lite.incompleteSetup.continue', 'Продолжить настройку')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={dismissTrialSetupHint}
+                            className="w-full rounded-xl border border-dark-600 bg-dark-800/70 py-2.5 text-sm font-medium text-dark-100 transition-colors hover:border-dark-500 hover:bg-dark-700"
+                          >
+                            {t('lite.incompleteSetup.hide', 'Больше не показывать')}
+                          </button>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="trial-hint-card"
+                        layout
+                        {...CARD_LAYOUT_TRANSITION}
+                        data-testid="lite-trial-hint-card"
+                        className="rounded-2xl border border-warning-500/35 bg-warning-500/10 p-3 min-[360px]:p-4"
+                      >
+                        <p className="text-sm font-semibold text-warning-300">
+                          {t('lite.connectHintTrialTitle')}
+                        </p>
+                        <p className="mt-1 text-xs text-dark-300">
+                          {t('lite.connectHintTrialDescription')}
+                        </p>
+                        <p className="mt-2 text-2xs font-semibold uppercase tracking-[0.05em] text-dark-400">
+                          {t('lite.connectHintProgress', {
+                            current: trialFlowStep3Done
+                              ? 3
+                              : trialFlowStep2Done
+                                ? 2
+                                : trialFlowStep1Done
+                                  ? 1
+                                  : 0,
+                            total: 3,
+                          })}
+                        </p>
+                        <ol className="mt-2 space-y-1.5 text-xs text-dark-200">
+                          <li className="flex items-start gap-2">
+                            <span
+                              className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep1Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
+                            >
+                              {trialFlowStep1Done ? '✓' : '1'}
+                            </span>
+                            <span>{t('lite.connectHintTrialStep1')}</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span
+                              className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep2Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
+                            >
+                              {trialFlowStep2Done ? '✓' : '2'}
+                            </span>
+                            <span>{t('lite.connectHintTrialStep2')}</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span
+                              className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep3Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
+                            >
+                              {trialFlowStep3Done ? '✓' : '3'}
+                            </span>
+                            <span>{t('lite.connectHintTrialStep3')}</span>
+                          </li>
+                        </ol>
+                        {!trialFlowStep1Done && (
+                          <button
+                            type="button"
+                            data-testid="lite-activate-trial"
+                            onClick={handleActivateTrial}
+                            disabled={activateTrialMutation.isPending || isTrialActivationLocked}
+                            className="mt-3 w-full rounded-xl border border-white/45 bg-accent-500 py-2.5 text-sm font-semibold text-white shadow-[0_0_0_1px_rgba(255,255,255,0.3)] ring-1 ring-white/35 transition-colors hover:bg-accent-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 disabled:cursor-not-allowed disabled:opacity-60 motion-safe:animate-pulse"
+                          >
+                            {activateTrialMutation.isPending
+                              ? t('common.loading')
+                              : t('lite.activateTrial')}
+                          </button>
                         )}
-                      </p>
-                      <div className="mt-3 flex flex-col gap-2">
-                        <button
-                          type="button"
-                          onClick={() => navigate('/connection?guide=trial&step=2')}
-                          className="w-full rounded-xl border border-accent-400/60 bg-accent-500 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70"
-                        >
-                          {t('lite.incompleteSetup.continue', 'Продолжить настройку')}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={dismissTrialSetupHint}
-                          className="w-full rounded-xl border border-dark-600 bg-dark-800/70 py-2.5 text-sm font-medium text-dark-100 transition-colors hover:border-dark-500 hover:bg-dark-700"
-                        >
-                          {t('lite.incompleteSetup.hide', 'Больше не показывать')}
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div
-                      data-testid="lite-trial-hint-card"
-                      className="rounded-2xl border border-warning-500/35 bg-warning-500/10 p-3 min-[360px]:p-4"
-                    >
-                      <p className="text-sm font-semibold text-warning-300">
-                        {t('lite.connectHintTrialTitle')}
-                      </p>
-                      <p className="mt-1 text-xs text-dark-300">
-                        {t('lite.connectHintTrialDescription')}
-                      </p>
-                      <p className="mt-2 text-2xs font-semibold uppercase tracking-[0.05em] text-dark-400">
-                        {t('lite.connectHintProgress', {
-                          current: trialFlowStep3Done
-                            ? 3
-                            : trialFlowStep2Done
-                              ? 2
-                              : trialFlowStep1Done
-                                ? 1
-                                : 0,
-                          total: 3,
-                        })}
-                      </p>
-                      <ol className="mt-2 space-y-1.5 text-xs text-dark-200">
-                        <li className="flex items-start gap-2">
-                          <span
-                            className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep1Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
-                          >
-                            {trialFlowStep1Done ? '✓' : '1'}
-                          </span>
-                          <span>{t('lite.connectHintTrialStep1')}</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span
-                            className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep2Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
-                          >
-                            {trialFlowStep2Done ? '✓' : '2'}
-                          </span>
-                          <span>{t('lite.connectHintTrialStep2')}</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span
-                            className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep3Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
-                          >
-                            {trialFlowStep3Done ? '✓' : '3'}
-                          </span>
-                          <span>{t('lite.connectHintTrialStep3')}</span>
-                        </li>
-                      </ol>
-                      {!trialFlowStep1Done && (
-                        <button
-                          type="button"
-                          data-testid="lite-activate-trial"
-                          onClick={handleActivateTrial}
-                          disabled={activateTrialMutation.isPending || isTrialActivationLocked}
-                          className="mt-3 w-full rounded-xl border border-white/45 bg-accent-500 py-2.5 text-sm font-semibold text-white shadow-[0_0_0_1px_rgba(255,255,255,0.3)] ring-1 ring-white/35 transition-colors hover:bg-accent-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 disabled:cursor-not-allowed disabled:opacity-60 motion-safe:animate-pulse"
-                        >
-                          {activateTrialMutation.isPending
-                            ? t('common.loading')
-                            : t('lite.activateTrial')}
-                        </button>
-                      )}
-                      {trialError && <p className="mt-2 text-xs text-error-300">{trialError}</p>}
-                    </div>
-                  ))}
-              </div>
+                        {trialError && <p className="mt-2 text-xs text-error-300">{trialError}</p>}
+                      </motion.div>
+                    ))}
+                </AnimatePresence>
+              </motion.div>
 
               {!hasMergedAnotherAccount && (
-                <div className="rounded-xl border border-accent-500/20 bg-accent-500/5 px-3 py-2">
+                <motion.div
+                  layout
+                  {...CARD_LAYOUT_TRANSITION}
+                  className="rounded-xl border border-accent-500/20 bg-accent-500/5 px-3 py-2"
+                >
                   <div className="flex flex-col gap-1.5 min-[360px]:flex-row min-[360px]:items-center min-[360px]:justify-between min-[360px]:gap-3">
                     <p className="text-xs text-dark-300">{t('lite.accountLinking.title')}</p>
                     <Link
@@ -496,15 +523,21 @@ export function LiteDashboard() {
                       {t('lite.accountLinking.cta')}
                     </Link>
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* Promo Offers */}
-              <PromoOffersSection useNowPath="/subscription/purchase" />
+              <motion.div layout {...CARD_LAYOUT_TRANSITION}>
+                <PromoOffersSection useNowPath="/subscription/purchase" />
+              </motion.div>
 
               {/* Referral card */}
               {referralLink && (
-                <div className="from-accent-500/12 via-accent-500/6 rounded-2xl border border-accent-500/25 bg-gradient-to-br to-transparent p-3 min-[360px]:p-4">
+                <motion.div
+                  layout
+                  {...CARD_LAYOUT_TRANSITION}
+                  className="from-accent-500/12 via-accent-500/6 rounded-2xl border border-accent-500/25 bg-gradient-to-br to-transparent p-3 min-[360px]:p-4"
+                >
                   <div className="mb-3 flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-500/20 text-accent-400">
                       <GiftIcon />
@@ -552,7 +585,7 @@ export function LiteDashboard() {
                       {t('lite.referral.share')}
                     </button>
                   </div>
-                </div>
+                </motion.div>
               )}
             </section>
           </div>
