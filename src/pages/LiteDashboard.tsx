@@ -120,6 +120,7 @@ const ShareIcon = () => (
 
 // Lite mode onboarding hook with separate storage key
 const LITE_ONBOARDING_KEY = 'lite_onboarding_completed';
+const LITE_TRIAL_SETUP_HINT_DISMISSED_KEY = 'lite_trial_setup_hint_dismissed';
 const TRIAL_ACTIVATE_CLICK_COOLDOWN_MS = 1500;
 
 function useLiteOnboarding(userId?: number | null) {
@@ -146,10 +147,12 @@ export function LiteDashboard() {
   const queryClient = useQueryClient();
   const { user, refreshUser } = useAuthStore();
   const haptic = useHapticFeedback();
+  const userId = user?.id ?? null;
   const [trialError, setTrialError] = useState<string | null>(null);
   const [isTrialActivationLocked, setIsTrialActivationLocked] = useState(false);
   const trialActivationCooldownRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [onboardingFlow, setOnboardingFlow] = useState(() => getLiteOnboardingFlowState(user?.id));
+  const [isTrialSetupHintDismissed, setIsTrialSetupHintDismissed] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const { isCompleted: isOnboardingCompleted, complete: completeOnboarding } = useLiteOnboarding(
@@ -157,8 +160,23 @@ export function LiteDashboard() {
   );
 
   useEffect(() => {
-    setOnboardingFlow(getLiteOnboardingFlowState(user?.id));
-  }, [user?.id]);
+    setOnboardingFlow(getLiteOnboardingFlowState(userId));
+  }, [userId]);
+
+  useEffect(() => {
+    const storageKey = userId
+      ? `${LITE_TRIAL_SETUP_HINT_DISMISSED_KEY}_${userId}`
+      : LITE_TRIAL_SETUP_HINT_DISMISSED_KEY;
+    setIsTrialSetupHintDismissed(localStorage.getItem(storageKey) === 'true');
+  }, [userId]);
+
+  const dismissTrialSetupHint = useCallback(() => {
+    const storageKey = userId
+      ? `${LITE_TRIAL_SETUP_HINT_DISMISSED_KEY}_${userId}`
+      : LITE_TRIAL_SETUP_HINT_DISMISSED_KEY;
+    localStorage.setItem(storageKey, 'true');
+    setIsTrialSetupHintDismissed(true);
+  }, [userId]);
 
   // Pull to refresh handler
   const handleRefresh = useCallback(async () => {
@@ -333,6 +351,8 @@ export function LiteDashboard() {
   const showTrialFlow =
     (shouldShowTrialConnectHint || onboardingFlow.trial_activated) &&
     !(trialFlowStep3Done && hasActiveSubscription);
+  const showIncompleteTrialSetupHint =
+    trialFlowStep1Done && !trialFlowStep3Done && !isTrialSetupHintDismissed;
 
   // Get device limit from tariff settings
   const tariffs = purchaseOptions?.sales_mode === 'tariffs' ? purchaseOptions.tariffs : [];
@@ -437,80 +457,103 @@ export function LiteDashboard() {
                   </div>
                 )}
 
-                {showTrialFlow && (
-                  <div
-                    data-testid="lite-trial-hint-card"
-                    className="rounded-2xl border border-warning-500/35 bg-warning-500/10 p-3 min-[360px]:p-4"
-                  >
-                    <p className="text-sm font-semibold text-warning-300">
-                      {t('lite.connectHintTrialTitle')}
-                    </p>
-                    <p className="mt-1 text-xs text-dark-300">
-                      {t('lite.connectHintTrialDescription')}
-                    </p>
-                    <p className="mt-2 text-2xs font-semibold uppercase tracking-[0.05em] text-dark-400">
-                      {t('lite.connectHintProgress', {
-                        current: trialFlowStep3Done
-                          ? 3
-                          : trialFlowStep2Done
-                            ? 2
-                            : trialFlowStep1Done
-                              ? 1
-                              : 0,
-                        total: 3,
-                      })}
-                    </p>
-                    <ol className="mt-2 space-y-1.5 text-xs text-dark-200">
-                      <li className="flex items-start gap-2">
-                        <span
-                          className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep1Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
+                {showTrialFlow &&
+                  (showIncompleteTrialSetupHint ? (
+                    <div
+                      data-testid="lite-incomplete-setup-hint"
+                      className="rounded-2xl border border-warning-500/35 bg-warning-500/10 p-3 min-[360px]:p-4"
+                    >
+                      <p className="text-base font-semibold text-warning-300">
+                        {t('lite.incompleteSetup.title', 'Вы не завершили настройку')}
+                      </p>
+                      <p className="mt-1 text-xs text-dark-200">
+                        {t(
+                          'lite.incompleteSetup.description',
+                          'Чтобы VPN заработал, необходимо добавить подписку в приложение Happ.',
+                        )}
+                      </p>
+                      <div className="mt-3 flex flex-col gap-2">
+                        <button
+                          type="button"
+                          onClick={() => navigate('/connection?guide=trial&step=2')}
+                          className="w-full rounded-xl border border-accent-400/60 bg-accent-500 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70"
                         >
-                          {trialFlowStep1Done ? '✓' : '1'}
-                        </span>
-                        <span>{t('lite.connectHintTrialStep1')}</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span
-                          className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep2Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
+                          {t('lite.incompleteSetup.continue', 'Продолжить настройку')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={dismissTrialSetupHint}
+                          className="w-full rounded-xl border border-dark-600 bg-dark-800/70 py-2.5 text-sm font-medium text-dark-100 transition-colors hover:border-dark-500 hover:bg-dark-700"
                         >
-                          {trialFlowStep2Done ? '✓' : '2'}
-                        </span>
-                        <span>{t('lite.connectHintTrialStep2')}</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span
-                          className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep3Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
+                          {t('lite.incompleteSetup.hide', 'Больше не показывать')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      data-testid="lite-trial-hint-card"
+                      className="rounded-2xl border border-warning-500/35 bg-warning-500/10 p-3 min-[360px]:p-4"
+                    >
+                      <p className="text-sm font-semibold text-warning-300">
+                        {t('lite.connectHintTrialTitle')}
+                      </p>
+                      <p className="mt-1 text-xs text-dark-300">
+                        {t('lite.connectHintTrialDescription')}
+                      </p>
+                      <p className="mt-2 text-2xs font-semibold uppercase tracking-[0.05em] text-dark-400">
+                        {t('lite.connectHintProgress', {
+                          current: trialFlowStep3Done
+                            ? 3
+                            : trialFlowStep2Done
+                              ? 2
+                              : trialFlowStep1Done
+                                ? 1
+                                : 0,
+                          total: 3,
+                        })}
+                      </p>
+                      <ol className="mt-2 space-y-1.5 text-xs text-dark-200">
+                        <li className="flex items-start gap-2">
+                          <span
+                            className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep1Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
+                          >
+                            {trialFlowStep1Done ? '✓' : '1'}
+                          </span>
+                          <span>{t('lite.connectHintTrialStep1')}</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span
+                            className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep2Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
+                          >
+                            {trialFlowStep2Done ? '✓' : '2'}
+                          </span>
+                          <span>{t('lite.connectHintTrialStep2')}</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span
+                            className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${trialFlowStep3Done ? 'bg-success-500/20 text-success-300' : 'bg-dark-700 text-dark-300'}`}
+                          >
+                            {trialFlowStep3Done ? '✓' : '3'}
+                          </span>
+                          <span>{t('lite.connectHintTrialStep3')}</span>
+                        </li>
+                      </ol>
+                      {!trialFlowStep1Done && (
+                        <button
+                          type="button"
+                          data-testid="lite-activate-trial"
+                          onClick={handleActivateTrial}
+                          disabled={activateTrialMutation.isPending || isTrialActivationLocked}
+                          className="mt-3 w-full rounded-xl border border-white/45 bg-accent-500 py-2.5 text-sm font-semibold text-white shadow-[0_0_0_1px_rgba(255,255,255,0.3)] ring-1 ring-white/35 transition-colors hover:bg-accent-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 disabled:cursor-not-allowed disabled:opacity-60 motion-safe:animate-pulse"
                         >
-                          {trialFlowStep3Done ? '✓' : '3'}
-                        </span>
-                        <span>{t('lite.connectHintTrialStep3')}</span>
-                      </li>
-                    </ol>
-                    {!trialFlowStep1Done && (
-                      <button
-                        type="button"
-                        data-testid="lite-activate-trial"
-                        onClick={handleActivateTrial}
-                        disabled={activateTrialMutation.isPending || isTrialActivationLocked}
-                        className="mt-3 w-full rounded-xl border border-white/45 bg-accent-500 py-2.5 text-sm font-semibold text-white shadow-[0_0_0_1px_rgba(255,255,255,0.3)] ring-1 ring-white/35 transition-colors hover:bg-accent-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70 disabled:cursor-not-allowed disabled:opacity-60 motion-safe:animate-pulse"
-                      >
-                        {activateTrialMutation.isPending
-                          ? t('common.loading')
-                          : t('lite.activateTrial')}
-                      </button>
-                    )}
-                    {trialFlowStep1Done && !trialFlowStep3Done && (
-                      <button
-                        type="button"
-                        onClick={() => navigate('/connection?guide=trial&step=2')}
-                        className="mt-3 w-full rounded-xl border border-accent-400/60 bg-accent-500 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/70"
-                      >
-                        {t('lite.connect')}
-                      </button>
-                    )}
-                    {trialError && <p className="mt-2 text-xs text-error-300">{trialError}</p>}
-                  </div>
-                )}
+                          {activateTrialMutation.isPending
+                            ? t('common.loading')
+                            : t('lite.activateTrial')}
+                        </button>
+                      )}
+                      {trialError && <p className="mt-2 text-xs text-error-300">{trialError}</p>}
+                    </div>
+                  ))}
               </div>
 
               {!hasMergedAnotherAccount && (
