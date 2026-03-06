@@ -627,11 +627,8 @@ export function LiteSubscription() {
   }
 
   return (
-    <PullToRefresh onRefresh={handleRefresh} className="min-h-screen">
-      <div
-        className="mx-auto w-full max-w-5xl px-3 py-5 min-[360px]:px-4 min-[360px]:py-6 lg:px-6 xl:px-8 2xl:py-8"
-        style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom, 24px))' }}
-      >
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="mx-auto w-full max-w-5xl px-3 py-5 min-[360px]:px-4 min-[360px]:py-6 lg:px-6 xl:px-8 2xl:py-8">
         {/* Expiry warning - show when 3 days or less */}
         {subscription &&
           !subscription.is_expired &&

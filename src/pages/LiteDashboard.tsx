@@ -352,8 +352,8 @@ export function LiteDashboard() {
 
   return (
     <>
-      <PullToRefresh onRefresh={handleRefresh} className="min-h-[calc(100vh-120px)]">
-        <div className="mx-auto flex min-h-[calc(100vh-120px)] w-full max-w-6xl flex-col px-3 py-4 pb-[calc(7rem+env(safe-area-inset-bottom,0px))] min-[360px]:px-4 min-[360px]:py-6 lg:px-6 lg:pb-10 xl:px-8 2xl:py-8">
+      <PullToRefresh onRefresh={handleRefresh}>
+        <div className="mx-auto flex w-full max-w-6xl flex-col px-3 py-4 min-[360px]:px-4 min-[360px]:py-6 lg:px-6 xl:px-8 2xl:py-8">
           <div className="flex flex-1 flex-col gap-5 min-[360px]:gap-6">
             <section className="space-y-5 min-[360px]:space-y-6">
               {/* Subscription status or Trial card */}
