@@ -349,8 +349,7 @@ function FullDashboard() {
                     {t('subscription.trialBanner.description', { days: subscription.days_left })}
                   </div>
                   <Link
-                    to="/subscription"
-                    state={{ scrollToExtend: true }}
+                    to="/subscription/purchase"
                     className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-warning-400 transition-colors hover:text-warning-300"
                   >
                     {t('subscription.trialBanner.upgrade')}

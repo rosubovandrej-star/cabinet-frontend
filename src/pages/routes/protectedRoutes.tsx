@@ -5,6 +5,7 @@ import type { RouteConfig } from './types';
 
 const Dashboard = lazy(() => import('../Dashboard'));
 const Subscription = lazy(() => import('../Subscription'));
+const SubscriptionPurchase = lazy(() => import('../SubscriptionPurchase'));
 const Balance = lazy(() => import('../Balance'));
 const Referral = lazy(() => import('../Referral'));
 const Support = lazy(() => import('../Support'));
@@ -38,6 +39,16 @@ export const protectedRoutes: RouteConfig[] = [
       <ProtectedRoute>
         <LazyPage>
           <Subscription />
+        </LazyPage>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/subscription/purchase',
+    element: (
+      <ProtectedRoute>
+        <LazyPage>
+          <SubscriptionPurchase />
         </LazyPage>
       </ProtectedRoute>
     ),

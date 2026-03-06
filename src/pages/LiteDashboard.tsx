@@ -528,7 +528,7 @@ export function LiteDashboard() {
               )}
 
               {/* Promo Offers */}
-              <PromoOffersSection useNowPath="/subscription" />
+              <PromoOffersSection useNowPath="/subscription/purchase" />
 
               {/* Referral card */}
               {referralLink && (

@@ -84,13 +84,13 @@ const XCircleIcon = () => (
 
 interface PromoOffersSectionProps {
   className?: string;
-  /** Path to navigate when "Use Now" is clicked. Defaults to /subscription */
+  /** Path to navigate when "Use Now" is clicked. Defaults to /subscription/purchase */
   useNowPath?: string;
 }
 
 export default function PromoOffersSection({
   className = '',
-  useNowPath = '/subscription',
+  useNowPath = '/subscription/purchase',
 }: PromoOffersSectionProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -161,7 +161,7 @@ export default function PromoOffersSection({
   };
 
   const handleUseNow = () => {
-    navigate(useNowPath, { state: { scrollToExtend: true } });
+    navigate(useNowPath);
   };
 
   const handleDeactivateClick = () => {

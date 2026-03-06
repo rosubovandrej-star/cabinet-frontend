@@ -1865,7 +1865,9 @@ function FullSubscription() {
                             selectedServers.includes(server.uuid)
                               ? 'border-accent-500 bg-accent-500/10'
                               : server.is_available
-                                ? 'border-dark-700/50 bg-dark-800/50 hover:border-dark-600'
+                                ? isDark
+                                  ? 'border-dark-700/50 bg-dark-800/50 hover:border-dark-600'
+                                  : 'border-champagne-300/60 bg-champagne-200/40 hover:border-champagne-400'
                                 : 'cursor-not-allowed border-dark-800/30 bg-dark-900/30 opacity-50'
                           }`}
                         >
@@ -2015,7 +2017,9 @@ function FullSubscription() {
                           : promoTotal.original;
 
                         return (
-                          <div className="flex items-center justify-between border-t border-dark-700/50 pt-4">
+                          <div
+                            className={`flex items-center justify-between border-t pt-4 ${isDark ? 'border-dark-700/50' : 'border-champagne-300/60'}`}
+                          >
                             <span className="text-lg font-semibold text-dark-100">
                               {t('subscription.total')}
                             </span>
