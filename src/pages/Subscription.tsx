@@ -11,6 +11,7 @@ import { formatTraffic } from '../utils/formatTraffic';
 import { getGlassColors } from '../utils/glassTheme';
 import { useTheme } from '../hooks/useTheme';
 import { HoverBorderGradient } from '../components/ui/hover-border-gradient';
+import PurchaseCTAButton from '../components/subscription/PurchaseCTAButton';
 import type {
   PurchaseSelection,
   PeriodOption,
