@@ -15,9 +15,10 @@ import { SimpleBarChart } from './SimpleBarChart';
 
 interface SalesTabProps {
   params: SalesStatsParams;
+  viewMode?: 'classic' | 'charts';
 }
 
-export function SalesTab({ params }: SalesTabProps) {
+export function SalesTab({ params, viewMode = 'classic' }: SalesTabProps) {
   const { t } = useTranslation();
   const { formatWithCurrency } = useCurrency();
 
@@ -76,11 +77,20 @@ export function SalesTab({ params }: SalesTabProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <SimpleBarChart data={tariffBarData} title={t('admin.salesStats.sales.byTariff')} />
-        <DonutChart data={periodPieData} title={t('admin.salesStats.sales.byPeriod')} />
+        <SimpleBarChart
+          mode={viewMode}
+          data={tariffBarData}
+          title={t('admin.salesStats.sales.byTariff')}
+        />
+        <DonutChart
+          mode={viewMode}
+          data={periodPieData}
+          title={t('admin.salesStats.sales.byPeriod')}
+        />
       </div>
 
       <SimpleAreaChart
+        mode={viewMode}
         data={dailyData}
         title={t('admin.salesStats.sales.dailyChart')}
         chartId="sales-daily"
@@ -88,6 +98,7 @@ export function SalesTab({ params }: SalesTabProps) {
       />
 
       <MultiSeriesAreaChart
+        mode={viewMode}
         data={dailyByTariffData}
         title={t('admin.salesStats.sales.dailyByTariff')}
         chartId="sales-daily-by-tariff"

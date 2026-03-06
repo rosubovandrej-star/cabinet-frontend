@@ -14,6 +14,7 @@ import { SimpleBarChart } from './SimpleBarChart';
 
 interface DepositsTabProps {
   params: SalesStatsParams;
+  viewMode?: 'classic' | 'charts';
 }
 
 const METHOD_LABELS: Record<string, string> = {
@@ -31,7 +32,7 @@ const METHOD_LABELS: Record<string, string> = {
   kassa_ai: 'Kassa AI',
 };
 
-export function DepositsTab({ params }: DepositsTabProps) {
+export function DepositsTab({ params, viewMode = 'classic' }: DepositsTabProps) {
   const { t } = useTranslation();
   const { formatWithCurrency } = useCurrency();
 
@@ -104,12 +105,14 @@ export function DepositsTab({ params }: DepositsTabProps) {
       </div>
 
       <SimpleBarChart
+        mode={viewMode}
         data={methodBarData}
         title={t('admin.salesStats.deposits.byMethod')}
         valueFormatter={formatValue}
       />
 
       <SimpleAreaChart
+        mode={viewMode}
         data={dailyData}
         title={t('admin.salesStats.deposits.dailyChart')}
         chartId="deposits-daily"
@@ -117,6 +120,7 @@ export function DepositsTab({ params }: DepositsTabProps) {
       />
 
       <MultiSeriesAreaChart
+        mode={viewMode}
         data={dailyByMethodData}
         title={t('admin.salesStats.deposits.dailyByMethod')}
         chartId="deposits-daily-by-method"

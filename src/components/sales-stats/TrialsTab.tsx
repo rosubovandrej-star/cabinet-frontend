@@ -11,6 +11,7 @@ import { DualAreaChart } from './DualAreaChart';
 
 interface TrialsTabProps {
   params: SalesStatsParams;
+  viewMode?: 'classic' | 'charts';
 }
 
 const PROVIDER_LABELS: Record<string, string> = {
@@ -22,7 +23,7 @@ const PROVIDER_LABELS: Record<string, string> = {
   discord: 'Discord',
 };
 
-export function TrialsTab({ params }: TrialsTabProps) {
+export function TrialsTab({ params, viewMode = 'classic' }: TrialsTabProps) {
   const { t } = useTranslation();
 
   const { data, isLoading, isError } = useQuery({
@@ -77,8 +78,13 @@ export function TrialsTab({ params }: TrialsTabProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <DonutChart data={pieData} title={t('admin.salesStats.trials.byProvider')} />
+        <DonutChart
+          mode={viewMode}
+          data={pieData}
+          title={t('admin.salesStats.trials.byProvider')}
+        />
         <DualAreaChart
+          mode={viewMode}
           data={dualData}
           title={t('admin.salesStats.trials.dailyChart')}
           chartId="trials-daily"

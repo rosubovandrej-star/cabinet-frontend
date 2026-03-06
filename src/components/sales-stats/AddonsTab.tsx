@@ -13,9 +13,10 @@ import { SimpleBarChart } from './SimpleBarChart';
 
 interface AddonsTabProps {
   params: SalesStatsParams;
+  viewMode?: 'classic' | 'charts';
 }
 
-export function AddonsTab({ params }: AddonsTabProps) {
+export function AddonsTab({ params, viewMode = 'classic' }: AddonsTabProps) {
   const { t } = useTranslation();
   const { formatWithCurrency } = useCurrency();
 
@@ -84,8 +85,13 @@ export function AddonsTab({ params }: AddonsTabProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <SimpleBarChart data={packageBarData} title={t('admin.salesStats.addons.byPackage')} />
+        <SimpleBarChart
+          mode={viewMode}
+          data={packageBarData}
+          title={t('admin.salesStats.addons.byPackage')}
+        />
         <DualAreaChart
+          mode={viewMode}
           data={dailyChartData}
           title={t('admin.salesStats.addons.dailyChart')}
           chartId="addons-daily"

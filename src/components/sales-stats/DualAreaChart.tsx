@@ -23,6 +23,7 @@ interface DualAreaChartProps {
   series1Color?: string;
   series2Color?: string;
   height?: number;
+  mode?: 'classic' | 'charts';
 }
 
 export function DualAreaChart({
@@ -34,6 +35,7 @@ export function DualAreaChart({
   series1Color,
   series2Color,
   height = SALES_STATS.CHART.HEIGHT,
+  mode = 'classic',
 }: DualAreaChartProps) {
   const { t, i18n } = useTranslation();
   const colors = useChartColors();
@@ -58,6 +60,63 @@ export function DualAreaChart({
         <h4 className="mb-3 text-sm font-semibold text-dark-200">{title}</h4>
         <div className="flex items-center justify-center text-sm text-dark-400" style={{ height }}>
           {t('common.noData')}
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === 'classic') {
+    const maxValue = Math.max(...data.map((item) => Math.max(item.series1, item.series2)), 0);
+
+    return (
+      <div className="bento-card">
+        <h4 className="mb-3 text-sm font-semibold text-dark-200">{title}</h4>
+        <div className="mb-3 flex flex-wrap gap-2 text-xs text-dark-300">
+          <div className="flex items-center gap-1.5 rounded-md bg-dark-800/40 px-2 py-1">
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color1 }} />
+            <span>{series1Label}</span>
+          </div>
+          <div className="flex items-center gap-1.5 rounded-md bg-dark-800/40 px-2 py-1">
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color2 }} />
+            <span>{series2Label}</span>
+          </div>
+        </div>
+
+        <div className="space-y-2" style={{ minHeight: height }}>
+          {chartData.map((item, index) => {
+            const width1 = maxValue > 0 ? Math.max((item.series1 / maxValue) * 100, 2) : 0;
+            const width2 = maxValue > 0 ? Math.max((item.series2 / maxValue) * 100, 2) : 0;
+
+            return (
+              <div key={`${item.date}-${index}`} className="space-y-1.5">
+                <div className="text-xs text-dark-300">{item.label}</div>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between gap-3 text-[11px] text-dark-400">
+                    <span>{series1Label}</span>
+                    <span className="shrink-0">{item.series1}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-dark-800/60">
+                    <div
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{ width: `${width1}%`, backgroundColor: color1 }}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between gap-3 text-[11px] text-dark-400">
+                    <span>{series2Label}</span>
+                    <span className="shrink-0">{item.series2}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-dark-800/60">
+                    <div
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{ width: `${width2}%`, backgroundColor: color2 }}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     );

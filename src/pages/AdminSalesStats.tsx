@@ -18,12 +18,14 @@ import {
 } from '../components/sales-stats';
 
 type TabId = 'trials' | 'sales' | 'renewals' | 'addons' | 'deposits';
+type SalesViewMode = 'classic' | 'charts';
 
 export default function AdminSalesStats() {
   const { t } = useTranslation();
   const { formatWithCurrency } = useCurrency();
 
   const [activeTab, setActiveTab] = useState<TabId>('trials');
+  const [viewMode, setViewMode] = useState<SalesViewMode>('classic');
   const [period, setPeriod] = useState<{
     days?: number;
     startDate?: string;
@@ -75,6 +77,31 @@ export default function AdminSalesStats() {
 
       {/* Period selector */}
       <PeriodSelector value={period} onChange={setPeriod} />
+
+      <div className="flex items-center gap-2 rounded-xl border border-dark-700/60 bg-dark-900/40 p-1">
+        <button
+          type="button"
+          onClick={() => setViewMode('classic')}
+          className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors sm:text-sm ${
+            viewMode === 'classic'
+              ? 'bg-accent-500/20 text-accent-300'
+              : 'text-dark-300 hover:bg-dark-800/70'
+          }`}
+        >
+          {t('admin.salesStats.viewModeClassic', { defaultValue: 'Наш режим' })}
+        </button>
+        <button
+          type="button"
+          onClick={() => setViewMode('charts')}
+          className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors sm:text-sm ${
+            viewMode === 'charts'
+              ? 'bg-accent-500/20 text-accent-300'
+              : 'text-dark-300 hover:bg-dark-800/70'
+          }`}
+        >
+          {t('admin.salesStats.viewModeCharts', { defaultValue: 'Графики' })}
+        </button>
+      </div>
 
       {/* Summary cards */}
       {summaryError && (
@@ -159,11 +186,11 @@ export default function AdminSalesStats() {
       {/* Tab content */}
       {isValidPeriod && (
         <div role="tabpanel" id={`panel-${activeTab}`} aria-labelledby={`tab-${activeTab}`}>
-          {activeTab === 'trials' && <TrialsTab params={params} />}
-          {activeTab === 'sales' && <SalesTab params={params} />}
-          {activeTab === 'renewals' && <RenewalsTab params={params} />}
-          {activeTab === 'addons' && <AddonsTab params={params} />}
-          {activeTab === 'deposits' && <DepositsTab params={params} />}
+          {activeTab === 'trials' && <TrialsTab params={params} viewMode={viewMode} />}
+          {activeTab === 'sales' && <SalesTab params={params} viewMode={viewMode} />}
+          {activeTab === 'renewals' && <RenewalsTab params={params} viewMode={viewMode} />}
+          {activeTab === 'addons' && <AddonsTab params={params} viewMode={viewMode} />}
+          {activeTab === 'deposits' && <DepositsTab params={params} viewMode={viewMode} />}
         </div>
       )}
     </div>

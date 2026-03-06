@@ -17,9 +17,10 @@ const TREND_STYLES = {
 
 interface RenewalsTabProps {
   params: SalesStatsParams;
+  viewMode?: 'classic' | 'charts';
 }
 
-export function RenewalsTab({ params }: RenewalsTabProps) {
+export function RenewalsTab({ params, viewMode = 'classic' }: RenewalsTabProps) {
   const { t } = useTranslation();
   const { formatWithCurrency } = useCurrency();
 
@@ -96,6 +97,7 @@ export function RenewalsTab({ params }: RenewalsTabProps) {
       </div>
 
       <SimpleAreaChart
+        mode={viewMode}
         data={dailyData}
         title={t('admin.salesStats.renewals.dailyChart')}
         chartId="renewals-daily"
