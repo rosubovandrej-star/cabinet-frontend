@@ -9,15 +9,15 @@ import { StatCard } from '../data-display/StatCard';
 
 import { SimpleAreaChart } from './SimpleAreaChart';
 
+const TREND_STYLES = {
+  up: { arrow: '\u2191', className: 'text-success-400' },
+  down: { arrow: '\u2193', className: 'text-error-400' },
+  stable: { arrow: '\u2192', className: 'text-dark-400' },
+} as const;
+
 interface RenewalsTabProps {
   params: SalesStatsParams;
 }
-
-const TREND_STYLES = {
-  up: { className: 'text-success-400', arrow: '↑' },
-  down: { className: 'text-error-400', arrow: '↓' },
-  stable: { className: 'text-dark-400', arrow: '→' },
-} as const;
 
 export function RenewalsTab({ params }: RenewalsTabProps) {
   const { t } = useTranslation();
