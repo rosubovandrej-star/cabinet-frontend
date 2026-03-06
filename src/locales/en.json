@@ -1045,7 +1045,8 @@
       "auditLog": "Audit Log",
       "salesStats": "Sales Statistics",
       "mainMenuButtons": "Main Menu Buttons",
-      "accountLinking": "Account Merges"
+      "accountLinking": "Account Merges",
+      "balancer": "Balancer"
     },
     "panel": {
       "title": "Admin Panel",
@@ -1080,7 +1081,8 @@
       "auditLogDesc": "Review system activity and access history",
       "salesStatsDesc": "Sales analytics and trends",
       "mainMenuButtonsDesc": "Configure custom main menu buttons",
-      "accountLinkingDesc": "Manual moderation for disputed account merges"
+      "accountLinkingDesc": "Manual moderation for disputed account merges",
+      "balancerDesc": "Manage and monitor xray-balancer"
     },
     "salesStats": {
       "title": "Sales Statistics",
@@ -1159,7 +1161,9 @@
         "dailyByMethod": "Daily Deposits by Payment Method",
         "revenue": "Revenue"
       },
-      "loadError": "Failed to load statistics"
+      "loadError": "Failed to load statistics",
+      "viewModeClassic": "Classic",
+      "viewModeCharts": "Charts"
     },
     "trafficUsage": {
       "title": "Traffic Usage",
@@ -1683,7 +1687,21 @@
       "projectName": "Project name",
       "quickPresets": "Quick presets",
       "resetAllColors": "Reset all colors",
-      "statusColors": "Status colors"
+      "statusColors": "Status colors",
+      "categories": {
+        "BALANCER": "Balancer"
+      },
+      "settingNames": {
+        "Balancer Api Url": "Balancer API URL",
+        "Balancer api url": "Balancer API URL",
+        "BALANCER API URL": "Balancer API URL",
+        "Balancer Admin Token": "Balancer Admin Token",
+        "Balancer admin token": "Balancer Admin Token",
+        "BALANCER ADMIN TOKEN": "Balancer Admin Token",
+        "Balancer Request Timeout": "Balancer Request Timeout",
+        "Balancer request timeout": "Balancer Request Timeout",
+        "BALANCER REQUEST TIMEOUT": "Balancer Request Timeout"
+      }
     },
     "theme": {
       "accentColor": "Accent color",
@@ -3252,6 +3270,158 @@
       "actions": {
         "approve": "Approve merge",
         "reject": "Reject request"
+      }
+    },
+    "balancer": {
+      "subtitle": "Manage xray-balancer middleware from cabinet",
+      "rawJson": "raw JSON",
+      "status": {
+        "configured": "Configured",
+        "notConfigured": "Not configured"
+      },
+      "actions": {
+        "actionError": "Action failed",
+        "addQuarantine": "Quarantine",
+        "changesDiscarded": "Changes discarded",
+        "groupNameRequired": "Group name is required",
+        "groupNamesUnique": "Group names must be unique",
+        "groupPatternsRequired": "Each group must contain patterns",
+        "groupsSaveError": "Groups save failed",
+        "groupsSaved": "Groups saved",
+        "quarantineAdded": "Node added to quarantine",
+        "quarantineError": "Failed to update quarantine",
+        "quarantineRemoved": "Node removed from quarantine",
+        "refreshGroups": "Refresh groups",
+        "refreshGroupsSuccess": "Groups updated",
+        "refreshStats": "Refresh stats",
+        "refreshStatsSuccess": "Stats updated",
+        "removeQuarantine": "Remove",
+        "tokenError": "Token debug failed"
+      },
+      "cards": {
+        "debugStats": "Debug stats",
+        "health": "Health",
+        "nodeStats": "Node stats",
+        "nodeStatsEmpty": "No node stats yet.",
+        "nodeStatsHint": "Showing real nodes without inbound aliases.",
+        "nodeStatsUnitsHint": "RAM load and CPU load are user density metrics (users per GB/core), not used memory/CPU percent.",
+        "ready": "Ready",
+        "tokenDebug": "Token debug result"
+      },
+      "groups": {
+        "add": "Add group",
+        "advancedTitle": "Advanced balancer settings",
+        "autoDrainEnabled": "Enable auto-drain",
+        "autoDrainFailures": "Auto-drain failures",
+        "autoDrainLoadThreshold": "Auto-drain load threshold",
+        "autoDrainRelease": "Auto-drain release successes",
+        "autoDrainScorePenalty": "Auto-drain score penalty",
+        "autoQuarantineEnabled": "Enable auto-quarantine",
+        "autoQuarantineFailures": "Auto-quarantine failures",
+        "autoQuarantineMaxNodes": "Auto-quarantine max nodes",
+        "balancerHysteresisDelta": "Score hysteresis delta",
+        "balancerLatencyWeight": "Score latency weight",
+        "balancerLoadWeight": "Score load weight",
+        "balancerMaxLatencyMs": "Score max latency (ms)",
+        "balancerSmoothingAlpha": "Score smoothing alpha",
+        "clearSelection": "Clear selection",
+        "empty": "No groups configured.",
+        "emptyExcludeHint": "Add at least one group to manage exclusions.",
+        "excludeCounter": "Selected {{selected}} / {{total}}",
+        "excludeLabel": "Exclude these groups from fastest selection:",
+        "fastestName": "Fastest group name",
+        "fastestToggle": "Enable fastest group",
+        "groupName": "Group name",
+        "groupNumber": "Group #{{index}}",
+        "howLine1": "Each group contains patterns for outbound tags.",
+        "howLine2": "Fastest group is an additional auto-group built from all groups except excluded ones.",
+        "howLine3": "Save applies config to /admin/groups and updates balancer immediately.",
+        "howTitle": "How groups work",
+        "loadError": "Failed to load groups. Check /admin/groups availability.",
+        "moveDown": "Down",
+        "moveUp": "Up",
+        "patterns": "Patterns separated by comma or new line",
+        "patternsCount": "{{count}} items",
+        "patternsTitle": "Patterns",
+        "previewHint": "This is the payload for PUT /admin/groups.",
+        "previewTitle": "Config preview",
+        "sectionAutoDrain": "Auto-drain",
+        "sectionAutoDrainHint": "Automatically drains overloaded nodes.",
+        "sectionAutoQuarantine": "Auto-quarantine",
+        "sectionAutoQuarantineHint": "Automatically quarantines failing nodes.",
+        "sectionScoreModel": "Score model",
+        "sectionScoreModelHint": "Parameters for node score calculation and smoothing.",
+        "title": "Groups editor",
+        "unsaved": "Unsaved groups changes",
+        "viewCompact": "Compact view",
+        "viewExpanded": "Expanded view",
+        "autoQuarantineEnabledDesc": "Automatically move failed nodes into quarantine.",
+        "autoQuarantineFailuresDesc": "Consecutive failures before node goes to quarantine.",
+        "autoQuarantineRelease": "Auto-quarantine release successes",
+        "autoQuarantineReleaseDesc": "Successful checks required to remove node from quarantine.",
+        "autoQuarantineMaxNodesDesc": "Maximum nodes that can be quarantined automatically.",
+        "autoDrainEnabledDesc": "Automatically drain overloaded nodes from selection.",
+        "autoDrainFailuresDesc": "Consecutive failures before auto-drain is applied.",
+        "autoDrainReleaseDesc": "Successful checks required to remove auto-drain.",
+        "autoDrainLoadThresholdDesc": "Load threshold to trigger auto-drain.",
+        "autoDrainScorePenaltyDesc": "Score penalty while node is in auto-drain state.",
+        "balancerLoadWeightDesc": "Weight of CPU/RAM load in node score.",
+        "balancerLatencyWeightDesc": "Weight of network latency in node score.",
+        "balancerMaxLatencyMsDesc": "Latency cap (ms) used to normalize score impact.",
+        "balancerSmoothingAlphaDesc": "Smoothing factor for node score oscillations.",
+        "balancerHysteresisDeltaDesc": "Switch delta to prevent rapid node flapping."
+      },
+      "labels": {
+        "autoGroups": "Auto groups",
+        "baseUrl": "Base URL",
+        "cachePresent": "Cache present",
+        "cacheTtl": "Cache ttl",
+        "cachedNodes": "Cached nodes",
+        "cbFailCount": "CB fail count",
+        "cbHalfOpen": "CB half-open",
+        "circuitOpen": "Circuit open",
+        "circuitOpenTotal": "Circuit open total",
+        "fastestGroup": "Fastest group",
+        "groups": "Groups",
+        "health": "Health",
+        "missing": "missing",
+        "nodeStats": "Node stats",
+        "ok": "ok",
+        "panelAuth": "Panel auth",
+        "profileMode": "Profile mode",
+        "quarantineCount": "Quarantine nodes",
+        "quarantineFiltered": "Quarantine filtered",
+        "rateLimited": "Rate limited",
+        "ready": "Ready",
+        "recentUpstream": "Recent upstream",
+        "requestFailures": "Request failures",
+        "requestsTotal": "Requests total",
+        "startedAt": "Started at",
+        "status": "Status",
+        "subPage": "Sub page",
+        "timeout": "Timeout",
+        "token": "Token"
+      },
+      "quarantine": {
+        "title": "Quarantine",
+        "hint": "Quarantined nodes are excluded from generated groups until removed from quarantine."
+      },
+      "table": {
+        "action": "Action",
+        "connected": "Connected",
+        "cpuCores": "CPU Cores",
+        "cpuLoad": "CPU Load",
+        "disabled": "Disabled",
+        "node": "Node",
+        "quarantine": "Quarantine",
+        "ramLoad": "RAM Load",
+        "totalRam": "Total RAM",
+        "users": "Users"
+      },
+      "tokenDebug": {
+        "placeholder": "Paste subscription token",
+        "run": "Run debug",
+        "title": "Token debug"
       }
     }
   },

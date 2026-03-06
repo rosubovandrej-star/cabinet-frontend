@@ -88,7 +88,7 @@ export default function AdminSalesStats() {
               : 'text-dark-300 hover:bg-dark-800/70'
           }`}
         >
-          {t('admin.salesStats.viewModeClassic', { defaultValue: 'Наш режим' })}
+          {t('admin.salesStats.viewModeClassic', { defaultValue: 'Классический' })}
         </button>
         <button
           type="button"
