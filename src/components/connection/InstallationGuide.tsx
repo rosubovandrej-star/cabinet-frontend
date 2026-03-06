@@ -216,18 +216,23 @@ export default function InstallationGuide({
     <div className="space-y-6 pb-6">
       {isTrialStepTwoGuide && (
         <div
-          className={`rounded-2xl border border-success-500/55 p-4 shadow-[0_0_0_1px_rgba(34,197,94,0.25)] motion-safe:animate-pulse ${isLight ? 'bg-accent-500/10' : 'bg-accent-500/10'}`}
+          className={`relative rounded-2xl border border-success-500/55 p-4 shadow-[0_0_0_1px_rgba(34,197,94,0.25)] ${isLight ? 'bg-accent-500/10' : 'bg-accent-500/10'}`}
         >
+          <div className="pointer-events-none absolute inset-[-1px] rounded-2xl border border-success-400/70 opacity-75 motion-safe:animate-trial-glow" />
           <p className="text-sm font-semibold text-accent-300">
-            {t('subscription.connection.trialStep2.title')}
+            {t('subscription.connection.trialStep2.title', 'Продолжите подключение')}
           </p>
           <p className="mt-1 text-xs text-dark-200">
-            {t('subscription.connection.trialStep2.description')}
+            {t(
+              'subscription.connection.trialStep2.description',
+              'После активации триала установите приложение и добавьте подписку.',
+            )}
           </p>
           <p className="mt-2 text-2xs font-semibold uppercase tracking-[0.05em] text-dark-300">
             {t('subscription.connection.trialStep2.progress', {
               current: trialStep3Done ? 3 : trialStep2Done ? 2 : trialStep1Done ? 1 : 0,
               total: 3,
+              defaultValue: 'Шаг {{current}} из {{total}}',
             })}
           </p>
           <ol className="mt-3 space-y-1.5 text-xs text-dark-200">
@@ -237,7 +242,12 @@ export default function InstallationGuide({
               >
                 {trialStep1Done ? '✓' : '1'}
               </span>
-              <span>{t('subscription.connection.trialStep2.ifNoApp')}</span>
+              <span>
+                {t(
+                  'subscription.connection.trialStep2.ifNoApp',
+                  'Если приложения нет, сначала установите его',
+                )}
+              </span>
             </li>
             <li className="flex items-start gap-2">
               <span
@@ -245,7 +255,12 @@ export default function InstallationGuide({
               >
                 {trialStep2Done ? '✓' : '2'}
               </span>
-              <span>{t('subscription.connection.trialStep2.afterInstall')}</span>
+              <span>
+                {t(
+                  'subscription.connection.trialStep2.afterInstall',
+                  'После установки вернитесь сюда и нажмите «Добавить подписку»',
+                )}
+              </span>
             </li>
             <li className="flex items-start gap-2">
               <span
@@ -253,7 +268,12 @@ export default function InstallationGuide({
               >
                 {trialStep3Done ? '✓' : '3'}
               </span>
-              <span>{t('subscription.connection.trialStep2.ifAppExists')}</span>
+              <span>
+                {t(
+                  'subscription.connection.trialStep2.ifAppExists',
+                  'Если приложение уже установлено, сразу нажмите «Добавить подписку»',
+                )}
+              </span>
             </li>
           </ol>
         </div>

@@ -110,24 +110,36 @@ export default function AccountLinking() {
             : '')
         );
       default:
-        return message || t('common.error');
+        return message || t('common.error', 'Произошла ошибка');
     }
   };
 
   const getUnlinkReasonText = (reason?: string | null) => {
     switch (reason) {
       case 'last_identity':
-        return t('profile.linking.unlink.reasons.lastIdentity');
+        return t(
+          'profile.linking.unlink.reasons.lastIdentity',
+          'Нельзя отвязать единственный способ входа',
+        );
       case 'cooldown_active':
-        return t('profile.linking.unlink.reasons.cooldownActive');
+        return t(
+          'profile.linking.unlink.reasons.cooldownActive',
+          'Сейчас действует ограничение по времени',
+        );
       case 'identity_not_linked':
-        return t('profile.linking.unlink.reasons.notLinked');
+        return t('profile.linking.unlink.reasons.notLinked', 'Этот способ входа не привязан');
       case 'provider_not_supported':
-        return t('profile.linking.unlink.reasons.providerNotSupported');
+        return t(
+          'profile.linking.unlink.reasons.providerNotSupported',
+          'Для этого способа отвязка не поддерживается',
+        );
       case 'telegram_required':
-        return t('profile.linking.unlink.reasons.telegramRequired');
+        return t(
+          'profile.linking.unlink.reasons.telegramRequired',
+          'Telegram должен оставаться привязанным',
+        );
       default:
-        return t('profile.linking.unlink.reasons.generic');
+        return t('profile.linking.unlink.reasons.generic', 'Сейчас отвязка недоступна');
     }
   };
 
@@ -147,19 +159,36 @@ export default function AccountLinking() {
     const parsed = parseApiError(err);
     if (parsed.reason) return getUnlinkReasonText(parsed.reason);
     if (parsed.code === 'unlink_otp_resend_cooldown')
-      return t('profile.linking.unlink.errors.otpResendCooldown');
+      return t(
+        'profile.linking.unlink.errors.otpResendCooldown',
+        'Код уже отправлен, подождите перед повторной отправкой',
+      );
     if (parsed.code === 'unlink_otp_rate_limited')
-      return t('profile.linking.unlink.errors.otpRateLimited');
+      return t(
+        'profile.linking.unlink.errors.otpRateLimited',
+        'Слишком много попыток. Попробуйте позже',
+      );
     if (parsed.code === 'unlink_request_invalid')
-      return t('profile.linking.unlink.errors.requestInvalid');
+      return t('profile.linking.unlink.errors.requestInvalid', 'Запрос устарел. Начните заново');
     if (parsed.code === 'unlink_request_mismatch')
-      return t('profile.linking.unlink.errors.requestMismatch');
-    if (parsed.code === 'unlink_otp_invalid') return t('profile.linking.unlink.errors.otpInvalid');
+      return t(
+        'profile.linking.unlink.errors.requestMismatch',
+        'Запрос не совпадает. Повторите действие',
+      );
+    if (parsed.code === 'unlink_otp_invalid') {
+      return t('profile.linking.unlink.errors.otpInvalid', 'Неверный код подтверждения');
+    }
     if (parsed.code === 'unlink_otp_attempts_exceeded')
-      return t('profile.linking.unlink.errors.otpAttemptsExceeded');
+      return t(
+        'profile.linking.unlink.errors.otpAttemptsExceeded',
+        'Превышено число попыток ввода кода',
+      );
     if (parsed.code === 'unlink_otp_delivery_failed')
-      return t('profile.linking.unlink.errors.otpDeliveryFailed');
-    return parsed.message || t('common.error');
+      return t(
+        'profile.linking.unlink.errors.otpDeliveryFailed',
+        'Не удалось отправить код подтверждения',
+      );
+    return parsed.message || t('common.error', 'Произошла ошибка');
   };
 
   const { data: linkedIdentitiesData } = useQuery({
@@ -269,7 +298,10 @@ export default function AccountLinking() {
       setLinkSuccess(
         data.provider === 'telegram'
           ? 'Код подтверждения отправлен в Telegram. После отвязки сразу сможете привязать новый Telegram-код.'
-          : t('profile.linking.unlink.codeSent'),
+          : t(
+              'profile.linking.unlink.codeSent',
+              'Код отправлен в Telegram. Введите его для подтверждения',
+            ),
       );
       setUnlinkProvider(data.provider);
       setUnlinkRequestToken(data.request_token);
@@ -295,7 +327,12 @@ export default function AccountLinking() {
       setUnlinkProvider(null);
       setUnlinkRequestToken(null);
       setUnlinkOtpCode('');
-      setLinkSuccess(t('profile.linking.unlink.success', { provider: data.provider }));
+      setLinkSuccess(
+        t('profile.linking.unlink.success', {
+          provider: data.provider,
+          defaultValue: 'Способ входа {{provider}} успешно отвязан',
+        }),
+      );
       queryClient.invalidateQueries({ queryKey: ['linked-identities'] });
       queryClient.invalidateQueries({ queryKey: ['user'] });
     },
@@ -388,7 +425,7 @@ export default function AccountLinking() {
                   className="rounded border border-error-500/40 px-2 py-0.5 text-[10px] text-error-300 transition-colors hover:bg-error-500/10 disabled:cursor-not-allowed disabled:border-dark-600 disabled:text-dark-500"
                   title={identity.can_unlink ? undefined : getIdentityBlockedDetails(identity)}
                 >
-                  {t('profile.linking.unlink.button')}
+                  {t('profile.linking.unlink.button', 'Отвязать')}
                 </button>
               </div>
             ))
@@ -562,7 +599,11 @@ export default function AccountLinking() {
           {unlinkProvider && unlinkRequestToken && (
             <div className="rounded-linear border border-warning-500/30 bg-warning-500/10 p-3">
               <p className="mb-2 text-sm text-warning-300">
-                {t('profile.linking.unlink.confirmText', { provider: unlinkProvider })}
+                {t('profile.linking.unlink.confirmText', {
+                  provider: unlinkProvider,
+                  defaultValue:
+                    'Вы уверены, что хотите отвязать {{provider}}? Для подтверждения нужен код из Telegram.',
+                })}
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -576,7 +617,7 @@ export default function AccountLinking() {
                   loading={confirmUnlinkMutation.isPending}
                   disabled={unlinkOtpCode.trim().length !== 6}
                 >
-                  {t('profile.linking.unlink.confirm')}
+                  {t('profile.linking.unlink.confirm', 'Подтвердить')}
                 </Button>
                 <Button
                   variant="secondary"
@@ -595,7 +636,10 @@ export default function AccountLinking() {
                 inputMode="numeric"
                 value={unlinkOtpCode}
                 onChange={(e) => setUnlinkOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder={t('profile.linking.unlink.otpPlaceholder')}
+                placeholder={t(
+                  'profile.linking.unlink.otpPlaceholder',
+                  'Введите код подтверждения',
+                )}
                 className="input mt-3 w-full text-center tracking-[0.4em]"
               />
             </div>
