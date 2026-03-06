@@ -56,9 +56,7 @@ const ShareIcon = () => (
 const LITE_ONBOARDING_KEY = 'lite_onboarding_completed';
 const LITE_TRIAL_SETUP_HINT_DISMISSED_KEY = 'lite_trial_setup_hint_dismissed';
 const TRIAL_ACTIVATE_CLICK_COOLDOWN_MS = 1500;
-const CARD_LAYOUT_TRANSITION = {
-  layout: { type: 'spring', stiffness: 320, damping: 30, mass: 0.9 },
-} as const;
+const CARD_LAYOUT_SPRING = { type: 'spring', stiffness: 320, damping: 30, mass: 0.9 } as const;
 
 function useLiteOnboarding(userId?: number | null) {
   const storageKey = userId ? `${LITE_ONBOARDING_KEY}_${userId}` : LITE_ONBOARDING_KEY;
@@ -362,13 +360,17 @@ export function LiteDashboard() {
           <div className="flex flex-1 flex-col gap-5 min-[360px]:gap-6">
             <section className="space-y-5 min-[360px]:space-y-6">
               {/* Subscription status or Trial card */}
-              <motion.div layout {...CARD_LAYOUT_TRANSITION} data-onboarding="lite-subscription">
+              <motion.div
+                layout
+                transition={{ layout: CARD_LAYOUT_SPRING }}
+                data-onboarding="lite-subscription"
+              >
                 <AnimatePresence mode="popLayout" initial={false}>
                   {subscription && (
                     <motion.div
                       key="subscription-card"
                       layout
-                      {...CARD_LAYOUT_TRANSITION}
+                      transition={{ layout: CARD_LAYOUT_SPRING }}
                       data-testid="lite-subscription-active-card"
                     >
                       <LiteSubscriptionCard
@@ -382,7 +384,7 @@ export function LiteDashboard() {
                     <motion.div
                       key="trial-loading-card"
                       layout
-                      {...CARD_LAYOUT_TRANSITION}
+                      transition={{ layout: CARD_LAYOUT_SPRING }}
                       data-testid="lite-trial-loading-card"
                       className="rounded-2xl border border-dark-600 bg-dark-800/80 p-3 text-center min-[360px]:p-4"
                     >
@@ -394,7 +396,7 @@ export function LiteDashboard() {
                     <motion.div
                       key="no-subscription-card"
                       layout
-                      {...CARD_LAYOUT_TRANSITION}
+                      transition={{ layout: CARD_LAYOUT_SPRING }}
                       data-testid="lite-no-subscription-card"
                       className="rounded-2xl border border-dark-600 bg-dark-800/80 p-3 text-center min-[360px]:p-4"
                     >
@@ -407,7 +409,7 @@ export function LiteDashboard() {
                       <motion.div
                         key="incomplete-setup-hint"
                         layout
-                        {...CARD_LAYOUT_TRANSITION}
+                        transition={{ layout: CARD_LAYOUT_SPRING }}
                         data-testid="lite-incomplete-setup-hint"
                         className="rounded-2xl border border-warning-500/35 bg-warning-500/10 p-3 min-[360px]:p-4"
                       >
@@ -441,7 +443,7 @@ export function LiteDashboard() {
                       <motion.div
                         key="trial-hint-card"
                         layout
-                        {...CARD_LAYOUT_TRANSITION}
+                        transition={{ layout: CARD_LAYOUT_SPRING }}
                         data-testid="lite-trial-hint-card"
                         className="rounded-2xl border border-warning-500/35 bg-warning-500/10 p-3 min-[360px]:p-4"
                       >
@@ -511,7 +513,7 @@ export function LiteDashboard() {
               {!hasMergedAnotherAccount && (
                 <motion.div
                   layout
-                  {...CARD_LAYOUT_TRANSITION}
+                  transition={{ layout: CARD_LAYOUT_SPRING }}
                   className="rounded-xl border border-accent-500/20 bg-accent-500/5 px-3 py-2"
                 >
                   <div className="flex flex-col gap-1.5 min-[360px]:flex-row min-[360px]:items-center min-[360px]:justify-between min-[360px]:gap-3">
@@ -527,7 +529,7 @@ export function LiteDashboard() {
               )}
 
               {/* Promo Offers */}
-              <motion.div layout {...CARD_LAYOUT_TRANSITION}>
+              <motion.div layout transition={{ layout: CARD_LAYOUT_SPRING }}>
                 <PromoOffersSection useNowPath="/subscription/purchase" />
               </motion.div>
 
@@ -535,7 +537,7 @@ export function LiteDashboard() {
               {referralLink && (
                 <motion.div
                   layout
-                  {...CARD_LAYOUT_TRANSITION}
+                  transition={{ layout: CARD_LAYOUT_SPRING }}
                   className="from-accent-500/12 via-accent-500/6 rounded-2xl border border-accent-500/25 bg-gradient-to-br to-transparent p-3 min-[360px]:p-4"
                 >
                   <div className="mb-3 flex items-center gap-2.5">
