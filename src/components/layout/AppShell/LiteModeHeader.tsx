@@ -14,7 +14,6 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthStore } from '@/store/auth';
 import { cn } from '@/lib/utils';
-import { LiteModeMenu } from './LiteModeMenu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 import type { TelegramPlatform } from '@/hooks/useTelegramSDK';
@@ -23,23 +22,6 @@ const FALLBACK_NAME = import.meta.env.VITE_APP_NAME || 'Cabinet';
 const FALLBACK_LOGO = import.meta.env.VITE_APP_LOGO || 'V';
 
 // Icons
-const MenuIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="3" y1="12" x2="21" y2="12" />
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <line x1="3" y1="18" x2="21" y2="18" />
-  </svg>
-);
-
 const BackIcon = () => (
   <svg
     width="24"
@@ -69,6 +51,22 @@ const AdminIcon = () => (
   >
     <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
     <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const ProfileIcon = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
   </svg>
 );
 
@@ -103,7 +101,6 @@ const MoonIcon = () => (
 );
 
 interface LiteModeHeaderProps {
-  headerHeight: number;
   isFullscreen: boolean;
   safeAreaInset: { top: number; bottom: number; left: number; right: number };
   contentSafeAreaInset: { top: number; bottom: number; left: number; right: number };
@@ -122,7 +119,6 @@ export function LiteModeHeader({
   const { isAdmin } = useAuthStore();
   const { formatWithCurrency } = useCurrency();
   const { toggleTheme, isDark, canToggle } = useTheme();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [logoLoaded, setLogoLoaded] = useState(() => isLogoPreloaded());
   const [logoShape, setLogoShape] = useState<'square' | 'wide' | 'tall'>('square');
 
@@ -185,12 +181,6 @@ export function LiteModeHeader({
 
   const isAdminPage = location.pathname.startsWith('/admin');
   const isMainPage = location.pathname === '/';
-
-  // Calculate full header height for menu positioning
-  const telegramHeaderHeight = telegramPlatform === 'android' ? 48 : 45;
-  const calculatedHeaderHeight = isFullscreen
-    ? 64 + Math.max(safeAreaInset.top, contentSafeAreaInset.top) + telegramHeaderHeight
-    : 64;
 
   return (
     <>
@@ -275,7 +265,7 @@ export function LiteModeHeader({
               </div>
             </Link>
 
-            {/* Right: Language + Theme + Admin link + Menu */}
+            {/* Right: Language + Theme + Admin link + Profile */}
             <div className="flex flex-shrink-0 items-center gap-1 min-[360px]:gap-2">
               <div className="hidden min-[390px]:block">
                 <LanguageSwitcher />
@@ -310,29 +300,18 @@ export function LiteModeHeader({
                   <AdminIcon />
                 </Link>
               )}
-
-              <button
-                onClick={() => setMenuOpen(!menuOpen)}
-                className={cn(
-                  'rounded-xl p-2 transition-all duration-200 min-[360px]:p-2.5',
-                  menuOpen
-                    ? 'bg-dark-700 text-dark-100'
-                    : 'text-dark-400 hover:bg-dark-800 hover:text-dark-100',
-                )}
-                aria-label={t('lite.menu')}
+              <Link
+                to="/profile"
+                className="rounded-xl p-2 text-dark-400 transition-all duration-200 hover:bg-dark-800 hover:text-dark-100 min-[360px]:p-2.5"
+                title={t('nav.profile')}
+                aria-label={t('nav.profile')}
               >
-                <MenuIcon />
-              </button>
+                <ProfileIcon />
+              </Link>
             </div>
           </div>
         </div>
       </header>
-
-      <LiteModeMenu
-        isOpen={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        headerHeight={calculatedHeaderHeight}
-      />
     </>
   );
 }

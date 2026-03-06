@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, type SyntheticEvent } from 'react';
 import { useLocation, Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import { useAuthStore } from '@/store/auth';
 import { useHaptic } from '@/platform';
@@ -25,6 +26,7 @@ import { BackgroundRenderer } from '@/components/backgrounds/BackgroundRenderer'
 import { SubscriptionIcon } from '@/components/icons';
 
 import { MobileBottomNav } from './MobileBottomNav';
+import { LiteMobileBottomNav } from './LiteMobileBottomNav';
 import { AppHeader } from './AppHeader';
 import { LiteModeHeader } from './LiteModeHeader';
 
@@ -316,7 +318,6 @@ export function AppShell({ children }: AppShellProps) {
       {/* Lite Mode Header - wait for mode to be determined for new users */}
       {isLiteModeReady && isLiteMode && (
         <LiteModeHeader
-          headerHeight={headerHeight}
           isFullscreen={isMobileFullscreen}
           safeAreaInset={safeAreaInset}
           contentSafeAreaInset={contentSafeAreaInset}
@@ -498,10 +499,24 @@ export function AppShell({ children }: AppShellProps) {
           isLiteMainPage ? 'pt-0 sm:pt-1' : isLiteMode ? 'pt-2 sm:pt-3' : 'pt-6',
         )}
       >
-        {children}
+        {isLiteModeReady && isLiteMode ? (
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10, filter: 'blur(2px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -8, filter: 'blur(1px)' }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        ) : (
+          children
+        )}
       </main>
 
-      {/* Mobile Bottom Navigation (hidden in Lite Mode) */}
+      {/* Mobile Bottom Navigation (regular mode) */}
       {isLiteModeReady && !isLiteMode && (
         <MobileBottomNav
           isKeyboardOpen={isKeyboardOpen}
@@ -509,6 +524,9 @@ export function AppShell({ children }: AppShellProps) {
           wheelEnabled={wheelEnabled}
         />
       )}
+
+      {/* Mobile Bottom Navigation (Lite mode) */}
+      {isLiteModeReady && isLiteMode && <LiteMobileBottomNav isKeyboardOpen={isKeyboardOpen} />}
     </div>
   );
 }
