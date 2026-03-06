@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { brandingApi, setCachedBranding } from '../../api/branding';
 import { setCachedFullscreenEnabled } from '../../hooks/useTelegramSDK';
 import { setCachedLiteMode } from '../../hooks/useLiteMode';
+import { setCachedUltimaMode } from '../../hooks/useUltimaMode';
 import { UploadIcon, TrashIcon, PencilIcon, CheckIcon, CloseIcon } from './icons';
 import { Toggle } from './Toggle';
 import { BackgroundEditor } from './BackgroundEditor';
@@ -40,6 +41,11 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
   const { data: liteModeSettings } = useQuery({
     queryKey: ['lite-mode-enabled'],
     queryFn: brandingApi.getLiteModeEnabled,
+  });
+
+  const { data: ultimaModeSettings } = useQuery({
+    queryKey: ['ultima-mode-enabled'],
+    queryFn: brandingApi.getUltimaModeEnabled,
   });
 
   // Mutations
@@ -88,6 +94,14 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
     onSuccess: (data) => {
       setCachedLiteMode(data.enabled);
       queryClient.invalidateQueries({ queryKey: ['lite-mode-enabled'] });
+    },
+  });
+
+  const updateUltimaModeMutation = useMutation({
+    mutationFn: (enabled: boolean) => brandingApi.updateUltimaModeEnabled(enabled),
+    onSuccess: (data) => {
+      setCachedUltimaMode(data.enabled);
+      queryClient.invalidateQueries({ queryKey: ['ultima-mode-enabled'] });
     },
   });
 
@@ -275,6 +289,20 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
               checked={liteModeSettings?.enabled ?? false}
               onChange={() => updateLiteModeMutation.mutate(!(liteModeSettings?.enabled ?? false))}
               disabled={updateLiteModeMutation.isPending}
+            />
+          </div>
+
+          <div className="flex items-center justify-between rounded-xl bg-dark-700/30 p-4">
+            <div>
+              <span className="font-medium text-dark-100">{t('admin.settings.ultimaMode')}</span>
+              <p className="text-sm text-dark-400">{t('admin.settings.ultimaModeDesc')}</p>
+            </div>
+            <Toggle
+              checked={ultimaModeSettings?.enabled ?? false}
+              onChange={() =>
+                updateUltimaModeMutation.mutate(!(ultimaModeSettings?.enabled ?? false))
+              }
+              disabled={updateUltimaModeMutation.isPending}
             />
           </div>
         </div>

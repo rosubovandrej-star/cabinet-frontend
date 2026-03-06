@@ -1701,7 +1701,11 @@
         "Balancer Request Timeout": "Balancer Request Timeout",
         "Balancer request timeout": "Balancer Request Timeout",
         "BALANCER REQUEST TIMEOUT": "Balancer Request Timeout"
-      }
+      },
+      "liteMode": "Lite mode",
+      "liteModeDesc": "Simplified cabinet interface",
+      "ultimaMode": "Ultima mode",
+      "ultimaModeDesc": "New Ultima-style dashboard home screen"
     },
     "theme": {
       "accentColor": "Accent color",
@@ -4233,6 +4237,7 @@
       "copied": "Copied",
       "share": "Share",
       "shareText": "Join now! Get a bonus on registration. I'm already using it and earning {{percent}}% commission."
-    }
+    },
+    "connectAndSetup": "Install and setup"
   }
 }

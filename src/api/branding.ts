@@ -27,6 +27,10 @@ export interface LiteModeEnabled {
   enabled: boolean;
 }
 
+export interface UltimaModeEnabled {
+  enabled: boolean;
+}
+
 export interface AnalyticsCounters {
   yandex_metrika_id: string;
   google_ads_id: string;
@@ -299,6 +303,37 @@ export const brandingApi = {
   // Update lite mode enabled (admin only)
   updateLiteModeEnabled: async (enabled: boolean): Promise<LiteModeEnabled> => {
     const response = await apiClient.patch<LiteModeEnabled>('/cabinet/branding/lite-mode', {
+      enabled,
+    });
+    return response.data;
+  },
+
+  // Get ultima mode enabled (public, no auth required)
+  getUltimaModeEnabled: async (): Promise<UltimaModeEnabled> => {
+    try {
+      const response = await apiClient.get<UltimaModeEnabled>('/cabinet/branding/ultima-mode');
+      try {
+        localStorage.setItem('cabinet_ultima_mode', String(response.data.enabled));
+      } catch {
+        // localStorage not available
+      }
+      return response.data;
+    } catch {
+      try {
+        const cached = localStorage.getItem('cabinet_ultima_mode');
+        if (cached !== null) {
+          return { enabled: cached === 'true' };
+        }
+      } catch {
+        // localStorage not available
+      }
+      return { enabled: false };
+    }
+  },
+
+  // Update ultima mode enabled (admin only)
+  updateUltimaModeEnabled: async (enabled: boolean): Promise<UltimaModeEnabled> => {
+    const response = await apiClient.patch<UltimaModeEnabled>('/cabinet/branding/ultima-mode', {
       enabled,
     });
     return response.data;

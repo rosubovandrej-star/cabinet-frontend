@@ -12,7 +12,9 @@ import { authApi } from '../api/auth';
 import Onboarding, { useOnboarding } from '../components/Onboarding';
 import PromoOffersSection from '../components/PromoOffersSection';
 import { useLiteMode } from '../hooks/useLiteMode';
+import { useUltimaMode } from '../hooks/useUltimaMode';
 import { LiteDashboard } from './LiteDashboard';
+import { UltimaDashboard } from './UltimaDashboard';
 import SubscriptionCardExpired from '../components/dashboard/SubscriptionCardExpired';
 import TrialOfferCard from '../components/dashboard/TrialOfferCard';
 import StatsGrid from '../components/dashboard/StatsGrid';
@@ -59,10 +61,15 @@ function getTrafficColor(percent: number): string {
 
 export default function Dashboard() {
   const { isLiteMode, isLiteModeReady } = useLiteMode();
+  const { isUltimaMode, isUltimaModeReady } = useUltimaMode();
 
-  // Wait for lite mode to be determined (for new users)
-  if (!isLiteModeReady) {
+  // Wait for mode flags to be determined (for new users)
+  if (!isLiteModeReady || !isUltimaModeReady) {
     return null;
+  }
+
+  if (isUltimaMode) {
+    return <UltimaDashboard />;
   }
 
   // Render Lite Dashboard if lite mode is enabled
