@@ -311,8 +311,8 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="min-h-screen">
-      {/* Animated background */}
-      <BackgroundRenderer />
+      {/* Animated background (disabled for Ultima mode) */}
+      {(!isUltimaModeReady || !isUltimaMode) && <BackgroundRenderer />}
 
       {/* Global components */}
       <WebSocketNotifications />

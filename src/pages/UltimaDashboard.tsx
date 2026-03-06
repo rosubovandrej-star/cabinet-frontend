@@ -136,11 +136,11 @@ export function UltimaDashboard() {
   })();
 
   return (
-    <div className="relative min-h-[100dvh] overflow-hidden bg-[radial-gradient(circle_at_76%_54%,rgba(16,185,129,0.34),rgba(4,17,26,0.98)_58%)] px-4 pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2 sm:px-6">
+    <div className="relative min-h-[100dvh] overflow-hidden bg-[radial-gradient(circle_at_76%_58%,rgba(16,185,129,0.34),rgba(4,17,26,0.98)_58%)] px-4 pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2 sm:px-6">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-[38%] h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/10" />
-        <div className="absolute left-1/2 top-[38%] h-[430px] w-[430px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/10" />
-        <div className="absolute left-1/2 top-[38%] h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/10" />
+        <div className="absolute left-1/2 top-[44%] h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/10" />
+        <div className="absolute left-1/2 top-[44%] h-[430px] w-[430px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/10" />
+        <div className="absolute left-1/2 top-[44%] h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/10" />
       </div>
 
       {isAdmin && (
@@ -155,8 +155,8 @@ export function UltimaDashboard() {
       )}
 
       <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-26px)] w-full max-w-md flex-col">
-        <section className="pt-[16vh]">
-          <div className="mx-auto mb-[24vh] flex h-24 w-24 items-center justify-center rounded-full bg-black/15">
+        <section className="pt-[22vh]">
+          <div className="mx-auto mb-[18vh] flex h-24 w-24 items-center justify-center rounded-full bg-black/15">
             <ShieldIcon />
           </div>
 

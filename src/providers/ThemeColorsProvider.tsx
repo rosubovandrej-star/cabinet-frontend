@@ -5,6 +5,7 @@ import { DEFAULT_THEME_COLORS } from '../types/theme';
 import { applyThemeColors } from '../hooks/useThemeColors';
 import { usePlatform } from '@/platform';
 import { useTheme } from '../hooks/useTheme';
+import { useUltimaMode } from '@/hooks/useUltimaMode';
 
 interface ThemeColorsProviderProps {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ export function ThemeColorsProvider({ children }: ThemeColorsProviderProps) {
 
   const { theme: platformTheme, capabilities } = usePlatform();
   const { isDark } = useTheme();
+  const { isUltimaMode } = useUltimaMode();
 
   // Apply colors on mount and when they change
   useEffect(() => {
@@ -33,11 +35,15 @@ export function ThemeColorsProvider({ children }: ThemeColorsProviderProps) {
 
     const themeColors = colors || DEFAULT_THEME_COLORS;
     // Use surface color for header/bottom bar to match app UI
-    const headerColor = isDark ? themeColors.darkSurface : themeColors.lightSurface;
+    const headerColor = isUltimaMode
+      ? '#0f2a2a'
+      : isDark
+        ? themeColors.darkSurface
+        : themeColors.lightSurface;
 
     platformTheme.setHeaderColor(headerColor);
     platformTheme.setBottomBarColor(headerColor);
-  }, [capabilities.hasThemeSync, colors, isDark, platformTheme]);
+  }, [capabilities.hasThemeSync, colors, isDark, isUltimaMode, platformTheme]);
 
   // Apply Telegram colors when theme or colors change
   useEffect(() => {
