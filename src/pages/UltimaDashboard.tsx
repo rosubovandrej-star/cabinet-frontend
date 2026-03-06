@@ -44,6 +44,13 @@ const SetupIcon = () => (
   </svg>
 );
 
+const PhoneIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+    <rect x="7" y="2.5" width="10" height="19" rx="2.5" stroke="currentColor" strokeWidth="1.8" />
+    <path d="M11 18h2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
 const HomeIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
     <path
@@ -155,7 +162,9 @@ export function UltimaDashboard() {
               <SetupIcon />
               {t('lite.connectAndSetup', { defaultValue: 'Установка и настройка' })}
             </span>
-            <span className="text-slate-500">◻</span>
+            <span className="text-slate-500">
+              <PhoneIcon />
+            </span>
           </button>
         </section>
 

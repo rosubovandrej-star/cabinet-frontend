@@ -105,6 +105,7 @@ interface LiteModeHeaderProps {
   safeAreaInset: { top: number; bottom: number; left: number; right: number };
   contentSafeAreaInset: { top: number; bottom: number; left: number; right: number };
   telegramPlatform?: TelegramPlatform;
+  variant?: 'lite' | 'ultima';
 }
 
 export function LiteModeHeader({
@@ -112,6 +113,7 @@ export function LiteModeHeader({
   safeAreaInset,
   contentSafeAreaInset,
   telegramPlatform,
+  variant = 'lite',
 }: LiteModeHeaderProps) {
   const { t } = useTranslation();
   const location = useLocation();
@@ -181,6 +183,7 @@ export function LiteModeHeader({
 
   const isAdminPage = location.pathname.startsWith('/admin');
   const isMainPage = location.pathname === '/';
+  const isUltimaVariant = variant === 'ultima';
 
   return (
     <>
@@ -267,26 +270,28 @@ export function LiteModeHeader({
 
             {/* Right: Language + Theme + Admin link + Profile */}
             <div className="flex flex-shrink-0 items-center gap-1 min-[360px]:gap-2">
-              <div className="hidden min-[390px]:block">
+              <div className={cn(isUltimaVariant ? 'block' : 'hidden min-[390px]:block')}>
                 <LanguageSwitcher />
               </div>
-              <button
-                onClick={toggleTheme}
-                className={cn(
-                  'rounded-xl p-2 transition-all duration-200 min-[360px]:p-2.5',
-                  !canToggle && 'pointer-events-none invisible',
-                  'text-dark-400 hover:bg-dark-800 hover:text-dark-100',
-                )}
-                title={isDark ? t('theme.light') || 'Light mode' : t('theme.dark') || 'Dark mode'}
-                aria-label={
-                  isDark
-                    ? t('theme.light') || 'Switch to light mode'
-                    : t('theme.dark') || 'Switch to dark mode'
-                }
-              >
-                {isDark ? <SunIcon /> : <MoonIcon />}
-              </button>
-              {isAdmin && (
+              {!isUltimaVariant && (
+                <button
+                  onClick={toggleTheme}
+                  className={cn(
+                    'rounded-xl p-2 transition-all duration-200 min-[360px]:p-2.5',
+                    !canToggle && 'pointer-events-none invisible',
+                    'text-dark-400 hover:bg-dark-800 hover:text-dark-100',
+                  )}
+                  title={isDark ? t('theme.light') || 'Light mode' : t('theme.dark') || 'Dark mode'}
+                  aria-label={
+                    isDark
+                      ? t('theme.light') || 'Switch to light mode'
+                      : t('theme.dark') || 'Switch to dark mode'
+                  }
+                >
+                  {isDark ? <SunIcon /> : <MoonIcon />}
+                </button>
+              )}
+              {isAdmin && !isUltimaVariant && (
                 <Link
                   to="/admin"
                   className={cn(

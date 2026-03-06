@@ -12,6 +12,7 @@ import { useBranding } from '@/hooks/useBranding';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { useScrollRestoration } from '@/hooks/useScrollRestoration';
 import { useLiteMode } from '@/hooks/useLiteMode';
+import { useUltimaMode } from '@/hooks/useUltimaMode';
 import { themeColorsApi } from '@/api/themeColors';
 import { isLogoPreloaded } from '@/api/branding';
 import { cn } from '@/lib/utils';
@@ -208,7 +209,9 @@ export function AppShell({ children }: AppShellProps) {
   const { appName, logoLetter, hasCustomLogo, logoUrl } = useBranding();
   const { referralEnabled, wheelEnabled, hasContests, hasPolls } = useFeatureFlags();
   const { isLiteMode, isLiteModeReady } = useLiteMode();
-  const isLiteMainPage = isLiteMode && location.pathname === '/';
+  const { isUltimaMode, isUltimaModeReady } = useUltimaMode();
+  const isCompactMode = isLiteMode || isUltimaMode;
+  const isCompactMainPage = isCompactMode && location.pathname === '/';
   const [desktopLogoLoaded, setDesktopLogoLoaded] = useState(() => isLogoPreloaded());
   const [desktopLogoShape, setDesktopLogoShape] = useState<'square' | 'wide' | 'tall'>('square');
   useScrollRestoration();
@@ -314,13 +317,14 @@ export function AppShell({ children }: AppShellProps) {
       <CampaignBonusNotifier />
       <SuccessNotificationModal />
 
-      {/* Lite Mode Header - wait for mode to be determined for new users */}
-      {isLiteModeReady && isLiteMode && (
+      {/* Compact Mode Header (Lite + Ultima) */}
+      {isLiteModeReady && isUltimaModeReady && isCompactMode && (
         <LiteModeHeader
           isFullscreen={isMobileFullscreen}
           safeAreaInset={safeAreaInset}
           contentSafeAreaInset={contentSafeAreaInset}
           telegramPlatform={platform}
+          variant={isUltimaMode ? 'ultima' : 'lite'}
         />
       )}
 
@@ -328,7 +332,7 @@ export function AppShell({ children }: AppShellProps) {
       <header
         className={cn(
           'fixed left-0 right-0 top-0 z-50 border-b border-dark-800/50 bg-dark-950/80 backdrop-blur-xl',
-          !isLiteModeReady || isLiteMode ? 'hidden' : 'hidden lg:block',
+          !isLiteModeReady || !isUltimaModeReady || isCompactMode ? 'hidden' : 'hidden lg:block',
         )}
       >
         <div className="mx-auto grid h-14 max-w-6xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6">
@@ -465,7 +469,7 @@ export function AppShell({ children }: AppShellProps) {
       </header>
 
       {/* Mobile Header (hidden in Lite Mode, wait for mode to be determined) */}
-      {isLiteModeReady && !isLiteMode && (
+      {isLiteModeReady && isUltimaModeReady && !isCompactMode && (
         <AppHeader
           mobileMenuOpen={mobileMenuOpen}
           setMobileMenuOpen={setMobileMenuOpen}
@@ -488,18 +492,18 @@ export function AppShell({ children }: AppShellProps) {
       {/* Mobile spacer */}
       <div
         className="lg:hidden"
-        style={{ height: isLiteMainPage ? Math.max(headerHeight - 10, 0) : headerHeight }}
+        style={{ height: isCompactMainPage ? Math.max(headerHeight - 10, 0) : headerHeight }}
       />
 
       {/* Main content */}
       <main
         className={cn(
           'mx-auto max-w-6xl px-4 lg:px-6 lg:pb-8',
-          isLiteMode ? 'pb-8' : 'pb-28',
-          isLiteMainPage ? 'pt-0 sm:pt-1' : isLiteMode ? 'pt-2 sm:pt-3' : 'pt-6',
+          isCompactMode ? 'pb-8' : 'pb-28',
+          isCompactMainPage ? 'pt-0 sm:pt-1' : isCompactMode ? 'pt-2 sm:pt-3' : 'pt-6',
         )}
       >
-        {isLiteModeReady && isLiteMode ? (
+        {isLiteModeReady && isUltimaModeReady && isCompactMode ? (
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={location.pathname}
@@ -517,7 +521,7 @@ export function AppShell({ children }: AppShellProps) {
       </main>
 
       {/* Mobile Bottom Navigation (regular mode) */}
-      {isLiteModeReady && !isLiteMode && (
+      {isLiteModeReady && isUltimaModeReady && !isCompactMode && (
         <MobileBottomNav
           isKeyboardOpen={isKeyboardOpen}
           referralEnabled={referralEnabled}
