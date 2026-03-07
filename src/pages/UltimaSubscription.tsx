@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
@@ -22,7 +22,7 @@ export function UltimaSubscription() {
   const queryClient = useQueryClient();
   const { currencySymbol } = useCurrency();
 
-  const [selectedTariffId, setSelectedTariffId] = useState<number | null>(null);
+  const [selectedDeviceIndex, setSelectedDeviceIndex] = useState(0);
   const [selectedPeriodDays, setSelectedPeriodDays] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,13 +37,32 @@ export function UltimaSubscription() {
     return purchaseOptions.tariffs.filter((tariff) => tariff.is_available);
   }, [purchaseOptions]);
 
+  const deviceLimits = useMemo(() => {
+    return [...new Set(tariffs.map((tariff) => Math.max(1, tariff.device_limit)))].sort(
+      (a, b) => a - b,
+    );
+  }, [tariffs]);
+
+  useEffect(() => {
+    if (!tariffs.length || !deviceLimits.length) return;
+    const current = tariffs.find((tariff) => tariff.is_current) ?? tariffs[0];
+    const idx = deviceLimits.findIndex((value) => value === current.device_limit);
+    setSelectedDeviceIndex(idx >= 0 ? idx : 0);
+  }, [tariffs, deviceLimits]);
+
+  const selectedDeviceLimit =
+    deviceLimits[Math.min(selectedDeviceIndex, Math.max(0, deviceLimits.length - 1))] ?? 1;
+
   const selectedTariff = useMemo(() => {
     if (!tariffs.length) return null;
-    if (selectedTariffId) {
-      return tariffs.find((tariff) => tariff.id === selectedTariffId) ?? tariffs[0];
-    }
-    return tariffs.find((tariff) => tariff.is_current) ?? tariffs[0];
-  }, [tariffs, selectedTariffId]);
+    const exact = tariffs.find((tariff) => tariff.device_limit === selectedDeviceLimit);
+    if (exact) return exact;
+    return [...tariffs].sort(
+      (a, b) =>
+        Math.abs(a.device_limit - selectedDeviceLimit) -
+        Math.abs(b.device_limit - selectedDeviceLimit),
+    )[0];
+  }, [tariffs, selectedDeviceLimit]);
 
   const displayPeriods = useMemo(() => {
     if (!selectedTariff?.periods?.length) return [] as TariffPeriod[];
@@ -131,8 +150,8 @@ export function UltimaSubscription() {
     <div className="relative h-[100dvh] overflow-hidden bg-[radial-gradient(circle_at_78%_50%,rgba(19,176,132,0.35),rgba(5,20,22,0.98)_58%)] px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
       <div className="mx-auto flex h-full max-w-md flex-col">
         <header className="mb-3">
-          <h1 className="text-[48px] font-semibold leading-[0.95] text-white">Покупка подписки</h1>
-          <p className="mt-2 text-[20px] leading-tight text-white/75">
+          <h1 className="text-[42px] font-semibold leading-[0.95] text-white">Покупка подписки</h1>
+          <p className="mt-2 text-[16px] leading-tight text-white/75">
             Подключайте больше устройств и пользуйтесь сервисом вместе с друзьями и близкими
           </p>
         </header>
@@ -140,23 +159,39 @@ export function UltimaSubscription() {
         <section className="mb-4 rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
           <div className="mb-3 flex items-center gap-3">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/90">
-              1
+              {selectedDeviceLimit}
             </span>
             <div>
-              <p className="text-[40px] font-medium leading-none text-white">Устройство</p>
-              <p className="mt-1 text-[20px] text-white/70">Одновременно в подписке</p>
+              <p className="text-[22px] font-medium leading-none text-white">Устройство</p>
+              <p className="mt-1 text-[14px] text-white/70">Одновременно в подписке</p>
             </div>
           </div>
 
           <div className="rounded-2xl bg-black/15 p-3">
             <div className="mb-2 h-1 w-full rounded-full bg-white/20" />
             <div className="flex items-center justify-between px-2">
-              <Dot active />
-              <Dot />
-              <Dot />
-              <Dot />
-              <Dot />
+              {deviceLimits.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  aria-label={`devices-${index + 1}`}
+                  onClick={() => setSelectedDeviceIndex(index)}
+                  className="inline-flex"
+                >
+                  <Dot active={index === selectedDeviceIndex} />
+                </button>
+              ))}
             </div>
+            <input
+              type="range"
+              min={0}
+              max={Math.max(0, deviceLimits.length - 1)}
+              step={1}
+              value={selectedDeviceIndex}
+              onChange={(event) => setSelectedDeviceIndex(Number(event.target.value))}
+              className="mt-3 h-1 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-emerald-400"
+              aria-label="devices-slider"
+            />
           </div>
         </section>
 
@@ -168,7 +203,6 @@ export function UltimaSubscription() {
                 key={period.days}
                 type="button"
                 onClick={() => {
-                  setSelectedTariffId(selectedTariff.id);
                   setSelectedPeriodDays(period.days);
                 }}
                 className={`rounded-3xl border p-4 text-left transition ${
@@ -178,13 +212,13 @@ export function UltimaSubscription() {
                 }`}
               >
                 <div className="mb-4 flex items-center justify-between">
-                  <span className="text-[34px] font-medium text-white">{periodLabel(period)}</span>
+                  <span className="text-[22px] font-medium text-white">{periodLabel(period)}</span>
                   {active && <span className="text-emerald-300">★</span>}
                 </div>
-                <p className="text-[50px] font-semibold leading-none text-white">
+                <p className="text-[42px] font-semibold leading-none text-white">
                   {formatPrice(period.price_kopeks)}
                 </p>
-                <p className="mt-1 text-[22px] text-white/70">
+                <p className="mt-1 text-[14px] text-white/70">
                   {period.price_per_month_kopeks > 0
                     ? `${formatPrice(period.price_per_month_kopeks)} / мес`
                     : ''}
@@ -200,13 +234,13 @@ export function UltimaSubscription() {
             type="button"
             onClick={() => purchaseMutation.mutate()}
             disabled={purchaseMutation.isPending}
-            className="flex w-full items-center justify-between rounded-full border border-[#52ecc6]/40 bg-[#12cd97] px-6 py-4 text-[26px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_8px_20px_rgba(10,123,94,0.28)]"
+            className="flex w-full items-center justify-between rounded-full border border-[#52ecc6]/40 bg-[#12cd97] px-6 py-4 text-[20px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_8px_20px_rgba(10,123,94,0.28)]"
           >
             <span>Оплатить подписку</span>
             <span className="flex items-center gap-2 text-white/95">
               {formatPrice(selectedPeriod.price_kopeks)}
               {selectedPeriod.original_price_kopeks ? (
-                <span className="text-[20px] text-white/55 line-through">
+                <span className="text-[15px] text-white/55 line-through">
                   {formatPrice(selectedPeriod.original_price_kopeks)}
                 </span>
               ) : null}
