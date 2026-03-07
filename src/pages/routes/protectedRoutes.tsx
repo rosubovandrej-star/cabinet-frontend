@@ -4,6 +4,8 @@ import { LazyPage, ProtectedRoute } from '../../components/routing/RouteShells';
 import type { RouteConfig } from './types';
 import Support from '../Support';
 import Profile from '../Profile';
+import TopUpMethodSelect from '../TopUpMethodSelect';
+import TopUpAmount from '../TopUpAmount';
 
 const Dashboard = lazy(() => import('../Dashboard'));
 const Subscription = lazy(() => import('../Subscription'));
@@ -17,8 +19,6 @@ const Info = lazy(() => import('../Info'));
 const Wheel = lazy(() => import('../Wheel'));
 const Connection = lazy(() => import('../Connection'));
 const ConnectionQR = lazy(() => import('../ConnectionQR'));
-const TopUpMethodSelect = lazy(() => import('../TopUpMethodSelect'));
-const TopUpAmount = lazy(() => import('../TopUpAmount'));
 const ReferralPartnerApply = lazy(() => import('../ReferralPartnerApply'));
 const ReferralWithdrawalRequest = lazy(() => import('../ReferralWithdrawalRequest'));
 
@@ -67,9 +67,7 @@ export const protectedRoutes: RouteConfig[] = [
     path: '/balance/top-up',
     element: (
       <ProtectedRoute>
-        <LazyPage>
-          <TopUpMethodSelect />
-        </LazyPage>
+        <TopUpMethodSelect />
       </ProtectedRoute>
     ),
   },
@@ -77,9 +75,7 @@ export const protectedRoutes: RouteConfig[] = [
     path: '/balance/top-up/:methodId',
     element: (
       <ProtectedRoute>
-        <LazyPage>
-          <TopUpAmount />
-        </LazyPage>
+        <TopUpAmount />
       </ProtectedRoute>
     ),
   },

@@ -5,11 +5,13 @@ import { motion } from 'framer-motion';
 
 import { balanceApi } from '../api/balance';
 import { useCurrency } from '../hooks/useCurrency';
+import { useUltimaMode } from '@/hooks/useUltimaMode';
 import { Card } from '@/components/data-display/Card';
 import { staggerContainer, staggerItem } from '@/components/motion/transitions';
 import PaymentMethodIcon from '@/components/PaymentMethodIcon';
+import { UltimaTopUpMethodSelect } from './UltimaTopUpMethodSelect';
 
-export default function TopUpMethodSelect() {
+function TopUpMethodSelectContent() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -96,4 +98,14 @@ export default function TopUpMethodSelect() {
       </motion.div>
     </motion.div>
   );
+}
+
+export default function TopUpMethodSelect() {
+  const { isUltimaMode } = useUltimaMode();
+
+  if (isUltimaMode) {
+    return <UltimaTopUpMethodSelect />;
+  }
+
+  return <TopUpMethodSelectContent />;
 }

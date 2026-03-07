@@ -9,9 +9,11 @@ import { useCurrency } from '../hooks/useCurrency';
 import { checkRateLimit, getRateLimitResetTime, RATE_LIMIT_KEYS } from '../utils/rateLimit';
 import { useCloseOnSuccessNotification } from '../store/successNotification';
 import { useHaptic, usePlatform } from '@/platform';
+import { useUltimaMode } from '@/hooks/useUltimaMode';
 import { staggerContainer, staggerItem } from '@/components/motion/transitions';
 import type { PaymentMethod } from '../types';
 import BentoCard from '../components/ui/BentoCard';
+import { UltimaTopUpAmount } from './UltimaTopUpAmount';
 
 // Icons
 const StarIcon = () => (
@@ -79,7 +81,7 @@ const getMethodIcon = (methodId: string) => {
   return <CardIcon />;
 };
 
-export default function TopUpAmount() {
+function TopUpAmountContent() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { methodId } = useParams<{ methodId: string }>();
@@ -565,4 +567,14 @@ export default function TopUpAmount() {
       )}
     </motion.div>
   );
+}
+
+export default function TopUpAmount() {
+  const { isUltimaMode } = useUltimaMode();
+
+  if (isUltimaMode) {
+    return <UltimaTopUpAmount />;
+  }
+
+  return <TopUpAmountContent />;
 }
