@@ -7,6 +7,7 @@ import { ticketsApi } from '@/api/tickets';
 import { subscriptionApi } from '@/api/subscription';
 import { usePlatform } from '@/platform';
 import { UltimaBottomNav } from '@/components/ultima/UltimaBottomNav';
+import type { Ticket } from '@/types';
 
 const SendIcon = () => (
   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -29,6 +30,7 @@ export function UltimaSupport() {
   const [newTitle, setNewTitle] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const [replyMessage, setReplyMessage] = useState('');
+  const [showOldTickets, setShowOldTickets] = useState(false);
 
   const { data: supportConfig, isLoading: configLoading } = useQuery({
     queryKey: ['support-config'],
@@ -49,6 +51,27 @@ export function UltimaSupport() {
     selectedTicketId && tickets?.items?.length
       ? tickets.items.find((ticket) => ticket.id === selectedTicketId) || null
       : null;
+
+  const ticketBuckets = useMemo(() => {
+    const items = [...(tickets?.items ?? [])];
+    items.sort((a, b) => {
+      const aTime = new Date(a.updated_at).getTime();
+      const bTime = new Date(b.updated_at).getTime();
+      return bTime - aTime;
+    });
+
+    const cutoffMs = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const recent = items.filter((ticket) => {
+      const updated = new Date(ticket.updated_at).getTime();
+      return (
+        ticket.status === 'open' ||
+        ticket.status === 'answered' ||
+        (Number.isFinite(updated) && updated >= cutoffMs)
+      );
+    });
+    const old = items.filter((ticket) => !recent.some((item) => item.id === ticket.id));
+    return { recent, old };
+  }, [tickets?.items]);
 
   const { data: ticketDetail, isLoading: ticketLoading } = useQuery({
     queryKey: ['ticket', selectedTicketId],
@@ -133,6 +156,37 @@ export function UltimaSupport() {
     void import('./Profile');
     navigate('/profile');
   };
+
+  const renderTicketCard = (ticket: Ticket) => (
+    <button
+      key={ticket.id}
+      type="button"
+      onClick={() => setSelectedTicketId(ticket.id)}
+      className={`w-full rounded-2xl px-3 py-2 text-left transition ${
+        selectedTicketId === ticket.id
+          ? 'bg-emerald-500/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
+          : 'bg-emerald-950/36 hover:bg-emerald-900/30'
+      }`}
+    >
+      <div className="mb-1.5 flex items-start justify-between gap-2">
+        <p className="truncate text-[14px] font-medium leading-5 text-white/95">{ticket.title}</p>
+        <span
+          className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${getStatusMeta(ticket.status).classes}`}
+        >
+          {getStatusMeta(ticket.status).label}
+        </span>
+      </div>
+      {ticket.last_message?.message_text ? (
+        <p className="text-white/62 truncate text-[12px]">
+          {ticket.last_message.is_from_admin
+            ? `${t('support.supportTeam', { defaultValue: 'Администратор' })}: `
+            : `${t('support.you', { defaultValue: 'Вы' })}: `}
+          {ticket.last_message.message_text}
+        </p>
+      ) : null}
+      <p className="text-white/48 mt-1 text-[11px]">{formatDate(ticket.updated_at)}</p>
+    </button>
+  );
 
   return (
     <div className="ultima-flat-frames relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
@@ -222,40 +276,40 @@ export function UltimaSupport() {
                 {ticketsLoading ? (
                   <p className="px-2 py-1 text-[13px] text-white/70">{t('common.loading')}</p>
                 ) : tickets?.items?.length ? (
-                  tickets.items.map((ticket) => (
-                    <button
-                      key={ticket.id}
-                      type="button"
-                      onClick={() => setSelectedTicketId(ticket.id)}
-                      className={`w-full rounded-2xl px-3 py-2 text-left transition ${
-                        selectedTicketId === ticket.id
-                          ? 'bg-emerald-500/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
-                          : 'bg-emerald-950/36 hover:bg-emerald-900/30'
-                      }`}
-                    >
-                      <div className="mb-1.5 flex items-start justify-between gap-2">
-                        <p className="truncate text-[14px] font-medium leading-5 text-white/95">
-                          {ticket.title}
+                  <>
+                    {ticketBuckets.recent.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="px-1 text-[10px] uppercase tracking-[0.18em] text-white/45">
+                          {t('support.recentTickets', { defaultValue: 'Новые и активные' })}
                         </p>
-                        <span
-                          className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${getStatusMeta(ticket.status).classes}`}
-                        >
-                          {getStatusMeta(ticket.status).label}
-                        </span>
+                        {ticketBuckets.recent.map((ticket) => renderTicketCard(ticket))}
                       </div>
-                      {ticket.last_message?.message_text ? (
-                        <p className="text-white/62 truncate text-[12px]">
-                          {ticket.last_message.is_from_admin
-                            ? `${t('support.supportTeam', { defaultValue: 'Администратор' })}: `
-                            : `${t('support.you', { defaultValue: 'Вы' })}: `}
-                          {ticket.last_message.message_text}
-                        </p>
-                      ) : null}
-                      <p className="text-white/48 mt-1 text-[11px]">
-                        {formatDate(ticket.updated_at)}
-                      </p>
-                    </button>
-                  ))
+                    )}
+
+                    {ticketBuckets.old.length > 0 && (
+                      <div className="space-y-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => setShowOldTickets((prev) => !prev)}
+                          className="w-full rounded-xl bg-emerald-900/25 px-2.5 py-2 text-left text-[12px] text-white/80"
+                        >
+                          {showOldTickets
+                            ? t('support.hideOldTickets', {
+                                defaultValue: 'Скрыть старые тикеты',
+                              })
+                            : t('support.showOldTickets', {
+                                defaultValue: 'Показать старые тикеты',
+                              })}{' '}
+                          ({ticketBuckets.old.length})
+                        </button>
+                        {showOldTickets && (
+                          <div className="space-y-2">
+                            {ticketBuckets.old.map((ticket) => renderTicketCard(ticket))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <p className="px-2 py-2 text-[13px] text-white/60">{t('support.noTickets')}</p>
                 )}
