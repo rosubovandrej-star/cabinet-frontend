@@ -129,6 +129,12 @@ export function UltimaSubscription() {
     staleTime: 60000,
     placeholderData: (previousData) => previousData,
   });
+  const { data: balanceData } = useQuery({
+    queryKey: ['balance'],
+    queryFn: balanceApi.getBalance,
+    staleTime: 15000,
+    placeholderData: (previousData) => previousData,
+  });
 
   useEffect(() => {
     // Warm dashboard route/data for seamless return transition.
@@ -569,6 +575,8 @@ export function UltimaSubscription() {
     return baseTariffPrice + selectedExtraDevices * extraDevicePricePerMonth * months;
   };
   const selectedPriceKopeks = calculatePeriodPrice(selectedPeriod);
+  const currentBalanceKopeks = Math.max(0, balanceData?.balance_kopeks ?? 0);
+  const payableAmountKopeks = Math.max(0, selectedPriceKopeks - currentBalanceKopeks);
 
   const openTopUpForSubscription = async () => {
     setError(null);
@@ -651,7 +659,7 @@ export function UltimaSubscription() {
     const topupAmountKopeksBase =
       typeof missingAmount === 'number' && missingAmount > 0
         ? Math.max(1, Math.ceil(missingAmount))
-        : selectedPriceKopeks;
+        : Math.max(1, payableAmountKopeks);
     const topupAmountKopeks = Math.min(
       Math.max(topupAmountKopeksBase, method.min_amount_kopeks ?? 1),
       method.max_amount_kopeks ?? Number.MAX_SAFE_INTEGER,
@@ -835,7 +843,7 @@ export function UltimaSubscription() {
           >
             <span>Оплатить подписку</span>
             <span className="flex items-center gap-2 text-white/95">
-              {formatPrice(selectedPriceKopeks)}
+              {formatPrice(payableAmountKopeks)}
               {selectedPeriod.original_price_kopeks &&
               selectedPeriod.original_price_kopeks > selectedPeriod.price_kopeks ? (
                 <span className="text-[15px] text-white/55 line-through">
