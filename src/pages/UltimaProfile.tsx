@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -11,6 +11,7 @@ import { brandingApi } from '@/api/branding';
 import { partnerApi } from '@/api/partners';
 import { authApi } from '@/api/auth';
 import { ultimaAgreementApi } from '@/api/ultimaAgreement';
+import { withdrawalApi } from '@/api/withdrawals';
 import { useAuthStore } from '@/store/auth';
 import { UltimaBottomNav } from '@/components/ultima/UltimaBottomNav';
 
@@ -298,13 +299,153 @@ export function UltimaProfile() {
     });
   }, [i18n.language, queryClient]);
 
-  const openPathFast = (path: string) => {
-    if (path === '/support') {
-      openSupportFast();
-      return;
-    }
-    navigate(path);
-  };
+  const openPathFast = useCallback(
+    async (path: string) => {
+      const tasks: Array<Promise<unknown>> = [];
+
+      if (path === '/balance/top-up') {
+        tasks.push(import('./TopUpMethodSelect'));
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['payment-methods'],
+            queryFn: balanceApi.getPaymentMethods,
+            staleTime: 60000,
+          }),
+        );
+      } else if (path === '/balance') {
+        tasks.push(import('./Balance'));
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['balance'],
+            queryFn: balanceApi.getBalance,
+            staleTime: 15000,
+          }),
+        );
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['transactions', 1, 'ultima'],
+            queryFn: () => balanceApi.getTransactions({ page: 1, per_page: 20 }),
+            staleTime: 15000,
+          }),
+        );
+      } else if (path === '/referral') {
+        tasks.push(import('./Referral'));
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['referral-info'],
+            queryFn: referralApi.getReferralInfo,
+            staleTime: 15000,
+          }),
+        );
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['referral-terms'],
+            queryFn: referralApi.getReferralTerms,
+            staleTime: 15000,
+          }),
+        );
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['referral-list'],
+            queryFn: () => referralApi.getReferralList({ per_page: 20 }),
+            staleTime: 15000,
+          }),
+        );
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['referral-earnings'],
+            queryFn: () => referralApi.getReferralEarnings({ per_page: 20 }),
+            staleTime: 15000,
+          }),
+        );
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['branding'],
+            queryFn: brandingApi.getBranding,
+            staleTime: 60000,
+          }),
+        );
+        const partnerStatus = await queryClient.fetchQuery({
+          queryKey: ['partner-status'],
+          queryFn: partnerApi.getStatus,
+          staleTime: 30000,
+        });
+        if (partnerStatus?.partner_status === 'approved') {
+          tasks.push(
+            queryClient.prefetchQuery({
+              queryKey: ['withdrawal-balance'],
+              queryFn: withdrawalApi.getBalance,
+              staleTime: 15000,
+            }),
+          );
+          tasks.push(
+            queryClient.prefetchQuery({
+              queryKey: ['withdrawal-history'],
+              queryFn: withdrawalApi.getHistory,
+              staleTime: 15000,
+            }),
+          );
+        }
+      } else if (path === '/account-linking') {
+        tasks.push(import('./AccountLinking'));
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['linked-identities'],
+            queryFn: authApi.getLinkedIdentities,
+            staleTime: 15000,
+          }),
+        );
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['latest-manual-merge-request'],
+            queryFn: authApi.getLatestManualMergeRequest,
+            staleTime: 15000,
+          }),
+        );
+      } else if (path === '/support') {
+        tasks.push(import('./Support'));
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['support-config'],
+            queryFn: infoApi.getSupportConfig,
+            staleTime: 60000,
+          }),
+        );
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['tickets'],
+            queryFn: () => ticketsApi.getTickets({ per_page: 20 }),
+            staleTime: 15000,
+          }),
+        );
+      } else if (path === '/ultima/agreement') {
+        tasks.push(import('./UltimaAgreement'));
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['ultima-agreement', i18n.language],
+            queryFn: () => ultimaAgreementApi.getAgreement(i18n.language || 'ru'),
+            staleTime: 60000,
+          }),
+        );
+      } else if (path === '/connection') {
+        tasks.push(import('./Connection'));
+        tasks.push(
+          queryClient.prefetchQuery({
+            queryKey: ['appConfig'],
+            queryFn: () => subscriptionApi.getAppConfig(),
+            staleTime: 15000,
+          }),
+        );
+      }
+
+      if (tasks.length > 0) {
+        await Promise.allSettled(tasks);
+      }
+
+      navigate(path);
+    },
+    [i18n.language, navigate, queryClient],
+  );
 
   const openSupportFast = () => {
     void queryClient.prefetchQuery({
