@@ -24,7 +24,9 @@ export function UltimaSubscription() {
   const { data: purchaseOptions, isLoading } = useQuery({
     queryKey: ['purchase-options'],
     queryFn: subscriptionApi.getPurchaseOptions,
-    refetchOnMount: 'always',
+    staleTime: 60000,
+    refetchOnMount: true,
+    placeholderData: (previousData) => previousData,
   });
   const { data: devicePriceMeta } = useQuery({
     queryKey: ['device-price', 'ultima-max'],
@@ -34,7 +36,22 @@ export function UltimaSubscription() {
   const { data: paymentMethods } = useQuery({
     queryKey: ['payment-methods'],
     queryFn: balanceApi.getPaymentMethods,
+    staleTime: 60000,
+    placeholderData: (previousData) => previousData,
   });
+
+  useEffect(() => {
+    // Warm dashboard route/data for seamless return transition.
+    void import('./Dashboard');
+    void queryClient.prefetchQuery({
+      queryKey: ['subscription'],
+      queryFn: subscriptionApi.getSubscription,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['purchase-options'],
+      queryFn: subscriptionApi.getPurchaseOptions,
+    });
+  }, [queryClient]);
 
   const tariffs = useMemo(() => {
     if (!purchaseOptions || purchaseOptions.sales_mode !== 'tariffs') return [] as Tariff[];

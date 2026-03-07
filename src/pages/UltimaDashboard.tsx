@@ -118,12 +118,15 @@ export function UltimaDashboard() {
   const { data: subscriptionResponse } = useQuery({
     queryKey: ['subscription'],
     queryFn: subscriptionApi.getSubscription,
-    refetchOnMount: 'always',
+    staleTime: 15000,
+    refetchOnMount: true,
+    placeholderData: (previousData) => previousData,
   });
   const { data: purchaseOptions } = useQuery({
     queryKey: ['purchase-options'],
     queryFn: subscriptionApi.getPurchaseOptions,
     staleTime: 60000,
+    placeholderData: (previousData) => previousData,
   });
 
   const subscription = subscriptionResponse?.subscription ?? null;
