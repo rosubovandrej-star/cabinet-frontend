@@ -331,10 +331,18 @@ export function UltimaSubscription() {
       if (!tariffId || !periodDays) throw new Error('No tariff selected');
       return subscriptionApi.purchaseTariff(tariffId, periodDays, undefined, params?.deviceLimit);
     },
-    onSuccess: async () => {
+    onSuccess: async (result) => {
       clearPendingUltimaPurchase();
       setAwaitingPaymentCompletion(false);
       setError(null);
+      queryClient.setQueryData(['subscription'], (prev: unknown) => {
+        const previous = prev as { has_subscription?: boolean } | undefined;
+        return {
+          ...(previous ?? {}),
+          has_subscription: true,
+          subscription: result.subscription,
+        };
+      });
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['subscription'] }),
         queryClient.invalidateQueries({ queryKey: ['purchase-options'] }),
@@ -448,12 +456,20 @@ export function UltimaSubscription() {
       finalizeInProgressRef.current = true;
       setIsFinalizingPending(true);
       try {
-        await subscriptionApi.purchaseTariff(
+        const result = await subscriptionApi.purchaseTariff(
           pending.tariffId,
           pending.periodDays,
           undefined,
           pending.deviceLimit,
         );
+        queryClient.setQueryData(['subscription'], (prev: unknown) => {
+          const previous = prev as { has_subscription?: boolean } | undefined;
+          return {
+            ...(previous ?? {}),
+            has_subscription: true,
+            subscription: result.subscription,
+          };
+        });
         clearPendingUltimaPurchase();
         setAwaitingPaymentCompletion(false);
         setError(null);
