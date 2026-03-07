@@ -186,6 +186,9 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
     const pendingGlobalKey = ULTIMA_CONNECTION_PENDING_STEP3_KEY;
 
     const applyPendingReturn = () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+        return;
+      }
       try {
         const pending =
           localStorage.getItem(pendingKey) === '1' ||
@@ -421,7 +424,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
       </div>
 
       {step === 1 && showInfo && (
-        <div className="ultima-step-enter bg-black/82 absolute inset-x-4 bottom-[236px] z-20 rounded-[24px] border border-white/10 p-4 text-white shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+        <div className="ultima-step-enter border-white/18 bg-black/94 absolute inset-x-4 bottom-[236px] z-20 rounded-[24px] border p-4 text-white shadow-[0_22px_46px_rgba(0,0,0,0.52)] backdrop-blur-xl">
           <div className="mb-2 flex items-start justify-between gap-3">
             <h3 className="text-[24px] font-semibold leading-[1.06]">
               {t('subscription.connection.importantInfo', { defaultValue: 'Важная информация' })}
@@ -435,7 +438,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
               ×
             </button>
           </div>
-          <p className="text-white/82 text-[15px] leading-[1.24]">
+          <p className="text-[15px] leading-[1.24] text-white/95">
             {t('subscription.connection.importantInfoDesc', {
               defaultValue:
                 'После установки приложения Happ, обязательно вернитесь на этот экран и нажмите «Следующий шаг», чтобы добавить конфигурацию в приложение.',
