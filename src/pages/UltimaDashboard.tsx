@@ -340,19 +340,19 @@ export function UltimaDashboard() {
               void import('./Subscription');
               navigate('/subscription');
             }}
-            className="mb-3 flex w-full items-center justify-between rounded-full border border-[#4ceac2]/45 bg-[#14cf9a] px-5 py-4 text-[18px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_16px_rgba(7,146,108,0.24)] transition hover:bg-[#16d8a1]"
+            className="border-[#66ebc9]/42 mb-3 flex w-full items-center justify-between rounded-full border bg-[#14cf9a] px-5 py-3 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)] transition hover:bg-[#16d8a1]"
           >
             <span className="flex items-center gap-2">
               <GlobeIcon />
               {t('lite.buySubscription', { defaultValue: 'Купить подписку' })}
             </span>
-            <span className="text-[18px] text-white/90">{buyFromLabel}</span>
+            <span className="text-[16px] text-white/90">{buyFromLabel}</span>
           </button>
 
           <button
             type="button"
             onClick={() => navigate('/connection')}
-            className="mb-4 flex w-full items-center justify-between rounded-full border border-white/85 bg-white px-5 py-4 text-[18px] font-medium text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_6px_14px_rgba(0,0,0,0.18)] transition hover:bg-white/95"
+            className="mb-4 flex w-full items-center justify-between rounded-full border border-white/80 bg-white px-5 py-3 text-[16px] font-medium text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_4px_12px_rgba(0,0,0,0.16)] transition hover:bg-white/95"
           >
             <span className="flex items-center gap-2">
               <SetupIcon />

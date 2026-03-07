@@ -15,18 +15,6 @@ type UltimaConnectionProps = {
 const ULTIMA_CONNECTION_STATE_KEY = 'ultima_connection_flow_v1';
 const ULTIMA_CONNECTION_PENDING_STEP3_KEY = 'ultima_connection_pending_step3_v1';
 
-const BackIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
-    <path
-      d="M15.5 5 8.5 12l7 7"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
 const DownloadIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" className="h-[74px] w-[74px] text-white/90">
     <path
@@ -299,15 +287,6 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
       <div className="relative z-10 mx-auto flex h-full min-h-0 max-w-md flex-col">
-        <button
-          type="button"
-          onClick={onGoBack}
-          className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full text-white/85"
-          aria-label="ultima-connection-back"
-        >
-          <BackIcon />
-        </button>
-
         <section className="flex min-h-0 flex-1 flex-col">
           <div key={step} className="ultima-step-enter pt-2 text-center">
             <h1 className="text-[46px] font-semibold leading-[0.96] text-white sm:text-[50px]">
@@ -400,7 +379,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             <button
               type="button"
               onClick={openInstall}
-              className="mb-3 flex w-full items-center justify-center gap-2 rounded-full border border-[#4ceac2]/45 bg-[#14cf9a] px-5 py-4 text-[18px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_16px_rgba(7,146,108,0.24)]"
+              className="border-[#66ebc9]/42 mb-3 flex w-full items-center justify-center gap-2 rounded-full border bg-[#14cf9a] px-5 py-3 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)]"
             >
               <span aria-hidden>⟳</span>
               {t('subscription.connection.installApp', { defaultValue: 'Установить приложение' })}
@@ -410,7 +389,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             <button
               type="button"
               onClick={openAddSubscription}
-              className="mb-3 flex w-full items-center justify-center gap-2 rounded-full border border-[#4ceac2]/45 bg-[#14cf9a] px-5 py-4 text-[18px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_16px_rgba(7,146,108,0.24)]"
+              className="border-[#66ebc9]/42 mb-3 flex w-full items-center justify-center gap-2 rounded-full border bg-[#14cf9a] px-5 py-3 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)]"
             >
               <span aria-hidden>◌</span>
               {t('subscription.connection.addSubscription', { defaultValue: 'Добавить подписку' })}
@@ -420,7 +399,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             <button
               type="button"
               onClick={finishFlow}
-              className="mb-3 flex w-full items-center justify-center rounded-full border border-[#4ceac2]/45 bg-[#14cf9a] px-5 py-4 text-[18px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_16px_rgba(7,146,108,0.24)]"
+              className="border-[#66ebc9]/42 mb-3 flex w-full items-center justify-center rounded-full border bg-[#14cf9a] px-5 py-3 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)]"
             >
               {t('subscription.connection.finishSetup', { defaultValue: 'Завершить настройку' })}
             </button>
@@ -430,7 +409,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             <button
               type="button"
               onClick={advanceStep}
-              className="mb-3 flex w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-4 text-[18px] font-medium text-white/95"
+              className="mb-3 flex w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-[16px] font-medium text-white/95"
             >
               {t('subscription.connection.nextStep', { defaultValue: 'Следующий шаг' })}
               <span aria-hidden className="text-white/70">
@@ -444,9 +423,9 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
       </div>
 
       {step === 1 && showInfo && (
-        <div className="ultima-step-enter absolute inset-x-4 bottom-[140px] z-20 rounded-[28px] border border-white/10 bg-black/85 p-5 text-white shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-          <div className="mb-3 flex items-start justify-between gap-3">
-            <h3 className="text-[34px] font-semibold leading-[1.04]">
+        <div className="ultima-step-enter bg-black/82 absolute inset-x-4 bottom-[182px] z-20 rounded-[24px] border border-white/10 p-4 text-white shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+          <div className="mb-2 flex items-start justify-between gap-3">
+            <h3 className="text-[24px] font-semibold leading-[1.06]">
               {t('subscription.connection.importantInfo', { defaultValue: 'Важная информация' })}
             </h3>
             <button
@@ -458,7 +437,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
               ×
             </button>
           </div>
-          <p className="text-[18px] leading-[1.24] text-white/85">
+          <p className="text-white/82 text-[15px] leading-[1.24]">
             {t('subscription.connection.importantInfoDesc', {
               defaultValue:
                 'После установки приложения Happ, обязательно вернитесь на этот экран и нажмите «Следующий шаг», чтобы добавить конфигурацию в приложение.',
@@ -466,14 +445,11 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
           </p>
           <button
             type="button"
-            onClick={() => {
-              setShowInfo(false);
-              openInstall();
-            }}
-            className="mt-5 flex w-full items-center justify-center rounded-full border border-[#4ceac2]/45 bg-[#14cf9a] px-5 py-4 text-[18px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_16px_rgba(7,146,108,0.24)]"
+            onClick={() => setShowInfo(false)}
+            className="border-white/22 bg-white/12 mt-4 flex w-full items-center justify-center rounded-full border px-5 py-2.5 text-[15px] font-medium text-white/95"
           >
-            {t('subscription.connection.goInstall', {
-              defaultValue: 'Хорошо, перейти к установке',
+            {t('subscription.connection.gotIt', {
+              defaultValue: 'Все понятно',
             })}
           </button>
         </div>
