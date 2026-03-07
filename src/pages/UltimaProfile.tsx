@@ -1,8 +1,10 @@
 import { type ReactNode, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { subscriptionApi } from '@/api/subscription';
+import { infoApi } from '@/api/info';
+import { ticketsApi } from '@/api/tickets';
 import { useAuthStore } from '@/store/auth';
 
 const GridIcon = () => (
@@ -154,6 +156,7 @@ function MenuItem({ item, onClick }: { item: SectionItem; onClick: () => void })
 export function UltimaProfile() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
   const [idCopied, setIdCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -244,6 +247,21 @@ export function UltimaProfile() {
     window.setTimeout(() => setDone(false), 1500);
   };
 
+  const openSupportFast = () => {
+    void queryClient.prefetchQuery({
+      queryKey: ['support-config'],
+      queryFn: infoApi.getSupportConfig,
+      staleTime: 60000,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['tickets'],
+      queryFn: () => ticketsApi.getTickets({ per_page: 20 }),
+      staleTime: 15000,
+    });
+    void import('./Support');
+    navigate('/support');
+  };
+
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(95%_70%_at_50%_45%,rgba(33,208,154,0.14),rgba(7,20,46,0.02)_62%,rgba(7,20,46,0)_100%)]" />
@@ -332,7 +350,7 @@ export function UltimaProfile() {
             <button
               type="button"
               className="rounded-full p-3 text-white/85 hover:bg-white/10"
-              onClick={() => navigate('/support')}
+              onClick={openSupportFast}
             >
               <SupportIcon />
             </button>

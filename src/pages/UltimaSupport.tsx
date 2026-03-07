@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { infoApi } from '@/api/info';
 import { ticketsApi } from '@/api/tickets';
+import { subscriptionApi } from '@/api/subscription';
 import { usePlatform } from '@/platform';
 
 const GridIcon = () => (
@@ -72,12 +73,16 @@ export function UltimaSupport() {
   const { data: supportConfig, isLoading: configLoading } = useQuery({
     queryKey: ['support-config'],
     queryFn: infoApi.getSupportConfig,
+    staleTime: 60000,
+    placeholderData: (previousData) => previousData,
   });
 
   const { data: tickets, isLoading: ticketsLoading } = useQuery({
     queryKey: ['tickets'],
     queryFn: () => ticketsApi.getTickets({ per_page: 20 }),
     enabled: supportConfig?.tickets_enabled === true,
+    staleTime: 15000,
+    placeholderData: (previousData) => previousData,
   });
 
   const selectedTicket =
@@ -157,11 +162,17 @@ export function UltimaSupport() {
     };
   };
 
-  if (configLoading) {
-    return <div className="h-[100dvh] w-full bg-transparent" />;
-  }
-
   const ticketsDisabled = Boolean(supportConfig && !supportConfig.tickets_enabled);
+
+  const openProfileFast = () => {
+    void queryClient.prefetchQuery({
+      queryKey: ['subscription'],
+      queryFn: subscriptionApi.getSubscription,
+      staleTime: 15000,
+    });
+    void import('./Profile');
+    navigate('/profile');
+  };
 
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
@@ -180,7 +191,11 @@ export function UltimaSupport() {
           </p>
         </header>
 
-        {ticketsDisabled ? (
+        {configLoading ? (
+          <section className="border-emerald-200/12 flex min-h-0 flex-1 items-center justify-center rounded-3xl border bg-[rgba(12,45,42,0.18)] p-4 backdrop-blur-md">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-300/35 border-t-transparent" />
+          </section>
+        ) : ticketsDisabled ? (
           <section className="border-emerald-200/12 rounded-3xl border bg-[rgba(12,45,42,0.18)] p-4 backdrop-blur-md">
             <button
               type="button"
@@ -378,7 +393,7 @@ export function UltimaSupport() {
             <button
               type="button"
               className="rounded-full p-3 hover:bg-white/5"
-              onClick={() => navigate('/profile')}
+              onClick={openProfileFast}
             >
               <ProfileIcon />
             </button>
