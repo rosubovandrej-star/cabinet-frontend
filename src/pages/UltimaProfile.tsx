@@ -1,10 +1,16 @@
-import { type ReactNode, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { subscriptionApi } from '@/api/subscription';
 import { infoApi } from '@/api/info';
 import { ticketsApi } from '@/api/tickets';
+import { balanceApi } from '@/api/balance';
+import { referralApi } from '@/api/referral';
+import { brandingApi } from '@/api/branding';
+import { partnerApi } from '@/api/partners';
+import { authApi } from '@/api/auth';
+import { ultimaAgreementApi } from '@/api/ultimaAgreement';
 import { useAuthStore } from '@/store/auth';
 import { UltimaBottomNav } from '@/components/ultima/UltimaBottomNav';
 
@@ -114,7 +120,7 @@ function MenuItem({ item, onClick }: { item: SectionItem; onClick: () => void })
 }
 
 export function UltimaProfile() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
@@ -207,6 +213,99 @@ export function UltimaProfile() {
     window.setTimeout(() => setDone(false), 1500);
   };
 
+  useEffect(() => {
+    // Warm profile-related routes to eliminate first-open loading flashes in Ultima mode.
+    void import('./Balance');
+    void import('./TopUpMethodSelect');
+    void import('./Referral');
+    void import('./AccountLinking');
+    void import('./Connection');
+    void import('./Support');
+    void import('./UltimaAgreement');
+
+    void queryClient.prefetchQuery({
+      queryKey: ['payment-methods'],
+      queryFn: balanceApi.getPaymentMethods,
+      staleTime: 60000,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['balance'],
+      queryFn: balanceApi.getBalance,
+      staleTime: 15000,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['transactions', 1, 'ultima'],
+      queryFn: () => balanceApi.getTransactions({ page: 1, per_page: 20 }),
+      staleTime: 15000,
+    });
+
+    void queryClient.prefetchQuery({
+      queryKey: ['referral-info'],
+      queryFn: referralApi.getReferralInfo,
+      staleTime: 15000,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['referral-terms'],
+      queryFn: referralApi.getReferralTerms,
+      staleTime: 15000,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['referral-list'],
+      queryFn: () => referralApi.getReferralList({ per_page: 20 }),
+      staleTime: 15000,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['referral-earnings'],
+      queryFn: () => referralApi.getReferralEarnings({ per_page: 20 }),
+      staleTime: 15000,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['branding'],
+      queryFn: brandingApi.getBranding,
+      staleTime: 60000,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['partner-status'],
+      queryFn: partnerApi.getStatus,
+      staleTime: 30000,
+    });
+
+    void queryClient.prefetchQuery({
+      queryKey: ['linked-identities'],
+      queryFn: authApi.getLinkedIdentities,
+      staleTime: 15000,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['latest-manual-merge-request'],
+      queryFn: authApi.getLatestManualMergeRequest,
+      staleTime: 15000,
+    });
+
+    void queryClient.prefetchQuery({
+      queryKey: ['support-config'],
+      queryFn: infoApi.getSupportConfig,
+      staleTime: 60000,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['tickets'],
+      queryFn: () => ticketsApi.getTickets({ per_page: 20 }),
+      staleTime: 15000,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['ultima-agreement', i18n.language],
+      queryFn: () => ultimaAgreementApi.getAgreement(i18n.language || 'ru'),
+      staleTime: 60000,
+    });
+  }, [i18n.language, queryClient]);
+
+  const openPathFast = (path: string) => {
+    if (path === '/support') {
+      openSupportFast();
+      return;
+    }
+    navigate(path);
+  };
+
   const openSupportFast = () => {
     void queryClient.prefetchQuery({
       queryKey: ['support-config'],
@@ -249,7 +348,7 @@ export function UltimaProfile() {
             </p>
             <div className="space-y-2">
               {profileItems.map((item) => (
-                <MenuItem key={item.key} item={item} onClick={() => navigate(item.path)} />
+                <MenuItem key={item.key} item={item} onClick={() => openPathFast(item.path)} />
               ))}
             </div>
           </section>
@@ -260,7 +359,7 @@ export function UltimaProfile() {
             </p>
             <div className="space-y-2">
               {supportItems.map((item) => (
-                <MenuItem key={item.key} item={item} onClick={() => navigate(item.path)} />
+                <MenuItem key={item.key} item={item} onClick={() => openPathFast(item.path)} />
               ))}
             </div>
           </section>
