@@ -6,13 +6,28 @@ import { BlacklistedScreen, ChannelSubscriptionScreen, MaintenanceScreen } from 
 import { useAuthStore } from '../../store/auth';
 import { useBlockingStore } from '../../store/blocking';
 import { saveReturnUrl } from '../../utils/token';
+import { getCachedUltimaMode } from '../../hooks/useUltimaMode';
+
+const resolveLoaderVariant = (pathname: string): 'dark' | 'light' | 'ultima' => {
+  const cachedUltima = getCachedUltimaMode();
+  if (cachedUltima === true) {
+    return 'ultima';
+  }
+
+  // For first-open in Ultima flow there may be no cache yet.
+  if (cachedUltima === null && ['/', '/subscription', '/connection'].includes(pathname)) {
+    return 'ultima';
+  }
+
+  return 'dark';
+};
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuthStore();
   const location = useLocation();
 
   if (isLoading) {
-    return <PageLoader variant="dark" />;
+    return <PageLoader variant={resolveLoaderVariant(location.pathname)} />;
   }
 
   if (!isAuthenticated) {
@@ -44,7 +59,12 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
 }
 
 export function LazyPage({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<PageLoader variant="dark" />}>{children}</Suspense>;
+  const location = useLocation();
+  return (
+    <Suspense fallback={<PageLoader variant={resolveLoaderVariant(location.pathname)} />}>
+      {children}
+    </Suspense>
+  );
 }
 
 export function BlockingOverlay() {
