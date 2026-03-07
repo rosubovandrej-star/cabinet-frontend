@@ -108,10 +108,14 @@ const queryClient = new QueryClient({
   },
 });
 
-const isTranslationReady = () =>
-  i18n.isInitialized &&
-  i18n.hasLoadedNamespace('translation') &&
-  i18n.t('common.loading') !== 'common.loading';
+const getBaseLanguage = (language: string | undefined) =>
+  (language || 'ru').toLowerCase().replace('_', '-').split('-')[0];
+
+const isTranslationReady = () => {
+  if (!i18n.isInitialized) return false;
+  const activeLanguage = getBaseLanguage(i18n.resolvedLanguage || i18n.language);
+  return i18n.hasResourceBundle(activeLanguage, 'translation');
+};
 
 const ensureI18nReady = async () => {
   if (isTranslationReady()) return;
@@ -133,11 +137,6 @@ const ensureI18nReady = async () => {
     i18n.on('loaded', finish);
     i18n.on('languageChanged', finish);
     finish();
-
-    window.setTimeout(() => {
-      cleanup();
-      resolve();
-    }, 5000);
   });
 };
 
