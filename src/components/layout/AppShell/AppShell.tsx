@@ -312,6 +312,31 @@ export function AppShell({ children }: AppShellProps) {
     setDesktopLogoLoaded(false);
   }, [logoUrl]);
 
+  useEffect(() => {
+    if (!isUltimaSceneRoute) {
+      return;
+    }
+    const prevBody = document.body.style.overflow;
+    const prevHtml = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevBody;
+      document.documentElement.style.overflow = prevHtml;
+    };
+  }, [isUltimaSceneRoute]);
+
+  useEffect(() => {
+    if (!isUltimaMode) {
+      return;
+    }
+    // Warm core Ultima routes to avoid fallback flashes on first transition.
+    void import('@/pages/Dashboard');
+    void import('@/pages/Subscription');
+    void import('@/pages/Support');
+    void import('@/pages/Connection');
+  }, [isUltimaMode]);
+
   return (
     <div className="min-h-screen">
       {/* Animated background (disabled for Ultima mode) */}

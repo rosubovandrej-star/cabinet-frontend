@@ -382,7 +382,7 @@ export function UltimaSubscription() {
 
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
-      <div className="ultima-content-enter relative z-10 mx-auto flex h-full max-w-md flex-col">
+      <div className="relative z-10 mx-auto flex h-full max-w-md flex-col">
         <header className="mb-3">
           <h1 className="text-[42px] font-semibold leading-[0.95] text-white">Покупка подписки</h1>
           <p className="mt-2 text-[16px] leading-tight text-white/75">

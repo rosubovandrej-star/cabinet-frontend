@@ -173,18 +173,6 @@ export function UltimaDashboard() {
   })();
 
   useEffect(() => {
-    const prevBody = document.body.style.overflow;
-    const prevHtml = document.documentElement.style.overflow;
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = prevBody;
-      document.documentElement.style.overflow = prevHtml;
-    };
-  }, []);
-
-  useEffect(() => {
     // Warm subscription route chunk so dashboard -> purchase transition stays seamless.
     void import('./Subscription');
   }, []);
@@ -202,7 +190,7 @@ export function UltimaDashboard() {
         </button>
       )}
 
-      <div className="ultima-content-enter relative z-10 mx-auto flex h-[calc(100dvh-26px)] w-full flex-col px-4 sm:px-6">
+      <div className="relative z-10 mx-auto flex h-[calc(100dvh-26px)] w-full flex-col px-4 sm:px-6">
         <section className="pt-[30vh]">
           <div className="mx-auto mb-[12vh] flex h-24 w-24 items-center justify-center rounded-full bg-black/15">
             <ShieldIcon />
