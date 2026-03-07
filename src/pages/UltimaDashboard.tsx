@@ -280,8 +280,8 @@ export function UltimaDashboard() {
     return (
       <div className="ultima-shell pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2">
         <div className="relative z-10 mx-auto flex h-[calc(100dvh-26px)] w-full flex-col px-4 sm:px-6">
-          <section className="pt-[clamp(96px,24vh,30vh)]">
-            <div className="mx-auto mb-[clamp(40px,8vh,12vh)] flex h-24 w-24 items-center justify-center rounded-full bg-black/15">
+          <section className="pt-[clamp(74px,16vh,160px)]">
+            <div className="mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-black/15">
               <ShieldIcon />
             </div>
             <div className="mb-5 h-16 animate-pulse rounded-2xl bg-white/10" />
@@ -313,15 +313,15 @@ export function UltimaDashboard() {
         <section
           className={
             hasSetupReminder
-              ? 'pt-[clamp(96px,24vh,30vh)]'
-              : 'pb-[clamp(14px,2.8vh,24px)] pt-[clamp(110px,27vh,33vh)]'
+              ? 'pt-[clamp(74px,16vh,160px)]'
+              : 'pb-[clamp(14px,2.8vh,24px)] pt-[clamp(86px,19vh,198px)]'
           }
         >
           <button
             type="button"
             aria-label={t('nav.dashboard')}
             onPointerDown={handleShieldTap}
-            className="relative mx-auto mb-[clamp(40px,8vh,12vh)] flex h-24 w-24 items-center justify-center rounded-full bg-black/15 focus-visible:outline-none"
+            className="relative mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-black/15 focus-visible:outline-none"
             style={{ WebkitTapHighlightColor: 'transparent' }}
           >
             <span aria-hidden className="pointer-events-none absolute inset-0 overflow-visible">
