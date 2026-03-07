@@ -126,79 +126,81 @@ export function UltimaBalanceHistory() {
           </p>
         </section>
 
-        <section className="border-emerald-200/12 min-h-0 flex-1 overflow-y-auto rounded-3xl border bg-[rgba(12,45,42,0.18)] p-3 backdrop-blur-md">
-          {txLoading ? (
-            <div className="flex h-40 items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-300/40 border-t-transparent" />
-            </div>
-          ) : transactionItems.length === 0 ? (
-            <div className="py-10 text-center">
-              <div className="mb-3 flex justify-center">
-                <WalletIcon />
+        <section className="border-emerald-200/12 min-h-0 flex-1 overflow-hidden rounded-3xl border bg-[rgba(12,45,42,0.18)] p-3 backdrop-blur-md">
+          <div className="ultima-scrollbar h-full overflow-y-auto pr-1">
+            {txLoading ? (
+              <div className="flex h-40 items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-300/40 border-t-transparent" />
               </div>
-              <p className="text-white/58 text-sm">{t('balance.noTransactions')}</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {transactionItems.map((tx) => {
-                const isPositive = tx.amount_rubles >= 0;
-                const sign = isPositive ? '+' : '-';
-                const amountValue = Math.abs(tx.amount_rubles);
-                return (
-                  <div
-                    key={tx.id}
-                    className="rounded-2xl border border-emerald-200/10 bg-emerald-950/30 px-3 py-2.5"
-                  >
-                    <div className="mb-1 flex items-center justify-between gap-2">
-                      <span className="rounded-full border border-emerald-200/15 bg-emerald-900/35 px-2 py-0.5 text-[10px] text-white/70">
-                        {getTypeLabel(tx.type)}
-                      </span>
-                      <span className="text-[11px] text-white/45">
-                        {new Date(tx.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                    {tx.description ? (
-                      <p className="text-white/58 mb-1 text-[12px]">{tx.description}</p>
-                    ) : null}
-                    <p
-                      className={`text-[15px] font-medium ${isPositive ? 'text-emerald-200' : 'text-rose-200'}`}
+            ) : transactionItems.length === 0 ? (
+              <div className="py-10 text-center">
+                <div className="mb-3 flex justify-center">
+                  <WalletIcon />
+                </div>
+                <p className="text-white/58 text-sm">{t('balance.noTransactions')}</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {transactionItems.map((tx) => {
+                  const isPositive = tx.amount_rubles >= 0;
+                  const sign = isPositive ? '+' : '-';
+                  const amountValue = Math.abs(tx.amount_rubles);
+                  return (
+                    <div
+                      key={tx.id}
+                      className="rounded-2xl border border-emerald-200/10 bg-emerald-950/30 px-3 py-2.5"
                     >
-                      {sign}
-                      {formatAmount(amountValue)} {currencySymbol}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                      <div className="mb-1 flex items-center justify-between gap-2">
+                        <span className="rounded-full border border-emerald-200/15 bg-emerald-900/35 px-2 py-0.5 text-[10px] text-white/70">
+                          {getTypeLabel(tx.type)}
+                        </span>
+                        <span className="text-[11px] text-white/45">
+                          {new Date(tx.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      {tx.description ? (
+                        <p className="text-white/58 mb-1 text-[12px]">{tx.description}</p>
+                      ) : null}
+                      <p
+                        className={`text-[15px] font-medium ${isPositive ? 'text-emerald-200' : 'text-rose-200'}`}
+                      >
+                        {sign}
+                        {formatAmount(amountValue)} {currencySymbol}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
-          {transactions && transactions.pages > 1 ? (
-            <div className="mt-3 flex items-center gap-2">
-              <button
-                type="button"
-                className="border-emerald-200/12 rounded-xl border bg-emerald-900/30 px-3 py-2 text-[12px] text-white/80 disabled:opacity-40"
-                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                disabled={transactions.page <= 1}
-              >
-                {t('common.back')}
-              </button>
-              <p className="flex-1 text-center text-[12px] text-white/60">
-                {t('balance.page', { current: transactions.page, total: transactions.pages })}
-              </p>
-              <button
-                type="button"
-                className="border-emerald-200/12 rounded-xl border bg-emerald-900/30 px-3 py-2 text-[12px] text-white/80 disabled:opacity-40"
-                onClick={() =>
-                  setPage((prev) =>
-                    transactions.pages ? Math.min(transactions.pages, prev + 1) : prev + 1,
-                  )
-                }
-                disabled={transactions.page >= transactions.pages}
-              >
-                {t('common.next')}
-              </button>
-            </div>
-          ) : null}
+            {transactions && transactions.pages > 1 ? (
+              <div className="mt-3 flex items-center gap-2">
+                <button
+                  type="button"
+                  className="border-emerald-200/12 rounded-xl border bg-emerald-900/30 px-3 py-2 text-[12px] text-white/80 disabled:opacity-40"
+                  onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                  disabled={transactions.page <= 1}
+                >
+                  {t('common.back')}
+                </button>
+                <p className="flex-1 text-center text-[12px] text-white/60">
+                  {t('balance.page', { current: transactions.page, total: transactions.pages })}
+                </p>
+                <button
+                  type="button"
+                  className="border-emerald-200/12 rounded-xl border bg-emerald-900/30 px-3 py-2 text-[12px] text-white/80 disabled:opacity-40"
+                  onClick={() =>
+                    setPage((prev) =>
+                      transactions.pages ? Math.min(transactions.pages, prev + 1) : prev + 1,
+                    )
+                  }
+                  disabled={transactions.page >= transactions.pages}
+                >
+                  {t('common.next')}
+                </button>
+              </div>
+            ) : null}
+          </div>
         </section>
 
         <section className="pt-3">
