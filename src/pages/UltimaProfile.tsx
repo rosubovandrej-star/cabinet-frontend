@@ -6,47 +6,7 @@ import { subscriptionApi } from '@/api/subscription';
 import { infoApi } from '@/api/info';
 import { ticketsApi } from '@/api/tickets';
 import { useAuthStore } from '@/store/auth';
-
-const GridIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-    <rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.8" />
-    <rect x="13" y="4" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.8" />
-    <rect x="4" y="13" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.8" />
-    <rect x="13" y="13" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.8" />
-  </svg>
-);
-
-const GearIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-    <path
-      d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.4" />
-  </svg>
-);
-
-const ProfileIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-    <circle cx="12" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.8" />
-    <path d="M5 20a7 7 0 0 1 14 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-  </svg>
-);
-
-const SupportIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-    <path
-      d="M5 17.5V12a7 7 0 1 1 14 0v5.5"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-    />
-    <path d="M8 17.5h8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-  </svg>
-);
+import { UltimaBottomNav } from '@/components/ultima/UltimaBottomNav';
 
 const CopyIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
@@ -325,36 +285,7 @@ export function UltimaProfile() {
             {linkCopied ? <span className="text-xs text-emerald-600">OK</span> : null}
           </div>
 
-          <nav className="border-white/14 grid grid-cols-4 gap-2 rounded-full border bg-emerald-900/45 p-2 text-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur">
-            <button
-              type="button"
-              className="rounded-full p-3 text-white/85 hover:bg-white/10"
-              onClick={() => navigate('/')}
-            >
-              <GridIcon />
-            </button>
-            <button
-              type="button"
-              className="rounded-full p-3 text-white/85 hover:bg-white/10"
-              onClick={() => navigate('/connection')}
-            >
-              <GearIcon />
-            </button>
-            <button
-              type="button"
-              className="rounded-full border border-[#59f0c9]/35 bg-[#14cf9a] p-3 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
-              onClick={() => navigate('/profile')}
-            >
-              <ProfileIcon />
-            </button>
-            <button
-              type="button"
-              className="rounded-full p-3 text-white/85 hover:bg-white/10"
-              onClick={openSupportFast}
-            >
-              <SupportIcon />
-            </button>
-          </nav>
+          <UltimaBottomNav active="profile" onSupportClick={openSupportFast} />
         </section>
       </div>
     </div>
