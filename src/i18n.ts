@@ -21,11 +21,18 @@ i18n
     resources,
     fallbackLng: 'ru',
     supportedLngs: ['ru', 'en', 'zh', 'fa'],
+    load: 'languageOnly',
+    cleanCode: true,
+    nonExplicitSupportedLngs: true,
 
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
       lookupLocalStorage: 'cabinet_language',
+      convertDetectedLanguage: (lng: string) => {
+        if (!lng) return 'ru';
+        return lng.toLowerCase().split('-')[0];
+      },
     },
 
     interpolation: {
