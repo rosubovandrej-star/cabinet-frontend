@@ -8,6 +8,7 @@ import { subscriptionApi } from '@/api/subscription';
 import { ticketsApi } from '@/api/tickets';
 import { UltimaBottomNav } from '@/components/ultima/UltimaBottomNav';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useHaptic } from '@/platform';
 import { useAuthStore } from '@/store/auth';
 
 const ShieldIcon = () => (
@@ -70,7 +71,7 @@ const AdminIcon = () => (
   </svg>
 );
 
-type TapRipple = {
+type ShieldRipple = {
   id: number;
   x: number;
   y: number;
@@ -82,9 +83,10 @@ export function UltimaDashboard() {
   const queryClient = useQueryClient();
   const { t, i18n } = useTranslation();
   const { currencySymbol } = useCurrency();
+  const haptic = useHaptic();
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const rippleIdRef = useRef(0);
-  const [tapRipples, setTapRipples] = useState<TapRipple[]>([]);
+  const [shieldRipples, setShieldRipples] = useState<ShieldRipple[]>([]);
 
   const {
     data: subscriptionResponse,
@@ -154,30 +156,27 @@ export function UltimaDashboard() {
     void import('./Subscription');
   }, []);
 
-  const handleTopAreaTap = useCallback((event: PointerEvent<HTMLElement>) => {
-    if (event.target !== event.currentTarget) {
-      return;
-    }
+  const handleShieldTap = useCallback(
+    (event: PointerEvent<HTMLButtonElement>) => {
+      haptic.impact('light');
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return;
-    }
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
 
-    const rect = event.currentTarget.getBoundingClientRect();
-    const y = event.clientY - rect.top;
-    if (y > rect.height * 0.62) {
-      return;
-    }
+      const rect = event.currentTarget.getBoundingClientRect();
+      const id = rippleIdRef.current++;
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const size = Math.max(rect.width, rect.height) * 1.85;
+      setShieldRipples((previous) => [...previous, { id, x, y, size }]);
 
-    const id = rippleIdRef.current++;
-    const x = event.clientX - rect.left;
-    const size = Math.max(160, rect.width * 0.55);
-    setTapRipples((previous) => [...previous, { id, x, y, size }]);
-
-    window.setTimeout(() => {
-      setTapRipples((previous) => previous.filter((ripple) => ripple.id !== id));
-    }, 900);
-  }, []);
+      window.setTimeout(() => {
+        setShieldRipples((previous) => previous.filter((ripple) => ripple.id !== id));
+      }, 900);
+    },
+    [haptic],
+  );
 
   const openSupport = () => {
     void import('./Support');
@@ -226,33 +225,30 @@ export function UltimaDashboard() {
       )}
 
       <div className="relative z-10 mx-auto flex h-[calc(100dvh-26px)] w-full flex-col px-4 sm:px-6">
-        <section className="relative pt-[30vh]" onPointerDown={handleTopAreaTap}>
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 h-[62%] overflow-hidden"
+        <section className="pt-[30vh]">
+          <button
+            type="button"
+            aria-label={t('nav.dashboard')}
+            onPointerDown={handleShieldTap}
+            className="relative mx-auto mb-[12vh] flex h-24 w-24 items-center justify-center rounded-full bg-black/15 focus-visible:outline-none"
+            style={{ WebkitTapHighlightColor: 'transparent' }}
           >
-            {tapRipples.map((ripple) => (
-              <div key={ripple.id} className="absolute inset-0">
-                {[0, 120, 240].map((delayMs) => (
-                  <span
-                    key={delayMs}
-                    className="ultima-tap-ring absolute -translate-x-1/2 -translate-y-1/2"
-                    style={{
-                      left: ripple.x,
-                      top: ripple.y,
-                      width: ripple.size,
-                      height: ripple.size,
-                      animationDelay: `${delayMs}ms`,
-                    }}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-
-          <div className="mx-auto mb-[12vh] flex h-24 w-24 items-center justify-center rounded-full bg-black/15">
+            <span aria-hidden className="pointer-events-none absolute inset-0 overflow-visible">
+              {shieldRipples.map((ripple) => (
+                <span
+                  key={ripple.id}
+                  className="ultima-tap-ring absolute -translate-x-1/2 -translate-y-1/2"
+                  style={{
+                    left: ripple.x,
+                    top: ripple.y,
+                    width: ripple.size,
+                    height: ripple.size,
+                  }}
+                />
+              ))}
+            </span>
             <ShieldIcon />
-          </div>
+          </button>
 
           <div className="mb-5 flex items-center justify-between text-white">
             <div>
