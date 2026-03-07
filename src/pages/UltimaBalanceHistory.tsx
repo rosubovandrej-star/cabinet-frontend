@@ -94,7 +94,7 @@ export function UltimaBalanceHistory() {
   const transactionItems = useMemo(() => transactions?.items ?? [], [transactions]);
 
   return (
-    <div className="relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
+    <div className="ultima-flat-frames relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(95%_70%_at_50%_45%,rgba(33,208,154,0.14),rgba(7,20,46,0.02)_62%,rgba(7,20,46,0)_100%)]" />
       <div className="relative z-10 mx-auto flex h-full min-h-0 max-w-md flex-col">
         <header className="mb-3">

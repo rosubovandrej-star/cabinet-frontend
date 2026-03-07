@@ -224,6 +224,10 @@
   background: linear-gradient(180deg, rgba(93, 245, 196, 0.94) 0%, rgba(52, 192, 160, 0.9) 100%);
 }
 
+.ultima-flat-frames [class*='border'] {
+  border-color: transparent !important;
+}
+
 /* Aceternity UI background CSS variables */
 :root {
   --blue-500: #3b82f6;
