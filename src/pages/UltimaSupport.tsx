@@ -151,7 +151,7 @@ export function UltimaSupport() {
         </header>
 
         {ticketsDisabled ? (
-          <section className="border-white/12 rounded-3xl border bg-black/20 p-4 backdrop-blur">
+          <section className="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
             <button
               type="button"
               onClick={() => supportContact?.action()}
@@ -161,19 +161,19 @@ export function UltimaSupport() {
             </button>
           </section>
         ) : showCreate ? (
-          <section className="border-white/12 space-y-3 rounded-3xl border bg-black/20 p-4 backdrop-blur">
+          <section className="space-y-3 rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
             <input
               value={newTitle}
               onChange={(event) => setNewTitle(event.target.value)}
               placeholder={t('support.subjectPlaceholder')}
-              className="w-full rounded-2xl border border-white/15 bg-black/20 px-4 py-3 text-white placeholder:text-white/45"
+              className="w-full rounded-2xl border border-white/15 bg-black/15 px-4 py-3 text-white placeholder:text-white/45"
               maxLength={255}
             />
             <textarea
               value={newMessage}
               onChange={(event) => setNewMessage(event.target.value)}
               placeholder={t('support.messagePlaceholder')}
-              className="min-h-[160px] w-full rounded-2xl border border-white/15 bg-black/20 px-4 py-3 text-white placeholder:text-white/45"
+              className="min-h-[160px] w-full rounded-2xl border border-white/15 bg-black/15 px-4 py-3 text-white placeholder:text-white/45"
               maxLength={4000}
             />
             <div className="flex gap-2">
@@ -200,22 +200,22 @@ export function UltimaSupport() {
             </div>
           </section>
         ) : (
-          <section className="border-white/12 flex min-h-0 flex-1 flex-col gap-3 rounded-3xl border bg-black/20 p-4 backdrop-blur">
+          <section className="flex min-h-0 flex-1 flex-col gap-3 rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-white/70">{t('support.yourTickets')}</p>
+              <p className="text-sm leading-none text-white/75">{t('support.yourTickets')}</p>
               <button
                 type="button"
                 onClick={() => setShowCreate(true)}
-                className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-white"
+                className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs leading-none text-white"
               >
                 {t('support.newTicket')}
               </button>
             </div>
 
             <div className="grid min-h-0 flex-1 grid-cols-1 gap-3">
-              <div className="max-h-[34vh] space-y-2 overflow-y-auto pr-1">
+              <div className="max-h-[30vh] space-y-2 overflow-y-auto rounded-2xl border border-white/10 bg-black/15 p-2 pr-1.5">
                 {ticketsLoading ? (
-                  <p className="text-sm text-white/70">{t('common.loading')}</p>
+                  <p className="px-2 py-1 text-sm text-white/70">{t('common.loading')}</p>
                 ) : tickets?.items?.length ? (
                   tickets.items.map((ticket) => (
                     <button
@@ -225,25 +225,27 @@ export function UltimaSupport() {
                       className={`w-full rounded-2xl border px-3 py-2 text-left transition ${
                         selectedTicketId === ticket.id
                           ? 'border-emerald-300/70 bg-emerald-500/15'
-                          : 'border-white/10 bg-black/20 hover:border-white/25'
+                          : 'border-white/10 bg-black/25 hover:border-white/25'
                       }`}
                     >
-                      <p className="truncate text-sm font-medium text-white">{ticket.title}</p>
+                      <p className="truncate text-sm font-medium leading-5 text-white">
+                        {ticket.title}
+                      </p>
                       <p className="mt-1 text-xs text-white/60">
                         {new Date(ticket.updated_at).toLocaleDateString()}
                       </p>
                     </button>
                   ))
                 ) : (
-                  <p className="text-sm text-white/60">{t('support.noTickets')}</p>
+                  <p className="px-2 py-2 text-sm text-white/60">{t('support.noTickets')}</p>
                 )}
               </div>
 
-              <div className="min-h-0 flex-1 rounded-2xl border border-white/10 bg-black/20 p-3">
+              <div className="min-h-0 flex-1 rounded-2xl border border-white/10 bg-black/15 p-3">
                 {selectedTicketId && ticketDetail ? (
                   <div className="flex h-full min-h-0 flex-col gap-3">
                     <p className="text-sm font-medium text-white">{selectedTicket?.title}</p>
-                    <div className="max-h-[20vh] space-y-2 overflow-y-auto pr-1">
+                    <div className="max-h-[24vh] space-y-2 overflow-y-auto pr-1">
                       {ticketLoading ? (
                         <p className="text-xs text-white/60">{t('common.loading')}</p>
                       ) : (
