@@ -307,7 +307,7 @@ export function UltimaProfile() {
             {linkCopied ? <span className="text-xs text-emerald-600">OK</span> : null}
           </div>
 
-          <nav className="bg-emerald-900/48 grid grid-cols-4 gap-2 rounded-full border border-emerald-100/10 p-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur">
+          <nav className="border-white/14 grid grid-cols-4 gap-2 rounded-full border bg-emerald-900/45 p-2 text-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur">
             <button
               type="button"
               className="rounded-full p-3 text-white/85 hover:bg-white/10"
