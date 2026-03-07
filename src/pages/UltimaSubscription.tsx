@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
@@ -20,7 +20,7 @@ export function UltimaSubscription() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { formatAmount, currencySymbol } = useCurrency();
+  const { currencySymbol } = useCurrency();
 
   const [selectedTariffId, setSelectedTariffId] = useState<number | null>(null);
   const [selectedPeriodDays, setSelectedPeriodDays] = useState<number | null>(null);
@@ -34,25 +34,54 @@ export function UltimaSubscription() {
 
   const tariffs = useMemo(() => {
     if (!purchaseOptions || purchaseOptions.sales_mode !== 'tariffs') return [] as Tariff[];
-    return purchaseOptions.tariffs.filter((t) => t.is_available);
+    return purchaseOptions.tariffs.filter((tariff) => tariff.is_available);
   }, [purchaseOptions]);
 
-  useEffect(() => {
-    if (!tariffs.length) return;
-
-    const nextTariffId = selectedTariffId ?? tariffs.find((t) => t.is_current)?.id ?? tariffs[0].id;
-    const tariff = tariffs.find((t) => t.id === nextTariffId) ?? tariffs[0];
-
-    setSelectedTariffId(tariff.id);
-    if (!selectedPeriodDays) {
-      const preferred = tariff.periods.find((p) => p.months === 6) ?? tariff.periods[0];
-      setSelectedPeriodDays(preferred?.days ?? null);
+  const selectedTariff = useMemo(() => {
+    if (!tariffs.length) return null;
+    if (selectedTariffId) {
+      return tariffs.find((tariff) => tariff.id === selectedTariffId) ?? tariffs[0];
     }
-  }, [tariffs, selectedTariffId, selectedPeriodDays]);
+    return tariffs.find((tariff) => tariff.is_current) ?? tariffs[0];
+  }, [tariffs, selectedTariffId]);
 
-  const selectedTariff = tariffs.find((t) => t.id === selectedTariffId) ?? null;
-  const periods = selectedTariff?.periods ?? [];
-  const selectedPeriod = periods.find((p) => p.days === selectedPeriodDays) ?? null;
+  const displayPeriods = useMemo(() => {
+    if (!selectedTariff?.periods?.length) return [] as TariffPeriod[];
+    const all = selectedTariff.periods.filter((p) => p.days > 0);
+
+    const pick = (months: number): TariffPeriod | null => {
+      const exact = all.find((period) => period.months === months);
+      if (exact) return exact;
+      const targetDays = months * 30;
+      return (
+        [...all].sort((a, b) => Math.abs(a.days - targetDays) - Math.abs(b.days - targetDays))[0] ??
+        null
+      );
+    };
+
+    const usedDays = new Set<number>();
+    const picked: TariffPeriod[] = [];
+
+    [1, 3, 6, 12].forEach((months) => {
+      const period = pick(months);
+      if (!period || usedDays.has(period.days)) return;
+      usedDays.add(period.days);
+      picked.push(period);
+    });
+
+    if (picked.length) return picked;
+    return [...all].sort((a, b) => a.days - b.days).slice(0, 4);
+  }, [selectedTariff]);
+
+  const selectedPeriod = useMemo(() => {
+    if (!displayPeriods.length) return null;
+    if (selectedPeriodDays) {
+      return (
+        displayPeriods.find((period) => period.days === selectedPeriodDays) ?? displayPeriods[0]
+      );
+    }
+    return displayPeriods.find((period) => period.months === 6) ?? displayPeriods[0];
+  }, [displayPeriods, selectedPeriodDays]);
 
   const purchaseMutation = useMutation({
     mutationFn: async () => {
@@ -73,9 +102,7 @@ export function UltimaSubscription() {
     },
   });
 
-  if (isLoading) {
-    return <div className="h-[100dvh] w-full bg-[#08201f]" />;
-  }
+  if (isLoading) return <div className="h-[100dvh] w-full bg-[#08201f]" />;
 
   if (!selectedTariff || !selectedPeriod) {
     return (
@@ -85,29 +112,28 @@ export function UltimaSubscription() {
     );
   }
 
-  const formatPrice = (kopeks: number) => `${formatAmount(kopeks / 100)} ${currencySymbol}`;
-  const getPeriodLabel = (period: TariffPeriod) => {
-    if (period.months === 1) return t('lite.oneMonth', { defaultValue: '1 месяц' });
-    if (period.months > 0)
-      return t('lite.monthsLabel', {
-        count: period.months,
-        defaultValue: `${period.months} месяца`,
-      });
-    return `${period.days} ${t('common.days', { defaultValue: 'дней' })}`;
+  const formatPrice = (kopeks: number) => {
+    const rubles = kopeks / 100;
+    const value = Number.isInteger(rubles) ? String(rubles) : rubles.toFixed(2);
+    return `${value} ${currencySymbol}`;
+  };
+
+  const periodLabel = (period: TariffPeriod) => {
+    if (period.months === 1) return '1 месяц';
+    if (period.months === 3) return '3 месяца';
+    if (period.months === 6) return '6 месяцев';
+    if (period.months === 12) return '1 год';
+    if (period.months > 0) return `${period.months} мес`;
+    return `${period.days} дней`;
   };
 
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-[radial-gradient(circle_at_78%_50%,rgba(19,176,132,0.35),rgba(5,20,22,0.98)_58%)] px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
       <div className="mx-auto flex h-full max-w-md flex-col">
         <header className="mb-3">
-          <h1 className="text-[56px] font-semibold leading-[0.94] text-white">
-            {t('lite.buySubscription', { defaultValue: 'Покупка подписки' })}
-          </h1>
-          <p className="mt-2 text-[28px] leading-tight text-white/75">
-            {t('lite.subscriptionHint', {
-              defaultValue:
-                'Подключайте больше устройств и пользуйтесь сервисом вместе с друзьями и близкими',
-            })}
+          <h1 className="text-[48px] font-semibold leading-[0.95] text-white">Покупка подписки</h1>
+          <p className="mt-2 text-[20px] leading-tight text-white/75">
+            Подключайте больше устройств и пользуйтесь сервисом вместе с друзьями и близкими
           </p>
         </header>
 
@@ -117,12 +143,8 @@ export function UltimaSubscription() {
               1
             </span>
             <div>
-              <p className="text-[34px] font-medium text-white">
-                {t('subscription.devicesLabel', { defaultValue: 'Устройство' })}
-              </p>
-              <p className="text-[24px] text-white/70">
-                {t('lite.oneDeviceInPlan', { defaultValue: 'Одновременно в подписке' })}
-              </p>
+              <p className="text-[40px] font-medium leading-none text-white">Устройство</p>
+              <p className="mt-1 text-[20px] text-white/70">Одновременно в подписке</p>
             </div>
           </div>
 
@@ -139,13 +161,16 @@ export function UltimaSubscription() {
         </section>
 
         <section className="grid grid-cols-2 gap-3">
-          {periods.map((period) => {
+          {displayPeriods.map((period) => {
             const active = period.days === selectedPeriod.days;
             return (
               <button
                 key={period.days}
                 type="button"
-                onClick={() => setSelectedPeriodDays(period.days)}
+                onClick={() => {
+                  setSelectedTariffId(selectedTariff.id);
+                  setSelectedPeriodDays(period.days);
+                }}
                 className={`rounded-3xl border p-4 text-left transition ${
                   active
                     ? 'border-emerald-400 bg-[#0a2522] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]'
@@ -153,17 +178,15 @@ export function UltimaSubscription() {
                 }`}
               >
                 <div className="mb-4 flex items-center justify-between">
-                  <span className="text-[30px] font-medium text-white">
-                    {getPeriodLabel(period)}
-                  </span>
+                  <span className="text-[34px] font-medium text-white">{periodLabel(period)}</span>
                   {active && <span className="text-emerald-300">★</span>}
                 </div>
-                <p className="text-[52px] font-semibold leading-none text-white">
+                <p className="text-[50px] font-semibold leading-none text-white">
                   {formatPrice(period.price_kopeks)}
                 </p>
-                <p className="mt-1 text-[24px] text-white/70">
+                <p className="mt-1 text-[22px] text-white/70">
                   {period.price_per_month_kopeks > 0
-                    ? `${formatPrice(period.price_per_month_kopeks)} ${t('subscription.perMonth', { defaultValue: 'в месяц' })}`
+                    ? `${formatPrice(period.price_per_month_kopeks)} / мес`
                     : ''}
                 </p>
               </button>
@@ -172,18 +195,18 @@ export function UltimaSubscription() {
         </section>
 
         <div className="mt-auto pt-4">
-          {error && <p className="mb-3 text-center text-[24px] text-red-300">{error}</p>}
+          {error && <p className="mb-3 text-center text-[18px] text-red-300">{error}</p>}
           <button
             type="button"
             onClick={() => purchaseMutation.mutate()}
             disabled={purchaseMutation.isPending}
-            className="flex w-full items-center justify-between rounded-full border border-[#52ecc6]/40 bg-[#12cd97] px-6 py-4 text-[30px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_8px_20px_rgba(10,123,94,0.28)]"
+            className="flex w-full items-center justify-between rounded-full border border-[#52ecc6]/40 bg-[#12cd97] px-6 py-4 text-[26px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_8px_20px_rgba(10,123,94,0.28)]"
           >
-            <span>{t('lite.paySubscription', { defaultValue: 'Оплатить подписку' })}</span>
+            <span>Оплатить подписку</span>
             <span className="flex items-center gap-2 text-white/95">
               {formatPrice(selectedPeriod.price_kopeks)}
               {selectedPeriod.original_price_kopeks ? (
-                <span className="text-[24px] text-white/55 line-through">
+                <span className="text-[20px] text-white/55 line-through">
                   {formatPrice(selectedPeriod.original_price_kopeks)}
                 </span>
               ) : null}
