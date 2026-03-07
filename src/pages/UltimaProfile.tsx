@@ -138,14 +138,14 @@ function MenuItem({ item, onClick }: { item: SectionItem; onClick: () => void })
     <button
       type="button"
       onClick={onClick}
-      className="border-[#7beacc]/14 hover:border-[#8ef1d5]/28 flex w-full items-center gap-3 rounded-2xl border bg-emerald-950/35 px-3 py-2.5 text-left transition"
+      className="bg-emerald-950/28 flex w-full items-center gap-3 rounded-2xl border border-emerald-200/10 px-3 py-2 text-left transition hover:border-emerald-200/20"
     >
-      <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white/90">
+      <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-emerald-100/10 bg-emerald-900/45 text-white/85">
         {item.icon}
       </div>
       <div className="min-w-0">
-        <p className="truncate text-[18px] leading-tight text-white">{item.title}</p>
-        <p className="truncate text-[13px] text-white/55">{item.subtitle}</p>
+        <p className="truncate text-[16px] leading-tight text-white/95">{item.title}</p>
+        <p className="text-white/52 truncate text-[12px]">{item.subtitle}</p>
       </div>
     </button>
   );
@@ -248,14 +248,14 @@ export function UltimaProfile() {
     <div className="relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(95%_70%_at_50%_45%,rgba(33,208,154,0.14),rgba(7,20,46,0.02)_62%,rgba(7,20,46,0)_100%)]" />
       <div className="relative z-10 mx-auto flex h-full min-h-0 max-w-md flex-col">
-        <section className="border-[#5de7c2]/18 mb-3 flex items-center gap-3 rounded-3xl border bg-[rgba(12,45,42,0.24)] px-3 py-2.5 backdrop-blur-md">
+        <section className="border-emerald-200/12 mb-3 flex items-center gap-3 rounded-3xl border bg-[rgba(12,45,42,0.18)] px-3 py-2.5 backdrop-blur-md">
           <div className="h-10 w-10 rounded-full bg-amber-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm text-white/85">{userLabel}</p>
+            <p className="text-white/78 truncate text-[13px]">{userLabel}</p>
           </div>
           <button
             type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white/80"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-100/10 bg-emerald-900/45 text-white/70"
             onClick={() => void copyText(String(user?.telegram_id ?? user?.id ?? ''), setIdCopied)}
             aria-label="copy-user-id"
           >
@@ -265,8 +265,8 @@ export function UltimaProfile() {
         </section>
 
         <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
-          <section className="border-[#5de7c2]/18 rounded-3xl border bg-[rgba(12,45,42,0.24)] p-3 backdrop-blur-md">
-            <p className="mb-2 text-[15px] text-white/75">
+          <section className="border-emerald-200/12 rounded-3xl border bg-[rgba(12,45,42,0.18)] p-3 backdrop-blur-md">
+            <p className="text-white/68 mb-2 text-[14px]">
               {t('profile.profileSettings', { defaultValue: 'Настройки профиля' })}
             </p>
             <div className="space-y-2">
@@ -276,8 +276,8 @@ export function UltimaProfile() {
             </div>
           </section>
 
-          <section className="border-[#5de7c2]/18 rounded-3xl border bg-[rgba(12,45,42,0.24)] p-3 backdrop-blur-md">
-            <p className="mb-2 text-[15px] text-white/75">
+          <section className="border-emerald-200/12 rounded-3xl border bg-[rgba(12,45,42,0.18)] p-3 backdrop-blur-md">
+            <p className="text-white/68 mb-2 text-[14px]">
               {t('nav.support', { defaultValue: 'Поддержка' })}
             </p>
             <div className="space-y-2">
@@ -289,9 +289,9 @@ export function UltimaProfile() {
         </div>
 
         <section className="pt-3">
-          <div className="mb-3 flex items-center gap-3 rounded-2xl border border-white/25 bg-white px-4 py-3 text-slate-900">
+          <div className="border-white/18 mb-3 flex items-center gap-3 rounded-2xl border bg-white/95 px-4 py-3 text-slate-900 shadow-[0_4px_16px_rgba(0,0,0,0.16)]">
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm">{subscriptionLink || '-'}</p>
+              <p className="truncate text-[13px]">{subscriptionLink || '-'}</p>
               <p className="text-xs text-slate-500">
                 {t('profile.subscriptionLink', { defaultValue: 'Ваша ссылка на подписку' })}
               </p>
@@ -307,17 +307,17 @@ export function UltimaProfile() {
             {linkCopied ? <span className="text-xs text-emerald-600">OK</span> : null}
           </div>
 
-          <nav className="border-white/18 grid grid-cols-4 gap-2 rounded-full border bg-emerald-900/60 p-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur">
+          <nav className="bg-emerald-900/48 grid grid-cols-4 gap-2 rounded-full border border-emerald-100/10 p-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur">
             <button
               type="button"
-              className="rounded-full p-3 text-white/90 hover:bg-white/10"
+              className="rounded-full p-3 text-white/85 hover:bg-white/10"
               onClick={() => navigate('/')}
             >
               <GridIcon />
             </button>
             <button
               type="button"
-              className="rounded-full p-3 text-white/90 hover:bg-white/10"
+              className="rounded-full p-3 text-white/85 hover:bg-white/10"
               onClick={() => navigate('/connection')}
             >
               <GearIcon />
@@ -331,7 +331,7 @@ export function UltimaProfile() {
             </button>
             <button
               type="button"
-              className="rounded-full p-3 text-white/90 hover:bg-white/10"
+              className="rounded-full p-3 text-white/85 hover:bg-white/10"
               onClick={() => navigate('/support')}
             >
               <SupportIcon />
