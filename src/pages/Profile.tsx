@@ -18,6 +18,8 @@ import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/primitives/Button';
 import { Switch } from '@/components/primitives/Switch';
 import { staggerContainer, staggerItem } from '@/components/motion/transitions';
+import { useUltimaMode } from '@/hooks/useUltimaMode';
+import { UltimaProfile } from './UltimaProfile';
 
 // Icons
 const CopyIcon = () => (
@@ -72,6 +74,16 @@ const PencilIcon = () => (
 );
 
 export default function Profile() {
+  const { isUltimaMode } = useUltimaMode();
+
+  if (isUltimaMode) {
+    return <UltimaProfile />;
+  }
+
+  return <FullProfile />;
+}
+
+function FullProfile() {
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
