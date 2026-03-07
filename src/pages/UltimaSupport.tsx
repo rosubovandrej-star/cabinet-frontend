@@ -136,6 +136,7 @@ export function UltimaSupport() {
 
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(95%_70%_at_50%_45%,rgba(33,208,154,0.14),rgba(7,20,46,0.02)_62%,rgba(7,20,46,0)_100%)]" />
       <div className="ultima-content-enter relative z-10 mx-auto flex h-full max-w-md flex-col">
         <header className="mb-4">
           <h1 className="text-[42px] font-semibold leading-[0.95] text-white">
@@ -151,7 +152,7 @@ export function UltimaSupport() {
         </header>
 
         {ticketsDisabled ? (
-          <section className="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+          <section className="border-[#5de7c2]/18 rounded-3xl border bg-[rgba(12,45,42,0.24)] p-4 backdrop-blur-md">
             <button
               type="button"
               onClick={() => supportContact?.action()}
@@ -161,19 +162,19 @@ export function UltimaSupport() {
             </button>
           </section>
         ) : showCreate ? (
-          <section className="space-y-3 rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+          <section className="border-[#5de7c2]/18 space-y-3 rounded-3xl border bg-[rgba(12,45,42,0.24)] p-4 backdrop-blur-md">
             <input
               value={newTitle}
               onChange={(event) => setNewTitle(event.target.value)}
               placeholder={t('support.subjectPlaceholder')}
-              className="w-full rounded-2xl border border-white/15 bg-black/15 px-4 py-3 text-white placeholder:text-white/45"
+              className="w-full rounded-2xl border border-[#7beacc]/25 bg-emerald-950/30 px-4 py-3 text-white placeholder:text-emerald-100/35"
               maxLength={255}
             />
             <textarea
               value={newMessage}
               onChange={(event) => setNewMessage(event.target.value)}
               placeholder={t('support.messagePlaceholder')}
-              className="min-h-[160px] w-full rounded-2xl border border-white/15 bg-black/15 px-4 py-3 text-white placeholder:text-white/45"
+              className="min-h-[160px] w-full rounded-2xl border border-[#7beacc]/25 bg-emerald-950/30 px-4 py-3 text-white placeholder:text-emerald-100/35"
               maxLength={4000}
             />
             <div className="flex gap-2">
@@ -193,27 +194,27 @@ export function UltimaSupport() {
               <button
                 type="button"
                 onClick={() => setShowCreate(false)}
-                className="rounded-full border border-white/20 bg-white/10 px-4 py-3 text-sm text-white/90"
+                className="border-white/18 rounded-full border bg-white/10 px-4 py-3 text-sm text-white/90"
               >
                 {t('common.cancel')}
               </button>
             </div>
           </section>
         ) : (
-          <section className="flex min-h-0 flex-1 flex-col gap-3 rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+          <section className="border-[#5de7c2]/18 flex min-h-0 flex-1 flex-col gap-3 rounded-3xl border bg-[rgba(12,45,42,0.24)] p-4 backdrop-blur-md">
             <div className="flex items-center justify-between">
               <p className="text-sm leading-none text-white/75">{t('support.yourTickets')}</p>
               <button
                 type="button"
                 onClick={() => setShowCreate(true)}
-                className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs leading-none text-white"
+                className="border-[#8af0d2]/22 bg-emerald-900/32 rounded-full border px-3 py-1.5 text-xs leading-none text-white"
               >
                 {t('support.newTicket')}
               </button>
             </div>
 
             <div className="grid min-h-0 flex-1 grid-cols-1 gap-3">
-              <div className="max-h-[30vh] space-y-2 overflow-y-auto rounded-2xl border border-white/10 bg-black/15 p-2 pr-1.5">
+              <div className="border-[#7beacc]/16 bg-emerald-950/28 max-h-[30vh] space-y-2 overflow-y-auto rounded-2xl border p-2 pr-1.5">
                 {ticketsLoading ? (
                   <p className="px-2 py-1 text-sm text-white/70">{t('common.loading')}</p>
                 ) : tickets?.items?.length ? (
@@ -225,7 +226,7 @@ export function UltimaSupport() {
                       className={`w-full rounded-2xl border px-3 py-2 text-left transition ${
                         selectedTicketId === ticket.id
                           ? 'border-emerald-300/70 bg-emerald-500/15'
-                          : 'border-white/10 bg-black/25 hover:border-white/25'
+                          : 'border-[#7beacc]/14 hover:border-[#8ef1d5]/28 bg-emerald-950/35'
                       }`}
                     >
                       <p className="truncate text-sm font-medium leading-5 text-white">
@@ -241,7 +242,7 @@ export function UltimaSupport() {
                 )}
               </div>
 
-              <div className="min-h-0 flex-1 rounded-2xl border border-white/10 bg-black/15 p-3">
+              <div className="border-[#7beacc]/16 bg-emerald-950/28 min-h-0 flex-1 rounded-2xl border p-3">
                 {selectedTicketId && ticketDetail ? (
                   <div className="flex h-full min-h-0 flex-col gap-3">
                     <p className="text-sm font-medium text-white">{selectedTicket?.title}</p>
@@ -255,7 +256,7 @@ export function UltimaSupport() {
                             className={`rounded-xl px-3 py-2 text-sm ${
                               msg.is_from_admin
                                 ? 'border border-emerald-300/30 bg-emerald-500/10 text-emerald-100'
-                                : 'border border-white/10 bg-black/25 text-white'
+                                : 'border-[#8cefd2]/16 bg-emerald-950/38 border text-white'
                             }`}
                           >
                             {msg.message_text}
@@ -270,7 +271,7 @@ export function UltimaSupport() {
                           value={replyMessage}
                           onChange={(event) => setReplyMessage(event.target.value)}
                           placeholder={t('support.replyPlaceholder')}
-                          className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-white/45"
+                          className="w-full rounded-xl border border-[#84ebcc]/25 bg-emerald-950/35 px-3 py-2 text-sm text-white placeholder:text-emerald-100/35"
                           maxLength={4000}
                         />
                         <button
