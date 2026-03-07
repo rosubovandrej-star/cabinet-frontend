@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter, useLocation, useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import {
   showBackButton,
   hideBackButton,
@@ -82,6 +83,7 @@ function TelegramBackButton() {
 
 export function AppWithNavigator() {
   const isTelegram = isInTelegramWebApp();
+  const { ready } = useTranslation();
 
   return (
     <BrowserRouter>
@@ -93,9 +95,7 @@ export function AppWithNavigator() {
             <TooltipProvider>
               <ToastProvider>
                 <WebSocketProvider>
-                  <Twemoji options={TWEMOJI_OPTIONS}>
-                    <App />
-                  </Twemoji>
+                  <Twemoji options={TWEMOJI_OPTIONS}>{ready ? <App /> : null}</Twemoji>
                 </WebSocketProvider>
               </ToastProvider>
             </TooltipProvider>

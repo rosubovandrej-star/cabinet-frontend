@@ -2,13 +2,13 @@
 import { lazy } from 'react';
 import { LazyPage, ProtectedRoute } from '../../components/routing/RouteShells';
 import type { RouteConfig } from './types';
+import Support from '../Support';
 
 const Dashboard = lazy(() => import('../Dashboard'));
 const Subscription = lazy(() => import('../Subscription'));
 const SubscriptionPurchase = lazy(() => import('../SubscriptionPurchase'));
 const Balance = lazy(() => import('../Balance'));
 const Referral = lazy(() => import('../Referral'));
-const Support = lazy(() => import('../Support'));
 const Profile = lazy(() => import('../Profile'));
 const AccountLinking = lazy(() => import('../AccountLinking'));
 const Contests = lazy(() => import('../Contests'));
@@ -117,9 +117,7 @@ export const protectedRoutes: RouteConfig[] = [
     path: '/support',
     element: (
       <ProtectedRoute>
-        <LazyPage>
-          <Support />
-        </LazyPage>
+        <Support />
       </ProtectedRoute>
     ),
   },

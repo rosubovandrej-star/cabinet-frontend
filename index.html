@@ -45,9 +45,36 @@
       html.light body {
         background-color: #f7e7ce;
       }
+      #root {
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 180ms ease;
+      }
+      html.app-ready #root {
+        visibility: visible;
+        opacity: 1;
+      }
+      #app-startup-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 1;
+        transition: opacity 220ms ease;
+      }
+      html.dark #app-startup-overlay {
+        background: radial-gradient(circle at 70% 45%, rgba(16, 185, 129, 0.2), #0a0f1a 60%);
+      }
+      html.light #app-startup-overlay {
+        background: radial-gradient(circle at 70% 45%, rgba(16, 185, 129, 0.12), #f7e7ce 60%);
+      }
+      html.app-ready #app-startup-overlay {
+        opacity: 0;
+      }
     </style>
   </head>
   <body>
+    <div id="app-startup-overlay" aria-hidden="true"></div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

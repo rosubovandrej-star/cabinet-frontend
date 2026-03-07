@@ -1,13 +1,17 @@
 import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Navigate, Route, Routes } from 'react-router';
 import { BlockingOverlay } from './components/routing/RouteShells';
 import { useAnalyticsCounters } from './hooks/useAnalyticsCounters';
+import { infoApi } from './api/info';
+import { ticketsApi } from './api/tickets';
 import { adminRoutes } from './pages/routes/adminRoutes';
 import { protectedRoutes } from './pages/routes/protectedRoutes';
 import { publicRoutes } from './pages/routes/publicRoutes';
 
 function App() {
   useAnalyticsCounters();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const prefetch = () => {
@@ -22,6 +26,14 @@ function App() {
 
     // Start critical route prefetch immediately to avoid first navigation hitch in Ultima flow.
     prefetch();
+    void queryClient.prefetchQuery({
+      queryKey: ['support-config'],
+      queryFn: infoApi.getSupportConfig,
+    });
+    void queryClient.prefetchQuery({
+      queryKey: ['tickets'],
+      queryFn: () => ticketsApi.getTickets({ per_page: 20 }),
+    });
 
     const idle = window.requestIdleCallback?.(() => prefetch(), { timeout: 1800 });
     if (idle) {
@@ -29,7 +41,7 @@ function App() {
     }
     const timeoutId = window.setTimeout(prefetch, 600);
     return () => window.clearTimeout(timeoutId);
-  }, []);
+  }, [queryClient]);
 
   return (
     <>

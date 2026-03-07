@@ -150,6 +150,13 @@ const renderApp = () => {
       </ErrorBoundary>
     </React.StrictMode>,
   );
+
+  requestAnimationFrame(() => {
+    document.documentElement.classList.add('app-ready');
+    window.setTimeout(() => {
+      document.getElementById('app-startup-overlay')?.remove();
+    }, 260);
+  });
 };
 
 void ensureI18nReady().finally(renderApp);
