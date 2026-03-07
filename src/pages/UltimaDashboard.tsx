@@ -180,14 +180,14 @@ export function UltimaDashboard() {
             <ShieldIcon />
           </div>
 
-          <div className="mb-4 flex items-center justify-between text-white">
+          <div className="mb-5 flex items-center justify-between text-white">
             <div>
-              <p className="text-[34px] font-semibold leading-none tracking-[-0.02em] sm:text-[38px]">
+              <p className="text-[32px] font-semibold leading-none tracking-[-0.02em] sm:text-[36px]">
                 {expiryLabel}
               </p>
               <p className="mt-2 text-base text-emerald-300/90">online</p>
             </div>
-            <span className="bg-white/8 rounded-full border border-white/15 px-3 py-1 text-xs text-white/75">
+            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs text-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
               {statusLabel}
             </span>
           </div>
@@ -197,19 +197,19 @@ export function UltimaDashboard() {
           <button
             type="button"
             onClick={() => navigate('/subscription')}
-            className="mb-3 flex w-full items-center justify-between rounded-full bg-emerald-500 px-5 py-4 text-xl font-medium text-white transition hover:bg-emerald-400"
+            className="mb-3 flex w-full items-center justify-between rounded-full border border-[#4ceac2]/45 bg-[#14cf9a] px-5 py-4 text-[18px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_16px_rgba(7,146,108,0.24)] transition hover:bg-[#16d8a1]"
           >
             <span className="flex items-center gap-2">
               <GlobeIcon />
               {t('lite.buySubscription', { defaultValue: 'Купить подписку' })}
             </span>
-            <span className="text-lg text-white/90">от 199 ₽</span>
+            <span className="text-[18px] text-white/90">от 199 ₽</span>
           </button>
 
           <button
             type="button"
             onClick={() => navigate('/connection')}
-            className="mb-4 flex w-full items-center justify-between rounded-full bg-white px-5 py-4 text-xl font-medium text-slate-900 transition hover:bg-white/90"
+            className="mb-4 flex w-full items-center justify-between rounded-full border border-white/85 bg-white px-5 py-4 text-[18px] font-medium text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_6px_14px_rgba(0,0,0,0.18)] transition hover:bg-white/95"
           >
             <span className="flex items-center gap-2">
               <SetupIcon />
@@ -220,10 +220,10 @@ export function UltimaDashboard() {
             </span>
           </button>
 
-          <nav className="grid grid-cols-4 gap-2 rounded-full border border-white/10 bg-emerald-900/45 p-2 text-white/80 backdrop-blur">
+          <nav className="border-white/14 grid grid-cols-4 gap-2 rounded-full border bg-emerald-900/45 p-2 text-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur">
             <button
               type="button"
-              className="rounded-full bg-emerald-500 p-3 text-white"
+              className="rounded-full border border-[#59f0c9]/35 bg-[#14cf9a] p-3 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
               onClick={() => navigate('/')}
             >
               <GridIcon />
