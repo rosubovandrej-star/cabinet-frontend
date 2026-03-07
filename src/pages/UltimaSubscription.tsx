@@ -354,6 +354,7 @@ export function UltimaSubscription() {
   const selectedTariffIdForPurchase = selectedPeriod?.tariffId ?? selectedTariff?.id ?? null;
   const sliderProgressPercent =
     deviceLimits.length > 1 ? (selectedDeviceIndex / (deviceLimits.length - 1)) * 100 : 0;
+  const sliderVisualPower = 0.28 + sliderProgressPercent / 130;
   const autoTariffId = Number(searchParams.get('autoTariffId'));
   const autoPeriodDays = Number(searchParams.get('autoPeriodDays'));
   const autoDeviceLimit = Number(searchParams.get('autoDeviceLimit'));
@@ -767,12 +768,23 @@ export function UltimaSubscription() {
                   className="absolute left-0 top-1/2 h-[9px] -translate-y-1/2 rounded-full bg-[linear-gradient(90deg,rgba(45,212,191,0.9)_0%,rgba(16,185,129,0.95)_100%)] shadow-[0_0_14px_rgba(45,212,191,0.42)]"
                   style={{
                     width: `${sliderProgressPercent}%`,
+                    boxShadow: `0 0 ${12 + sliderProgressPercent * 0.13}px rgba(45,212,191,${Math.min(0.72, sliderVisualPower)})`,
+                  }}
+                />
+                <div
+                  className="ultima-slider-glow pointer-events-none absolute left-0 top-1/2 h-[9px] -translate-y-1/2 rounded-full bg-[linear-gradient(90deg,rgba(162,255,233,0)_0%,rgba(162,255,233,0.65)_45%,rgba(162,255,233,0)_100%)]"
+                  style={{
+                    width: `${Math.max(18, sliderProgressPercent)}%`,
+                    filter: `blur(${2 + sliderProgressPercent * 0.02}px)`,
+                    opacity: Math.min(0.78, 0.26 + sliderProgressPercent / 170),
                   }}
                 />
                 <span
                   className="absolute top-1/2 z-20 h-5 w-5 -translate-y-1/2 rounded-full border border-emerald-100/70 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.75),rgba(45,212,191,0.9)_45%,rgba(6,38,31,0.95)_100%)] shadow-[0_0_16px_rgba(52,211,153,0.55)]"
                   style={{
                     left: `calc(${sliderProgressPercent}% - 10px)`,
+                    transform: `translateY(-50%) scale(${1 + sliderProgressPercent / 500})`,
+                    boxShadow: `0 0 ${16 + sliderProgressPercent * 0.16}px rgba(52,211,153,${Math.min(0.86, 0.44 + sliderProgressPercent / 220)})`,
                   }}
                 />
                 <input
@@ -781,9 +793,7 @@ export function UltimaSubscription() {
                   max={Math.max(0, deviceLimits.length - 1)}
                   step={1}
                   value={selectedDeviceIndex}
-                  onChange={(event) =>
-                    applyDeviceIndex(Number(event.target.value), { withHaptic: false })
-                  }
+                  onChange={(event) => applyDeviceIndex(Number(event.target.value))}
                   className="absolute inset-0 z-10 h-9 w-full cursor-pointer opacity-0"
                   aria-label="devices-slider-input"
                 />
@@ -806,11 +816,16 @@ export function UltimaSubscription() {
                       style={{ left }}
                     >
                       <span
-                        className={`block h-2.5 w-2.5 rounded-full transition ${
-                          active
-                            ? 'bg-emerald-200 shadow-[0_0_10px_rgba(52,211,153,0.8)]'
-                            : 'bg-white/30'
+                        className={`block rounded-full transition ${
+                          active ? 'bg-emerald-200' : 'bg-white/30'
                         }`}
+                        style={{
+                          width: active ? 10 : 8,
+                          height: active ? 10 : 8,
+                          boxShadow: active
+                            ? `0 0 ${10 + sliderProgressPercent * 0.1}px rgba(52,211,153,${Math.min(0.92, 0.54 + sliderProgressPercent / 170)})`
+                            : 'none',
+                        }}
                       />
                     </button>
                   );

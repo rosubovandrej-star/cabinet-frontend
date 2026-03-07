@@ -2,6 +2,7 @@ import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { initDataUser } from '@telegram-apps/sdk-react';
 import { subscriptionApi } from '@/api/subscription';
 import { infoApi } from '@/api/info';
 import { ticketsApi } from '@/api/tickets';
@@ -140,6 +141,25 @@ export function UltimaProfile() {
     const fallback = user?.telegram_id ?? user?.id ?? 0;
     return `id: ${fallback}`;
   }, [user?.id, user?.telegram_id]);
+
+  const telegramPhotoUrl = useMemo(() => {
+    if (!user?.telegram_id) return null;
+    try {
+      const tgUser = initDataUser();
+      const photoUrl = tgUser?.photo_url;
+      return typeof photoUrl === 'string' && photoUrl.length > 0 ? photoUrl : null;
+    } catch {
+      return null;
+    }
+  }, [user?.telegram_id]);
+
+  const avatarFallbackLabel = useMemo(() => {
+    const source =
+      user?.first_name?.trim() ||
+      user?.username?.trim() ||
+      String(user?.telegram_id ?? user?.id ?? '?');
+    return source.slice(0, 1).toUpperCase();
+  }, [user?.first_name, user?.id, user?.telegram_id, user?.username]);
 
   const subscriptionLink = subscriptionResponse?.subscription?.subscription_url ?? '';
 
@@ -387,7 +407,18 @@ export function UltimaProfile() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(95%_70%_at_50%_45%,rgba(33,208,154,0.14),rgba(7,20,46,0.02)_62%,rgba(7,20,46,0)_100%)]" />
       <div className="relative z-10 mx-auto flex h-full min-h-0 max-w-md flex-col">
         <section className="border-emerald-200/12 mb-3 flex items-center gap-3 rounded-3xl border bg-[rgba(12,45,42,0.18)] px-3 py-2.5 backdrop-blur-md">
-          <div className="h-10 w-10 rounded-full bg-amber-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" />
+          {telegramPhotoUrl ? (
+            <img
+              src={telegramPhotoUrl}
+              alt="telegram-avatar"
+              className="h-10 w-10 rounded-full border border-white/30 object-cover shadow-[0_6px_12px_rgba(0,0,0,0.22)]"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-300 text-sm font-semibold text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]">
+              {avatarFallbackLabel}
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <p className="text-white/78 truncate text-[13px]">{userLabel}</p>
           </div>
