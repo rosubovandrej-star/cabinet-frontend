@@ -65,9 +65,27 @@ export function UltimaSubscription() {
     return map;
   }, [tariffs]);
 
-  const deviceLimits = useMemo(() => {
+  const availableDeviceLimits = useMemo(() => {
     return [...periodsByDevice.keys()].sort((a, b) => a - b);
   }, [periodsByDevice]);
+
+  const deviceLimits = useMemo(() => {
+    if (!tariffs.length) return availableDeviceLimits.length ? availableDeviceLimits : [1];
+    const withMaxLimit = (tariff: Tariff) => tariff as Tariff & { max_device_limit?: number };
+
+    const minBase = Math.max(
+      1,
+      Math.min(...tariffs.map((tariff) => tariff.base_device_limit ?? tariff.device_limit ?? 1)),
+    );
+    const maxLimit = Math.max(
+      minBase,
+      ...tariffs.map(
+        (tariff) => withMaxLimit(tariff).max_device_limit ?? tariff.device_limit ?? minBase,
+      ),
+    );
+    const fullRange = Array.from({ length: maxLimit - minBase + 1 }, (_, i) => minBase + i);
+    return fullRange.length ? fullRange : availableDeviceLimits;
+  }, [tariffs, availableDeviceLimits]);
 
   const closestDeviceIndex = useMemo(() => {
     if (!deviceLimits.length) return 0;
@@ -114,13 +132,13 @@ export function UltimaSubscription() {
   };
 
   const allPeriodsForDevice = useMemo(() => {
-    if (!deviceLimits.length) return [] as DisplayPeriod[];
+    if (!availableDeviceLimits.length) return [] as DisplayPeriod[];
     const exact = periodsByDevice.get(selectedDeviceLimit) ?? [];
     const source =
       exact.length > 0
         ? exact
         : (periodsByDevice.get(
-            [...deviceLimits].sort(
+            [...availableDeviceLimits].sort(
               (a, b) => Math.abs(a - selectedDeviceLimit) - Math.abs(b - selectedDeviceLimit),
             )[0] ?? selectedDeviceLimit,
           ) ?? []);
@@ -135,7 +153,7 @@ export function UltimaSubscription() {
     return [...bestByDays.values()].sort(
       (a, b) => a.months - b.months || a.days - b.days || a.price_kopeks - b.price_kopeks,
     );
-  }, [periodsByDevice, deviceLimits, selectedDeviceLimit]);
+  }, [periodsByDevice, availableDeviceLimits, selectedDeviceLimit]);
 
   const selectedTariff = useMemo(() => {
     if (!tariffs.length) return null;
@@ -261,25 +279,37 @@ export function UltimaSubscription() {
                   setSelectedDeviceIndex((prev) => Math.min(deviceLimits.length - 1, prev + 1));
                 }
               }}
-              className="relative mb-3 h-2 w-full cursor-pointer rounded-full bg-white/20"
+              className="relative mb-3"
             >
-              <div
-                className="h-full rounded-full bg-emerald-400/80"
-                style={{
-                  width:
-                    deviceLimits.length > 1
-                      ? `${(selectedDeviceIndex / (deviceLimits.length - 1)) * 100}%`
-                      : '0%',
-                }}
-              />
-              <span
-                className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-emerald-300 bg-[#06261f] shadow-[0_0_10px_rgba(52,211,153,0.6)]"
-                style={{
-                  left:
-                    deviceLimits.length > 1
-                      ? `calc(${(selectedDeviceIndex / (deviceLimits.length - 1)) * 100}% - 8px)`
-                      : '0px',
-                }}
+              <div className="relative h-2 w-full rounded-full bg-white/20">
+                <div
+                  className="h-full rounded-full bg-emerald-400/80 transition-all duration-200"
+                  style={{
+                    width:
+                      deviceLimits.length > 1
+                        ? `${(selectedDeviceIndex / (deviceLimits.length - 1)) * 100}%`
+                        : '0%',
+                  }}
+                />
+                <span
+                  className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-emerald-300 bg-[#06261f] shadow-[0_0_10px_rgba(52,211,153,0.6)] transition-all duration-200"
+                  style={{
+                    left:
+                      deviceLimits.length > 1
+                        ? `calc(${(selectedDeviceIndex / (deviceLimits.length - 1)) * 100}% - 8px)`
+                        : '0px',
+                  }}
+                />
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={Math.max(0, deviceLimits.length - 1)}
+                step={1}
+                value={selectedDeviceIndex}
+                onChange={(event) => setSelectedDeviceIndex(Number(event.target.value))}
+                className="absolute inset-0 z-10 h-4 w-full cursor-pointer opacity-0"
+                aria-label="devices-slider-input"
               />
             </div>
             <div className="flex items-center justify-between px-1">
@@ -294,6 +324,10 @@ export function UltimaSubscription() {
                   <Dot active={index === selectedDeviceIndex} />
                 </button>
               ))}
+            </div>
+            <div className="mt-2 flex items-center justify-between text-[11px] text-white/55">
+              <span>{deviceLimits[0]}</span>
+              <span>{deviceLimits[deviceLimits.length - 1]}</span>
             </div>
           </div>
         </section>
@@ -310,20 +344,20 @@ export function UltimaSubscription() {
                 }}
                 className={`rounded-3xl border p-4 text-left transition ${
                   active
-                    ? 'border-emerald-400 bg-[#0a2522] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]'
-                    : 'border-white/12 bg-black/20'
+                    ? 'scale-[0.985] border-emerald-400 bg-[#0a2522] shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_0_0_1px_rgba(16,185,129,0.25)]'
+                    : 'border-white/12 bg-black/20 hover:-translate-y-0.5 hover:border-white/25'
                 }`}
               >
                 <div className="mb-4 flex items-center justify-between">
-                  <span className="text-[22px] font-medium text-white">{periodLabel(period)}</span>
+                  <span className="text-[19px] font-medium text-white">{periodLabel(period)}</span>
                   {active && <span className="text-emerald-300">★</span>}
                 </div>
-                <p className="text-[42px] font-semibold leading-none text-white">
+                <p className="text-[32px] font-semibold leading-none text-white">
                   {formatPrice(period.price_kopeks)}
                 </p>
                 {period.original_price_kopeks &&
                 period.original_price_kopeks > period.price_kopeks ? (
-                  <p className="mt-1 text-[14px] text-white/70">
+                  <p className="mt-1 text-[13px] text-white/70">
                     {period.price_per_month_kopeks > 0
                       ? `${formatPrice(period.price_per_month_kopeks)} / мес`
                       : ''}
