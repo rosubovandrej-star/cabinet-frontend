@@ -21,6 +21,9 @@ const Connection = lazy(() => import('../Connection'));
 const ConnectionQR = lazy(() => import('../ConnectionQR'));
 const ReferralPartnerApply = lazy(() => import('../ReferralPartnerApply'));
 const ReferralWithdrawalRequest = lazy(() => import('../ReferralWithdrawalRequest'));
+const UltimaAgreement = lazy(() =>
+  import('../UltimaAgreement').then((module) => ({ default: module.UltimaAgreement })),
+);
 
 export const protectedRoutes: RouteConfig[] = [
   {
@@ -161,6 +164,16 @@ export const protectedRoutes: RouteConfig[] = [
       <ProtectedRoute>
         <LazyPage>
           <Info />
+        </LazyPage>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/ultima/agreement',
+    element: (
+      <ProtectedRoute>
+        <LazyPage>
+          <UltimaAgreement />
         </LazyPage>
       </ProtectedRoute>
     ),

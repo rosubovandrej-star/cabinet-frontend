@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { adminSettingsApi, type SettingDefinition } from '@/api/adminSettings';
 import { AdminBackButton } from '@/components/admin';
+import { ultimaAgreementApi } from '@/api/ultimaAgreement';
 
 const AgreementIcon = () => (
   <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -16,65 +16,41 @@ const AgreementIcon = () => (
   </svg>
 );
 
-function isAgreementCandidate(setting: SettingDefinition): boolean {
-  const text = `${setting.key} ${setting.name ?? ''}`.toLowerCase();
-  const category = setting.category.key.toLowerCase();
+const SUPPORTED_LANGUAGES = ['ru', 'en', 'fa', 'zh', 'ua'] as const;
 
-  const legal = /agreement|terms|offer|policy|rules|соглаш|правил|оферт|политик/.test(text);
-  const ultima = /ultima|happ|miniapp/.test(text) || /miniapp|happ/.test(category);
-  return legal && ultima;
-}
-
-function settingValueToString(value: unknown): string {
-  if (typeof value === 'string') return value;
-  if (value == null) return '';
-  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
-  try {
-    return JSON.stringify(value, null, 2);
-  } catch {
-    return String(value);
-  }
-}
+type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 export default function AdminUltimaAgreement() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const queryClient = useQueryClient();
-  const [selectedKey, setSelectedKey] = useState('');
+  const initialLanguage = useMemo<SupportedLanguage>(() => {
+    const normalized = (i18n.language || 'ru').split('-', 1)[0] as SupportedLanguage;
+    return SUPPORTED_LANGUAGES.includes(normalized) ? normalized : 'ru';
+  }, [i18n.language]);
+
+  const [language, setLanguage] = useState<SupportedLanguage>(initialLanguage);
   const [draft, setDraft] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: allSettings, isLoading } = useQuery({
-    queryKey: ['admin-settings'],
-    queryFn: () => adminSettingsApi.getSettings(),
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin-ultima-agreement', language],
+    queryFn: () => ultimaAgreementApi.getAdminAgreement(language),
+    placeholderData: (previousData) => previousData,
   });
 
-  const candidates = useMemo(
-    () => (allSettings ?? []).filter((setting) => isAgreementCandidate(setting)),
-    [allSettings],
-  );
-
-  const selectedSetting = useMemo(
-    () => candidates.find((setting) => setting.key === selectedKey) ?? null,
-    [candidates, selectedKey],
-  );
-
   useEffect(() => {
-    if (!selectedKey && candidates.length > 0) {
-      setSelectedKey(candidates[0].key);
-      setDraft(settingValueToString(candidates[0].current));
+    if (data) {
+      setDraft(data.content ?? '');
     }
-  }, [candidates, selectedKey]);
+  }, [data]);
 
-  useEffect(() => {
-    if (selectedSetting) {
-      setDraft(settingValueToString(selectedSetting.current));
-    }
-  }, [selectedSetting]);
-
-  const updateMutation = useMutation({
-    mutationFn: ({ key, value }: { key: string; value: string }) =>
-      adminSettingsApi.updateSetting(key, value),
+  const saveMutation = useMutation({
+    mutationFn: () =>
+      ultimaAgreementApi.updateAdminAgreement({
+        language,
+        content: draft,
+      }),
     onSuccess: () => {
       setError(null);
       setMessage(
@@ -82,34 +58,14 @@ export default function AdminUltimaAgreement() {
           defaultValue: 'Соглашение обновлено',
         }),
       );
-      queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-ultima-agreement', language] });
+      queryClient.invalidateQueries({ queryKey: ['ultima-agreement'] });
     },
     onError: () => {
       setMessage(null);
       setError(
         t('admin.ultimaSettings.agreementSaveError', {
           defaultValue: 'Не удалось сохранить соглашение',
-        }),
-      );
-    },
-  });
-
-  const resetMutation = useMutation({
-    mutationFn: (key: string) => adminSettingsApi.resetSetting(key),
-    onSuccess: () => {
-      setError(null);
-      setMessage(
-        t('admin.ultimaSettings.agreementReset', {
-          defaultValue: 'Соглашение сброшено к значению по умолчанию',
-        }),
-      );
-      queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
-    },
-    onError: () => {
-      setMessage(null);
-      setError(
-        t('admin.ultimaSettings.agreementResetError', {
-          defaultValue: 'Не удалось выполнить сброс',
         }),
       );
     },
@@ -130,7 +86,7 @@ export default function AdminUltimaAgreement() {
           </h1>
           <p className="text-sm text-dark-400">
             {t('admin.ultimaSettings.agreementSubtitle', {
-              defaultValue: 'Редактирование страницы соглашения для режима Ultima.',
+              defaultValue: 'Отдельная страница соглашения только для Ultima режима.',
             })}
           </p>
         </div>
@@ -139,33 +95,24 @@ export default function AdminUltimaAgreement() {
       <div className="rounded-2xl border border-dark-700/50 bg-dark-800/30 p-4">
         {isLoading ? (
           <div className="py-8 text-center text-dark-400">{t('common.loading')}</div>
-        ) : candidates.length === 0 ? (
-          <div className="rounded-xl border border-dark-700/40 bg-dark-800/40 p-6 text-center text-sm text-dark-400">
-            {t('admin.ultimaSettings.agreementNotFound', {
-              defaultValue:
-                'Не найден ключ соглашения для Ultima. Добавьте setting с ключом вида ULTIMA_*_AGREEMENT в категории MINIAPP/HAPP.',
-            })}
-          </div>
         ) : (
           <div className="space-y-4">
             <div>
               <label className="mb-1 block text-sm font-medium text-dark-300">
-                {t('admin.ultimaSettings.agreementSettingKey', {
-                  defaultValue: 'Ключ настройки',
-                })}
+                {t('common.language', { defaultValue: 'Язык' })}
               </label>
               <select
-                value={selectedKey}
-                onChange={(e) => {
-                  setSelectedKey(e.target.value);
+                value={language}
+                onChange={(event) => {
+                  setLanguage(event.target.value as SupportedLanguage);
                   setMessage(null);
                   setError(null);
                 }}
                 className="input"
               >
-                {candidates.map((setting) => (
-                  <option key={setting.key} value={setting.key}>
-                    {setting.key}
+                {SUPPORTED_LANGUAGES.map((lang) => (
+                  <option key={lang} value={lang}>
+                    {lang.toUpperCase()}
                   </option>
                 ))}
               </select>
@@ -179,8 +126,8 @@ export default function AdminUltimaAgreement() {
               </label>
               <textarea
                 value={draft}
-                onChange={(e) => {
-                  setDraft(e.target.value);
+                onChange={(event) => {
+                  setDraft(event.target.value);
                   setMessage(null);
                   setError(null);
                 }}
@@ -195,24 +142,10 @@ export default function AdminUltimaAgreement() {
               <button
                 type="button"
                 className="btn-primary"
-                disabled={!selectedKey || updateMutation.isPending}
-                onClick={() => {
-                  if (!selectedKey) return;
-                  updateMutation.mutate({ key: selectedKey, value: draft });
-                }}
+                disabled={saveMutation.isPending}
+                onClick={() => saveMutation.mutate()}
               >
                 {t('common.save')}
-              </button>
-              <button
-                type="button"
-                className="btn-secondary"
-                disabled={!selectedKey || resetMutation.isPending}
-                onClick={() => {
-                  if (!selectedKey) return;
-                  resetMutation.mutate(selectedKey);
-                }}
-              >
-                {t('admin.settings.reset')}
               </button>
             </div>
 

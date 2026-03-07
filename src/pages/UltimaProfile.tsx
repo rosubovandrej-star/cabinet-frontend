@@ -195,7 +195,7 @@ export function UltimaProfile() {
       key: 'terms',
       title: t('profile.termsTitle', { defaultValue: 'Пользовательское соглашение' }),
       subtitle: t('profile.termsDescription', { defaultValue: 'Соглашения и правила сервиса' }),
-      path: '/info',
+      path: '/ultima/agreement',
       icon: <TermsIcon />,
     },
   ];
