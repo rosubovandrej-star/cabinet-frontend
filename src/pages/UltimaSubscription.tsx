@@ -108,6 +108,7 @@ export function UltimaSubscription() {
   const [awaitingPaymentCompletion, setAwaitingPaymentCompletion] = useState(false);
   const [isFinalizingPending, setIsFinalizingPending] = useState(false);
   const didInitDevice = useRef(false);
+  const lastHapticDeviceIndexRef = useRef<number | null>(null);
   const deviceTrackRef = useRef<HTMLDivElement | null>(null);
   const autoPurchaseAttemptRef = useRef<string | null>(null);
   const finalizeInProgressRef = useRef(false);
@@ -263,13 +264,26 @@ export function UltimaSubscription() {
   const selectedDeviceLimit =
     deviceLimits[Math.min(selectedDeviceIndex, Math.max(0, deviceLimits.length - 1))] ?? 1;
 
+  const applyDeviceIndex = useCallback(
+    (nextIndex: number) => {
+      const maxIndex = Math.max(0, deviceLimits.length - 1);
+      const clamped = Math.min(Math.max(0, nextIndex), maxIndex);
+      setSelectedDeviceIndex(clamped);
+      if (lastHapticDeviceIndexRef.current !== clamped) {
+        haptic.selection();
+        lastHapticDeviceIndexRef.current = clamped;
+      }
+    },
+    [deviceLimits.length, haptic],
+  );
+
   const handleDeviceTrackClick = (event: MouseEvent<HTMLDivElement>) => {
     if (!deviceTrackRef.current || deviceLimits.length <= 1) return;
     const rect = deviceTrackRef.current.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const ratio = Math.min(1, Math.max(0, x / rect.width));
     const index = Math.round(ratio * (deviceLimits.length - 1));
-    setSelectedDeviceIndex(index);
+    applyDeviceIndex(index);
   };
 
   const allPeriodsForDevice = useMemo(() => {
@@ -725,7 +739,7 @@ export function UltimaSubscription() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-black/15 p-3">
+          <div className="rounded-2xl border border-emerald-200/10 bg-[linear-gradient(180deg,rgba(10,49,43,0.42)_0%,rgba(8,25,29,0.46)_100%)] p-3">
             <div
               ref={deviceTrackRef}
               role="button"
@@ -735,19 +749,19 @@ export function UltimaSubscription() {
               onKeyDown={(event) => {
                 if (event.key === 'ArrowLeft') {
                   event.preventDefault();
-                  setSelectedDeviceIndex((prev) => Math.max(0, prev - 1));
+                  applyDeviceIndex(selectedDeviceIndex - 1);
                 }
                 if (event.key === 'ArrowRight') {
                   event.preventDefault();
-                  setSelectedDeviceIndex((prev) => Math.min(deviceLimits.length - 1, prev + 1));
+                  applyDeviceIndex(selectedDeviceIndex + 1);
                 }
               }}
               className="relative"
             >
-              <div className="relative h-8 w-full">
-                <div className="absolute left-0 right-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-white/20" />
+              <div className="relative h-9 w-full">
+                <div className="absolute left-0 right-0 top-1/2 h-[9px] -translate-y-1/2 rounded-full border border-emerald-200/15 bg-white/10 shadow-[inset_0_1px_4px_rgba(0,0,0,0.25)]" />
                 <div
-                  className="absolute left-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-emerald-400/80 transition-all duration-200"
+                  className="absolute left-0 top-1/2 h-[9px] -translate-y-1/2 rounded-full bg-[linear-gradient(90deg,rgba(45,212,191,0.9)_0%,rgba(16,185,129,0.95)_100%)] shadow-[0_0_14px_rgba(45,212,191,0.42)] transition-all duration-200"
                   style={{
                     width:
                       deviceLimits.length > 1
@@ -756,11 +770,11 @@ export function UltimaSubscription() {
                   }}
                 />
                 <span
-                  className="absolute top-1/2 z-20 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-emerald-300 bg-[#06261f] shadow-[0_0_10px_rgba(52,211,153,0.6)] transition-all duration-200"
+                  className="absolute top-1/2 z-20 h-5 w-5 -translate-y-1/2 rounded-full border border-emerald-100/70 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.75),rgba(45,212,191,0.9)_45%,rgba(6,38,31,0.95)_100%)] shadow-[0_0_16px_rgba(52,211,153,0.55)] transition-all duration-200"
                   style={{
                     left:
                       deviceLimits.length > 1
-                        ? `calc(${(selectedDeviceIndex / (deviceLimits.length - 1)) * 100}% - 8px)`
+                        ? `calc(${(selectedDeviceIndex / (deviceLimits.length - 1)) * 100}% - 10px)`
                         : '0px',
                   }}
                 />
@@ -770,8 +784,8 @@ export function UltimaSubscription() {
                   max={Math.max(0, deviceLimits.length - 1)}
                   step={1}
                   value={selectedDeviceIndex}
-                  onChange={(event) => setSelectedDeviceIndex(Number(event.target.value))}
-                  className="absolute inset-0 z-10 h-8 w-full cursor-pointer opacity-0"
+                  onChange={(event) => applyDeviceIndex(Number(event.target.value))}
+                  className="absolute inset-0 z-10 h-9 w-full cursor-pointer opacity-0"
                   aria-label="devices-slider-input"
                 />
                 {deviceLimits.map((limit, index) => {
@@ -787,7 +801,7 @@ export function UltimaSubscription() {
                       aria-label={`devices-${limit}`}
                       onClick={(event) => {
                         event.preventDefault();
-                        setSelectedDeviceIndex(index);
+                        applyDeviceIndex(index);
                       }}
                       className="absolute top-1/2 z-30 -translate-x-1/2 -translate-y-1/2"
                       style={{ left }}
@@ -795,8 +809,8 @@ export function UltimaSubscription() {
                       <span
                         className={`block h-2.5 w-2.5 rounded-full transition ${
                           active
-                            ? 'bg-emerald-200 shadow-[0_0_8px_rgba(52,211,153,0.7)]'
-                            : 'bg-white/40'
+                            ? 'bg-emerald-200 shadow-[0_0_10px_rgba(52,211,153,0.8)]'
+                            : 'bg-white/30'
                         }`}
                       />
                     </button>

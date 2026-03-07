@@ -349,10 +349,10 @@ export function AppShell({ children }: AppShellProps) {
       {(!isUltimaModeReady || !isUltimaMode) && <BackgroundRenderer />}
       {isUltimaModeReady && isUltimaSceneRoute && (
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[radial-gradient(circle_at_76%_58%,rgba(16,185,129,0.34),rgba(4,17,26,0.98)_58%)]">
-          {[0, 1.2, 2.4, 3.6, 4.8, 6, 7.2].map((delay) => (
+          {[0, 1.15, 2.3, 3.45, 4.6, 5.75, 6.9, 8.05, 9.2, 10.35].map((delay) => (
             <div
               key={delay}
-              className="ultima-ring-wave absolute left-1/2 top-[36%] h-[150vmax] w-[150vmax] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/35"
+              className="ultima-ring-wave absolute left-1/2 top-[36%] h-[160vmax] w-[160vmax] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/45"
               style={{ animationDelay: `${ultimaWavePhaseShiftSecRef.current + delay}s` }}
             />
           ))}
