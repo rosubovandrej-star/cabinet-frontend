@@ -6,8 +6,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authApi } from '@/api/auth';
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/primitives/Button';
+import { useUltimaMode } from '@/hooks/useUltimaMode';
 import { useAuthStore } from '@/store/auth';
 import type { LinkCodePreviewResponse, LinkedIdentity } from '@/types';
+import UltimaAccountLinking from './UltimaAccountLinking';
 
 const LinkIcon = () => (
   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -21,7 +23,7 @@ const LinkIcon = () => (
 
 type LinkFlowStep = 'idle' | 'preview' | 'warning' | 'manual' | 'done';
 
-export default function AccountLinking() {
+function AccountLinkingContent() {
   const { t } = useTranslation();
   const { setUser, setTokens, checkAdminStatus, user } = useAuthStore();
   const queryClient = useQueryClient();
@@ -689,4 +691,14 @@ export default function AccountLinking() {
       </Card>
     </div>
   );
+}
+
+export default function AccountLinking() {
+  const { isUltimaMode } = useUltimaMode();
+
+  if (isUltimaMode) {
+    return <UltimaAccountLinking />;
+  }
+
+  return <AccountLinkingContent />;
 }

@@ -340,6 +340,7 @@ export function AppShell({ children }: AppShellProps) {
     void import('@/pages/Balance');
     void import('@/pages/TopUpMethodSelect');
     void import('@/pages/TopUpAmount');
+    void import('@/pages/AccountLinking');
   }, [isUltimaMode]);
 
   return (
