@@ -344,15 +344,13 @@ export function UltimaDashboard() {
               {statusLabel}
             </span>
           </div>
-        </section>
 
-        <section className="mt-auto pb-1">
           {connectionStep === 2 && (
-            <div className="mb-3 rounded-3xl border border-amber-300/30 bg-black/30 p-4 backdrop-blur">
-              <p className="text-[18px] font-semibold leading-tight text-amber-100">
+            <div className="bg-black/24 mb-4 rounded-2xl border border-amber-300/30 p-3.5 backdrop-blur">
+              <p className="text-[16px] font-semibold leading-tight text-amber-100">
                 {t('ultima.setupNotFinishedTitle', { defaultValue: 'Установка не завершена' })}
               </p>
-              <p className="mt-1 text-sm leading-snug text-amber-100/85">
+              <p className="mt-1 text-[13px] leading-snug text-amber-100/85">
                 {t('ultima.setupNotFinishedDesc', {
                   defaultValue: 'Вернитесь к настройке и завершите подключение VPN.',
                 })}
@@ -360,13 +358,15 @@ export function UltimaDashboard() {
               <button
                 type="button"
                 onClick={() => navigate('/connection')}
-                className="border-[#66ebc9]/42 mt-3 flex w-full items-center justify-center rounded-full border bg-[#14cf9a] px-5 py-3 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)] transition hover:bg-[#16d8a1]"
+                className="border-[#66ebc9]/42 mt-2.5 flex w-full items-center justify-center rounded-full border bg-[#14cf9a] px-4 py-2.5 text-[15px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)] transition hover:bg-[#16d8a1]"
               >
                 {t('ultima.finishSetup', { defaultValue: 'Завершить установку' })}
               </button>
             </div>
           )}
+        </section>
 
+        <section className="mt-auto pb-1">
           <button
             type="button"
             onClick={() => {
