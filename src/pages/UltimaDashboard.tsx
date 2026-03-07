@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
@@ -88,6 +88,7 @@ export function UltimaDashboard() {
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const rippleIdRef = useRef(0);
   const warmedLanguagesRef = useRef<Set<string>>(new Set());
+  const trialAutoActivationAttemptedRef = useRef(false);
   const [shieldRipples, setShieldRipples] = useState<ShieldRipple[]>([]);
 
   const {
@@ -109,6 +110,7 @@ export function UltimaDashboard() {
   });
 
   const subscription = subscriptionResponse?.subscription ?? null;
+  const hasAnySubscription = subscriptionResponse?.has_subscription === true;
   const isSubscriptionReady =
     isSubscriptionFetched || Boolean(subscriptionResponse) || isSubscriptionError;
   const isActive = Boolean(subscription?.is_active && !subscription?.is_expired);
@@ -153,10 +155,45 @@ export function UltimaDashboard() {
     return formatted;
   })();
 
+  const { data: trialInfo } = useQuery({
+    queryKey: ['trial-info'],
+    queryFn: subscriptionApi.getTrialInfo,
+    enabled: isSubscriptionReady && !hasAnySubscription,
+    staleTime: 15000,
+    placeholderData: (previousData) => previousData,
+  });
+
+  const activateTrialMutation = useMutation({
+    mutationFn: subscriptionApi.activateTrial,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      queryClient.invalidateQueries({ queryKey: ['trial-info'] });
+      queryClient.invalidateQueries({ queryKey: ['balance'] });
+      queryClient.invalidateQueries({ queryKey: ['purchase-options'] });
+    },
+  });
+
   useEffect(() => {
     // Warm subscription route chunk so dashboard -> purchase transition stays seamless.
     void import('./Subscription');
   }, []);
+
+  useEffect(() => {
+    if (!isSubscriptionReady || hasAnySubscription) {
+      return;
+    }
+    if (!trialInfo?.is_available) {
+      return;
+    }
+    if (activateTrialMutation.isPending) {
+      return;
+    }
+    if (trialAutoActivationAttemptedRef.current) {
+      return;
+    }
+    trialAutoActivationAttemptedRef.current = true;
+    activateTrialMutation.mutate();
+  }, [activateTrialMutation, hasAnySubscription, isSubscriptionReady, trialInfo?.is_available]);
 
   useEffect(() => {
     const language = i18n.language || 'ru';
