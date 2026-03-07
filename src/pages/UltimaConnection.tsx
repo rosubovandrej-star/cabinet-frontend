@@ -161,7 +161,6 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
   const [showInfo, setShowInfo] = useState(true);
   const [burst, setBurst] = useState(0);
   const [showReturnConfetti, setShowReturnConfetti] = useState(false);
-  const [isFinishing, setIsFinishing] = useState(false);
 
   const setupUrls = useMemo(
     () => findSetupUrls(appConfig, i18n.language || 'ru'),
@@ -184,16 +183,20 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
 
   useEffect(() => {
     const pendingKey = `${ULTIMA_CONNECTION_PENDING_STEP3_KEY}:${user?.id ?? 'guest'}`;
+    const pendingGlobalKey = ULTIMA_CONNECTION_PENDING_STEP3_KEY;
 
     const applyPendingReturn = () => {
       try {
-        const pending = localStorage.getItem(pendingKey) === '1';
+        const pending =
+          localStorage.getItem(pendingKey) === '1' ||
+          localStorage.getItem(pendingGlobalKey) === '1';
         if (!pending) return;
         localStorage.removeItem(pendingKey);
+        localStorage.removeItem(pendingGlobalKey);
         setStep(3);
         setShowReturnConfetti(true);
         setBurst((prev) => prev + 1);
-        window.setTimeout(() => setShowReturnConfetti(false), 1700);
+        window.setTimeout(() => setShowReturnConfetti(false), 2400);
       } catch {
         // ignore localStorage errors
       }
@@ -263,6 +266,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
     if (step === 2) {
       try {
         localStorage.setItem(`${ULTIMA_CONNECTION_PENDING_STEP3_KEY}:${user?.id ?? 'guest'}`, '1');
+        localStorage.setItem(ULTIMA_CONNECTION_PENDING_STEP3_KEY, '1');
       } catch {
         // ignore localStorage errors
       }
@@ -273,15 +277,9 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
   };
 
   const finishFlow = () => {
-    if (isFinishing) return;
-    setIsFinishing(true);
-    setBurst((prev) => prev + 1);
-    window.setTimeout(() => {
-      setStep(1);
-      setShowInfo(false);
-      setIsFinishing(false);
-      onGoBack();
-    }, 1200);
+    setStep(1);
+    setShowInfo(false);
+    onGoBack();
   };
 
   return (
@@ -351,9 +349,9 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
               {icon}
               {step === 3 && showReturnConfetti && (
                 <div className="pointer-events-none absolute inset-0 overflow-visible">
-                  {Array.from({ length: 96 }).map((_, index) => {
-                    const angle = (index * 360) / 96;
-                    const distance = 80 + ((index * 13) % 160);
+                  {Array.from({ length: 180 }).map((_, index) => {
+                    const angle = (index * 360) / 180;
+                    const distance = 95 + ((index * 17) % 210);
                     const hue = (index * 37) % 360;
                     return (
                       <span
@@ -362,7 +360,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
                         style={{
                           background: `hsl(${hue} 95% 62%)`,
                           transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-${distance}px)`,
-                          animation: 'ultima-confetti-fall 1300ms ease-out forwards',
+                          animation: 'ultima-confetti-fall 1650ms ease-out forwards',
                           opacity: 0,
                         }}
                       />
@@ -423,7 +421,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
       </div>
 
       {step === 1 && showInfo && (
-        <div className="ultima-step-enter bg-black/82 absolute inset-x-4 bottom-[182px] z-20 rounded-[24px] border border-white/10 p-4 text-white shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+        <div className="ultima-step-enter bg-black/82 absolute inset-x-4 bottom-[236px] z-20 rounded-[24px] border border-white/10 p-4 text-white shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl">
           <div className="mb-2 flex items-start justify-between gap-3">
             <h3 className="text-[24px] font-semibold leading-[1.06]">
               {t('subscription.connection.importantInfo', { defaultValue: 'Важная информация' })}
