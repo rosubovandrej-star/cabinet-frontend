@@ -120,6 +120,18 @@ export interface UserClickSequencesResponse {
   total: number;
 }
 
+export interface UltimaStartConfigResponse {
+  message_text: string;
+  button_text: string;
+  button_url: string;
+}
+
+export interface UltimaStartConfigUpdateRequest {
+  message_text: string;
+  button_text: string;
+  button_url: string;
+}
+
 const FALLBACK_DEFAULT_MENU_LAYOUT: MenuLayoutUpdateRequest = {
   rows: [
     {
@@ -309,6 +321,23 @@ export const adminMenuLayoutApi = {
     } catch {
       return adminMenuLayoutApi.update(FALLBACK_DEFAULT_MENU_LAYOUT);
     }
+  },
+
+  getUltimaStartConfig: async (): Promise<UltimaStartConfigResponse> => {
+    const response = await apiClient.get<UltimaStartConfigResponse>(
+      '/cabinet/admin/menu-layout/ultima-start',
+    );
+    return response.data;
+  },
+
+  updateUltimaStartConfig: async (
+    payload: UltimaStartConfigUpdateRequest,
+  ): Promise<UltimaStartConfigResponse> => {
+    const response = await apiClient.put<UltimaStartConfigResponse>(
+      '/cabinet/admin/menu-layout/ultima-start',
+      payload,
+    );
+    return response.data;
   },
 
   updateButton: async (
