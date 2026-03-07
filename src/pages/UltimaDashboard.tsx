@@ -117,7 +117,11 @@ export function UltimaDashboard() {
   const { currencySymbol } = useCurrency();
   const isAdmin = useAuthStore((state) => state.isAdmin);
 
-  const { data: subscriptionResponse } = useQuery({
+  const {
+    data: subscriptionResponse,
+    isFetched: isSubscriptionFetched,
+    isError: isSubscriptionError,
+  } = useQuery({
     queryKey: ['subscription'],
     queryFn: subscriptionApi.getSubscription,
     staleTime: 15000,
@@ -132,6 +136,8 @@ export function UltimaDashboard() {
   });
 
   const subscription = subscriptionResponse?.subscription ?? null;
+  const isSubscriptionReady =
+    isSubscriptionFetched || Boolean(subscriptionResponse) || isSubscriptionError;
   const isActive = Boolean(subscription?.is_active && !subscription?.is_expired);
   const statusLabel = isActive ? t('subscription.active') : t('subscription.expired');
   const buyFromLabel = useMemo(() => {
@@ -191,6 +197,26 @@ export function UltimaDashboard() {
     });
     navigate('/support');
   };
+
+  if (!isSubscriptionReady) {
+    return (
+      <div className="relative h-[100dvh] overflow-hidden bg-transparent pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2">
+        <div className="relative z-10 mx-auto flex h-[calc(100dvh-26px)] w-full flex-col px-4 sm:px-6">
+          <section className="pt-[30vh]">
+            <div className="mx-auto mb-[12vh] flex h-24 w-24 items-center justify-center rounded-full bg-black/15">
+              <ShieldIcon />
+            </div>
+            <div className="mb-5 h-16 animate-pulse rounded-2xl bg-white/10" />
+          </section>
+          <section className="mt-auto space-y-3 pb-1">
+            <div className="h-14 animate-pulse rounded-full bg-white/10" />
+            <div className="h-14 animate-pulse rounded-full bg-white/10" />
+            <div className="h-[58px] animate-pulse rounded-full bg-white/10" />
+          </section>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-transparent pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2">
