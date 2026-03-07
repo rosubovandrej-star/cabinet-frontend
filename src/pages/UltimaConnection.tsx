@@ -171,6 +171,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
   const [step, setStep] = useState<Step>(1);
   const [showInfo, setShowInfo] = useState(true);
   const [burst, setBurst] = useState(0);
+  const [isFinishing, setIsFinishing] = useState(false);
 
   const setupUrls = useMemo(
     () => findSetupUrls(appConfig, i18n.language || 'ru'),
@@ -200,12 +201,6 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
     }
   }, [step, user?.id]);
 
-  useEffect(() => {
-    if (step === 3) {
-      setBurst((prev) => prev + 1);
-    }
-  }, [step]);
-
   const title =
     step === 1
       ? t('subscription.connection.stepInstallTitle', { defaultValue: 'Приложение' })
@@ -227,6 +222,10 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
           });
 
   const icon = step === 1 ? <DownloadIcon /> : step === 2 ? <PlusIcon /> : <CheckIcon />;
+  const progressRatio = step === 1 ? 0.34 : step === 2 ? 0.67 : 1;
+  const ringRadius = 90;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const ringOffset = ringCircumference * (1 - progressRatio);
 
   const openInstall = () => {
     if (setupUrls.installUrl) {
@@ -241,13 +240,28 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
   };
 
   const advanceStep = () => {
-    setStep((prev) => (prev === 1 ? 2 : prev === 2 ? 3 : 1));
+    if (step === 1) {
+      setStep(2);
+      return;
+    }
+    if (step === 2) {
+      openAddSubscription();
+      setStep(3);
+      return;
+    }
+    setStep(1);
   };
 
   const finishFlow = () => {
-    setStep(1);
-    setShowInfo(false);
-    onGoBack();
+    if (isFinishing) return;
+    setIsFinishing(true);
+    setBurst((prev) => prev + 1);
+    window.setTimeout(() => {
+      setStep(1);
+      setShowInfo(false);
+      setIsFinishing(false);
+      onGoBack();
+    }, 1200);
   };
 
   return (
@@ -296,13 +310,39 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             <div className="border-emerald-200/22 pointer-events-none absolute h-[360px] w-[360px] rounded-full border" />
             <div className="pointer-events-none absolute h-[270px] w-[270px] rounded-full border border-emerald-200/20" />
             <div className="pointer-events-none absolute h-[188px] w-[188px] rounded-full border border-emerald-300/65" />
+            <svg
+              viewBox="0 0 240 240"
+              className="pointer-events-none absolute h-[220px] w-[220px] -rotate-90"
+              aria-hidden
+            >
+              <circle
+                cx="120"
+                cy="120"
+                r={ringRadius}
+                fill="none"
+                stroke="rgba(180,255,235,0.22)"
+                strokeWidth="4"
+              />
+              <circle
+                cx="120"
+                cy="120"
+                r={ringRadius}
+                fill="none"
+                stroke="rgba(45,212,191,0.95)"
+                strokeWidth="4.5"
+                strokeLinecap="round"
+                strokeDasharray={ringCircumference}
+                strokeDashoffset={ringOffset}
+                style={{ transition: 'stroke-dashoffset 420ms ease, stroke 240ms ease' }}
+              />
+            </svg>
             <div className="bg-black/8 relative flex h-[132px] w-[132px] items-center justify-center rounded-full">
               {icon}
-              {step === 3 && (
+              {step === 3 && isFinishing && (
                 <div className="pointer-events-none absolute inset-0 overflow-visible">
-                  {Array.from({ length: 32 }).map((_, index) => {
-                    const angle = (index * 360) / 32;
-                    const distance = 60 + ((index * 11) % 95);
+                  {Array.from({ length: 96 }).map((_, index) => {
+                    const angle = (index * 360) / 96;
+                    const distance = 80 + ((index * 13) % 160);
                     const hue = (index * 37) % 360;
                     return (
                       <span
@@ -311,7 +351,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
                         style={{
                           background: `hsl(${hue} 95% 62%)`,
                           transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-${distance}px)`,
-                          animation: 'ultima-confetti-fall 920ms ease-out forwards',
+                          animation: 'ultima-confetti-fall 1300ms ease-out forwards',
                           opacity: 0,
                         }}
                       />
@@ -359,7 +399,11 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             onClick={advanceStep}
             className="mb-3 flex w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-4 text-[18px] font-medium text-white/95"
           >
-            {t('subscription.connection.nextStep', { defaultValue: 'Следующий шаг' })}
+            {step === 2
+              ? t('subscription.connection.nextStepAddNow', {
+                  defaultValue: 'Следующий шаг (добавить подписку)',
+                })
+              : t('subscription.connection.nextStep', { defaultValue: 'Следующий шаг' })}
             <span aria-hidden className="text-white/70">
               →
             </span>
