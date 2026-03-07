@@ -559,13 +559,6 @@ export default function AdminPanel() {
           permission: 'pinned_messages:read',
         },
         {
-          to: '/admin/main-menu-buttons',
-          icon: <MainMenuButtonsIcon />,
-          title: t('admin.nav.mainMenuButtons'),
-          description: t('admin.panel.mainMenuButtonsDesc'),
-          permission: 'settings:read',
-        },
-        {
           to: '/admin/wheel',
           icon: <SparklesIcon />,
           title: t('admin.nav.wheel'),
@@ -609,6 +602,15 @@ export default function AdminPanel() {
           icon: <CogIcon />,
           title: t('admin.nav.settings'),
           description: t('admin.panel.settingsDesc'),
+          permission: 'settings:read',
+        },
+        {
+          to: '/admin/ultima-settings',
+          icon: <MainMenuButtonsIcon />,
+          title: t('admin.nav.ultimaSettings', { defaultValue: 'Ultima настройки' }),
+          description: t('admin.panel.ultimaSettingsDesc', {
+            defaultValue: 'Кнопки, соглашение и параметры режима Ultima',
+          }),
           permission: 'settings:read',
         },
         {

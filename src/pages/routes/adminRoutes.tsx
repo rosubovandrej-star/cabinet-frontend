@@ -64,6 +64,8 @@ const AdminRoleAssign = lazy(() => import('../AdminRoleAssign'));
 const AdminPolicies = lazy(() => import('../AdminPolicies'));
 const AdminPolicyEdit = lazy(() => import('../AdminPolicyEdit'));
 const AdminAuditLog = lazy(() => import('../AdminAuditLog'));
+const AdminUltimaSettings = lazy(() => import('../AdminUltimaSettings'));
+const AdminUltimaAgreement = lazy(() => import('../AdminUltimaAgreement'));
 
 const withAdminLayout = (element: React.ReactNode) => (
   <AdminRoute>
@@ -77,6 +79,11 @@ export const adminRoutes: RouteConfig[] = [
   { path: '/admin/account-linking', element: withAdminLayout(<AdminAccountLinking />) },
   { path: '/admin/tickets/settings', element: withAdminLayout(<AdminTicketSettings />) },
   { path: '/admin/settings', element: withAdminLayout(<AdminSettings />) },
+  { path: '/admin/ultima-settings', element: withAdminLayout(<AdminUltimaSettings />) },
+  {
+    path: '/admin/ultima-settings/agreement',
+    element: withAdminLayout(<AdminUltimaAgreement />),
+  },
   { path: '/admin/apps', element: withAdminLayout(<AdminApps />) },
   { path: '/admin/wheel', element: withAdminLayout(<AdminWheel />) },
   { path: '/admin/tariffs', element: withAdminLayout(<AdminTariffs />) },
