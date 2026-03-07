@@ -342,7 +342,12 @@ export function AppShell({ children }: AppShellProps) {
       {/* Animated background (disabled for Ultima mode) */}
       {(!isUltimaModeReady || !isUltimaMode) && <BackgroundRenderer />}
       {isUltimaModeReady && isUltimaSceneRoute && (
-        <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[radial-gradient(circle_at_76%_58%,rgba(16,185,129,0.34),rgba(4,17,26,0.98)_58%)]">
+        <div className="ultima-premium-bg pointer-events-none fixed inset-0 z-0 overflow-hidden">
+          <div className="ultima-premium-grain absolute inset-0" />
+          <div className="ultima-premium-sheen absolute inset-[-18%]" />
+          <div className="ultima-ambient-orb ultima-ambient-orb-a absolute left-[-22vmax] top-[-26vmax] h-[72vmax] w-[72vmax] rounded-full" />
+          <div className="ultima-ambient-orb ultima-ambient-orb-b absolute right-[-20vmax] top-[8vmax] h-[64vmax] w-[64vmax] rounded-full" />
+          <div className="ultima-ambient-orb ultima-ambient-orb-c absolute left-[22%] top-[58%] h-[44vmax] w-[44vmax] rounded-full" />
           {[0, 1.2, 2.4, 3.6, 4.8, 6, 7.2].map((delay) => (
             <div
               key={delay}
@@ -350,6 +355,7 @@ export function AppShell({ children }: AppShellProps) {
               style={{ animationDelay: `${ultimaWavePhaseShiftSecRef.current + delay}s` }}
             />
           ))}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_92%,rgba(2,8,14,0),rgba(2,8,14,0.52)_50%,rgba(1,5,10,0.9)_100%)]" />
         </div>
       )}
 
