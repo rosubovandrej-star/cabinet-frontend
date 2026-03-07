@@ -153,7 +153,6 @@ export function UltimaDashboard() {
     const minTariff = Math.min(...periods.map((period) => period.price_kopeks));
     return `от ${Math.round(minTariff / 100)} ${currencySymbol}`;
   }, [purchaseOptions, currencySymbol]);
-  const wavePhaseShiftSec = useMemo(() => -((Date.now() / 1000) % 9.6), []);
 
   const expiryLabel = (() => {
     if (!subscription?.end_date) return t('subscription.notActive');
@@ -188,17 +187,7 @@ export function UltimaDashboard() {
   }, []);
 
   return (
-    <div className="relative h-[100dvh] overflow-hidden bg-[radial-gradient(circle_at_76%_58%,rgba(16,185,129,0.34),rgba(4,17,26,0.98)_58%)] pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2">
-      <div className="pointer-events-none absolute inset-0">
-        {[0, 1.2, 2.4, 3.6, 4.8, 6, 7.2].map((delay) => (
-          <div
-            key={delay}
-            className="ultima-ring-wave absolute left-1/2 top-[36%] h-[150vmax] w-[150vmax] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/35"
-            style={{ animationDelay: `${wavePhaseShiftSec + delay}s` }}
-          />
-        ))}
-      </div>
-
+    <div className="relative h-[100dvh] overflow-hidden bg-transparent pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2">
       {isAdmin && (
         <button
           type="button"

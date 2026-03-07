@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, type SyntheticEvent } from 'react';
+import { useEffect, useState, useCallback, useRef, type SyntheticEvent } from 'react';
 import { useLocation, Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -211,6 +211,9 @@ export function AppShell({ children }: AppShellProps) {
   const { isLiteMode, isLiteModeReady } = useLiteMode();
   const { isUltimaMode, isUltimaModeReady } = useUltimaMode();
   const isCompactMode = isLiteMode || isUltimaMode;
+  const isUltimaSceneRoute =
+    isUltimaMode && ['/', '/subscription', '/connection'].includes(location.pathname);
+  const ultimaWavePhaseShiftSecRef = useRef(-((Date.now() / 1000) % 9.6));
   const hasLiteHeader = isLiteMode;
   const hasRegularHeader = !isCompactMode;
   const isCompactMainPage = isCompactMode && location.pathname === '/';
@@ -313,6 +316,17 @@ export function AppShell({ children }: AppShellProps) {
     <div className="min-h-screen">
       {/* Animated background (disabled for Ultima mode) */}
       {(!isUltimaModeReady || !isUltimaMode) && <BackgroundRenderer />}
+      {isUltimaModeReady && isUltimaSceneRoute && (
+        <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[radial-gradient(circle_at_76%_58%,rgba(16,185,129,0.34),rgba(4,17,26,0.98)_58%)]">
+          {[0, 1.2, 2.4, 3.6, 4.8, 6, 7.2].map((delay) => (
+            <div
+              key={delay}
+              className="ultima-ring-wave absolute left-1/2 top-[36%] h-[150vmax] w-[150vmax] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/35"
+              style={{ animationDelay: `${ultimaWavePhaseShiftSecRef.current + delay}s` }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Global components */}
       <WebSocketNotifications />
@@ -507,7 +521,7 @@ export function AppShell({ children }: AppShellProps) {
       {/* Main content */}
       <main
         className={cn(
-          'mx-auto max-w-6xl px-4 lg:px-6 lg:pb-8',
+          'relative z-10 mx-auto max-w-6xl px-4 lg:px-6 lg:pb-8',
           isUltimaMode && 'max-w-none px-0 lg:px-0',
           isUltimaMode ? 'pb-0' : isCompactMode ? 'pb-8' : 'pb-28',
           isUltimaMode
