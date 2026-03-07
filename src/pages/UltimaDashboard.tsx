@@ -111,6 +111,9 @@ export function UltimaDashboard() {
 
   const subscription = subscriptionResponse?.subscription ?? null;
   const hasAnySubscription = subscriptionResponse?.has_subscription === true;
+  const isI18nReady =
+    i18n.isInitialized &&
+    (typeof i18n.hasLoadedNamespace !== 'function' || i18n.hasLoadedNamespace('translation'));
   const isSubscriptionReady =
     isSubscriptionFetched || Boolean(subscriptionResponse) || isSubscriptionError;
   const isActive = Boolean(subscription?.is_active && !subscription?.is_expired);
@@ -195,6 +198,13 @@ export function UltimaDashboard() {
     activateTrialMutation.mutate();
   }, [activateTrialMutation, hasAnySubscription, isSubscriptionReady, trialInfo?.is_available]);
 
+  const shouldHoldForAutoTrial =
+    isSubscriptionReady &&
+    !hasAnySubscription &&
+    ((trialInfo?.is_available ?? true) ||
+      activateTrialMutation.isPending ||
+      !trialAutoActivationAttemptedRef.current);
+
   useEffect(() => {
     const language = i18n.language || 'ru';
     if (warmedLanguagesRef.current.has(language)) {
@@ -239,7 +249,7 @@ export function UltimaDashboard() {
     navigate('/support');
   };
 
-  if (!isSubscriptionReady) {
+  if (!isI18nReady || !isSubscriptionReady || shouldHoldForAutoTrial) {
     return (
       <div className="relative h-[100dvh] overflow-hidden bg-transparent pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2">
         <div className="relative z-10 mx-auto flex h-[calc(100dvh-26px)] w-full flex-col px-4 sm:px-6">
