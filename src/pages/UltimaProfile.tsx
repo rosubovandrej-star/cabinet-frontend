@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
@@ -53,12 +53,84 @@ const CopyIcon = () => (
   </svg>
 );
 
+const PaymentIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+    <rect x="3.5" y="6" width="17" height="12" rx="2.5" stroke="currentColor" strokeWidth="1.8" />
+    <path d="M3.5 10h17" stroke="currentColor" strokeWidth="1.8" />
+    <path d="M7.5 14h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
+const HistoryIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+    <path
+      d="M5 5h14M5 12h14M5 19h14"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+const ReferralIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+    <path
+      d="M12 20s-6.5-3.8-8.6-7.6C1.8 9.4 3.2 6 6.6 6c2.1 0 3.2 1.2 4 2.3.8-1.1 1.9-2.3 4-2.3 3.4 0 4.8 3.4 3.2 6.4C18.5 16.2 12 20 12 20Z"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const AccessIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+    <path
+      d="M12 3 5 5.8v5.4c0 4.3 2.9 8.3 7 9.5 4.1-1.2 7-5.2 7-9.5V5.8L12 3Z"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    />
+    <path d="m9.3 12.3 1.8 1.8 3.5-3.5" stroke="currentColor" strokeWidth="1.8" />
+  </svg>
+);
+
+const DeviceIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+    <rect x="4" y="5" width="16" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" />
+    <path d="M9 19h6M12 16v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
+const ChatIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+    <path
+      d="M7 18.5 3.5 21V6.5A2.5 2.5 0 0 1 6 4h12a2.5 2.5 0 0 1 2.5 2.5V16A2.5 2.5 0 0 1 18 18.5H7Z"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+    />
+    <path d="M8 9h8M8 12.5h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
+const TermsIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+    <rect x="6" y="3.5" width="12" height="17" rx="2" stroke="currentColor" strokeWidth="1.8" />
+    <path
+      d="M9 8.5h6M9 12h6M9 15.5h4"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
 type SectionItem = {
   key: string;
   title: string;
   subtitle: string;
   path: string;
-  icon: string;
+  icon: ReactNode;
 };
 
 function MenuItem({ item, onClick }: { item: SectionItem; onClick: () => void }) {
@@ -68,8 +140,8 @@ function MenuItem({ item, onClick }: { item: SectionItem; onClick: () => void })
       onClick={onClick}
       className="border-[#7beacc]/14 hover:border-[#8ef1d5]/28 flex w-full items-center gap-3 rounded-2xl border bg-emerald-950/35 px-3 py-2.5 text-left transition"
     >
-      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white/80">
-        <span className="text-base">{item.icon}</span>
+      <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white/90">
+        {item.icon}
       </div>
       <div className="min-w-0">
         <p className="truncate text-[18px] leading-tight text-white">{item.title}</p>
@@ -108,14 +180,14 @@ export function UltimaProfile() {
         defaultValue: 'Настройка способов оплаты',
       }),
       path: '/balance/top-up',
-      icon: '💳',
+      icon: <PaymentIcon />,
     },
     {
       key: 'history',
       title: t('profile.transactionsTitle', { defaultValue: 'История операций' }),
       subtitle: t('profile.transactionsDescription', { defaultValue: 'Список ваших транзакций' }),
       path: '/balance',
-      icon: '☰',
+      icon: <HistoryIcon />,
     },
     {
       key: 'referral',
@@ -124,7 +196,7 @@ export function UltimaProfile() {
         defaultValue: 'Получайте бонусы за приглашения',
       }),
       path: '/referral',
-      icon: '💚',
+      icon: <ReferralIcon />,
     },
     {
       key: 'linking',
@@ -133,7 +205,7 @@ export function UltimaProfile() {
         defaultValue: 'На случай блокировки Telegram',
       }),
       path: '/account-linking',
-      icon: '🛡️',
+      icon: <AccessIcon />,
     },
   ];
 
@@ -147,21 +219,21 @@ export function UltimaProfile() {
         defaultValue: 'Подробная инструкция для установки',
       }),
       path: '/connection',
-      icon: '🖥️',
+      icon: <DeviceIcon />,
     },
     {
       key: 'support',
       title: t('profile.supportContactTitle', { defaultValue: 'Связаться с поддержкой' }),
       subtitle: t('profile.supportContactDescription', { defaultValue: 'Решение проблем онлайн' }),
       path: '/support',
-      icon: '💬',
+      icon: <ChatIcon />,
     },
     {
       key: 'terms',
       title: t('profile.termsTitle', { defaultValue: 'Пользовательское соглашение' }),
       subtitle: t('profile.termsDescription', { defaultValue: 'Соглашения и правила сервиса' }),
       path: '/info',
-      icon: '📄',
+      icon: <TermsIcon />,
     },
   ];
 
@@ -175,7 +247,7 @@ export function UltimaProfile() {
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(95%_70%_at_50%_45%,rgba(33,208,154,0.14),rgba(7,20,46,0.02)_62%,rgba(7,20,46,0)_100%)]" />
-      <div className="relative z-10 mx-auto flex h-full max-w-md flex-col">
+      <div className="relative z-10 mx-auto flex h-full min-h-0 max-w-md flex-col">
         <section className="border-[#5de7c2]/18 mb-3 flex items-center gap-3 rounded-3xl border bg-[rgba(12,45,42,0.24)] px-3 py-2.5 backdrop-blur-md">
           <div className="h-10 w-10 rounded-full bg-amber-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" />
           <div className="min-w-0 flex-1">
@@ -192,29 +264,31 @@ export function UltimaProfile() {
           {idCopied ? <span className="text-xs text-emerald-200">OK</span> : null}
         </section>
 
-        <section className="border-[#5de7c2]/18 mb-3 rounded-3xl border bg-[rgba(12,45,42,0.24)] p-3 backdrop-blur-md">
-          <p className="mb-2 text-[15px] text-white/70">
-            {t('profile.profileSettings', { defaultValue: 'Настройки профиля' })}
-          </p>
-          <div className="space-y-2">
-            {profileItems.map((item) => (
-              <MenuItem key={item.key} item={item} onClick={() => navigate(item.path)} />
-            ))}
-          </div>
-        </section>
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
+          <section className="border-[#5de7c2]/18 rounded-3xl border bg-[rgba(12,45,42,0.24)] p-3 backdrop-blur-md">
+            <p className="mb-2 text-[15px] text-white/75">
+              {t('profile.profileSettings', { defaultValue: 'Настройки профиля' })}
+            </p>
+            <div className="space-y-2">
+              {profileItems.map((item) => (
+                <MenuItem key={item.key} item={item} onClick={() => navigate(item.path)} />
+              ))}
+            </div>
+          </section>
 
-        <section className="border-[#5de7c2]/18 rounded-3xl border bg-[rgba(12,45,42,0.24)] p-3 backdrop-blur-md">
-          <p className="mb-2 text-[15px] text-white/70">
-            {t('nav.support', { defaultValue: 'Поддержка' })}
-          </p>
-          <div className="space-y-2">
-            {supportItems.map((item) => (
-              <MenuItem key={item.key} item={item} onClick={() => navigate(item.path)} />
-            ))}
-          </div>
-        </section>
+          <section className="border-[#5de7c2]/18 rounded-3xl border bg-[rgba(12,45,42,0.24)] p-3 backdrop-blur-md">
+            <p className="mb-2 text-[15px] text-white/75">
+              {t('nav.support', { defaultValue: 'Поддержка' })}
+            </p>
+            <div className="space-y-2">
+              {supportItems.map((item) => (
+                <MenuItem key={item.key} item={item} onClick={() => navigate(item.path)} />
+              ))}
+            </div>
+          </section>
+        </div>
 
-        <section className="mt-auto pt-3">
+        <section className="pt-3">
           <div className="mb-3 flex items-center gap-3 rounded-2xl border border-white/25 bg-white px-4 py-3 text-slate-900">
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm">{subscriptionLink || '-'}</p>
@@ -233,17 +307,17 @@ export function UltimaProfile() {
             {linkCopied ? <span className="text-xs text-emerald-600">OK</span> : null}
           </div>
 
-          <nav className="border-white/14 grid grid-cols-4 gap-2 rounded-full border bg-emerald-900/45 p-2 text-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur">
+          <nav className="border-white/18 grid grid-cols-4 gap-2 rounded-full border bg-emerald-900/60 p-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur">
             <button
               type="button"
-              className="rounded-full p-3 hover:bg-white/5"
+              className="rounded-full p-3 text-white/90 hover:bg-white/10"
               onClick={() => navigate('/')}
             >
               <GridIcon />
             </button>
             <button
               type="button"
-              className="rounded-full p-3 hover:bg-white/5"
+              className="rounded-full p-3 text-white/90 hover:bg-white/10"
               onClick={() => navigate('/connection')}
             >
               <GearIcon />
@@ -257,7 +331,7 @@ export function UltimaProfile() {
             </button>
             <button
               type="button"
-              className="rounded-full p-3 hover:bg-white/5"
+              className="rounded-full p-3 text-white/90 hover:bg-white/10"
               onClick={() => navigate('/support')}
             >
               <SupportIcon />
