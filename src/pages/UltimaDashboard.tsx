@@ -270,7 +270,7 @@ export function UltimaDashboard() {
   }
 
   return (
-    <div className="relative h-[100dvh] overflow-hidden bg-transparent pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2">
+    <div className="relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
       {isAdmin && (
         <button
           type="button"
@@ -282,7 +282,7 @@ export function UltimaDashboard() {
         </button>
       )}
 
-      <div className="relative z-10 mx-auto flex h-[calc(100dvh-26px)] w-full flex-col px-4 sm:px-6">
+      <div className="relative z-10 mx-auto flex h-full min-h-0 w-full max-w-md flex-col">
         <section className="pt-[30vh]">
           <button
             type="button"
@@ -321,7 +321,7 @@ export function UltimaDashboard() {
           </div>
         </section>
 
-        <section className="mt-auto">
+        <section className="mt-auto pb-1">
           <button
             type="button"
             onClick={() => {

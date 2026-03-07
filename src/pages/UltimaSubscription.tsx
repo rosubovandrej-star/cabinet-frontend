@@ -265,11 +265,12 @@ export function UltimaSubscription() {
     deviceLimits[Math.min(selectedDeviceIndex, Math.max(0, deviceLimits.length - 1))] ?? 1;
 
   const applyDeviceIndex = useCallback(
-    (nextIndex: number) => {
+    (nextIndex: number, options?: { withHaptic?: boolean }) => {
       const maxIndex = Math.max(0, deviceLimits.length - 1);
       const clamped = Math.min(Math.max(0, nextIndex), maxIndex);
       setSelectedDeviceIndex(clamped);
-      if (lastHapticDeviceIndexRef.current !== clamped) {
+      const withHaptic = options?.withHaptic ?? true;
+      if (withHaptic && lastHapticDeviceIndexRef.current !== clamped) {
         haptic.selection();
         lastHapticDeviceIndexRef.current = clamped;
       }
@@ -351,6 +352,8 @@ export function UltimaSubscription() {
   }, [displayPeriods, selectedPeriodDays]);
 
   const selectedTariffIdForPurchase = selectedPeriod?.tariffId ?? selectedTariff?.id ?? null;
+  const sliderProgressPercent =
+    deviceLimits.length > 1 ? (selectedDeviceIndex / (deviceLimits.length - 1)) * 100 : 0;
   const autoTariffId = Number(searchParams.get('autoTariffId'));
   const autoPeriodDays = Number(searchParams.get('autoPeriodDays'));
   const autoDeviceLimit = Number(searchParams.get('autoDeviceLimit'));
@@ -734,7 +737,7 @@ export function UltimaSubscription() {
               {selectedDeviceLimit}
             </span>
             <div>
-              <p className="text-[22px] font-medium leading-none text-white">Устройство</p>
+              <p className="text-[22px] font-medium leading-none text-white">Устройств</p>
               <p className="mt-1 text-[14px] text-white/70">Одновременно в подписке</p>
             </div>
           </div>
@@ -761,21 +764,15 @@ export function UltimaSubscription() {
               <div className="relative h-9 w-full">
                 <div className="absolute left-0 right-0 top-1/2 h-[9px] -translate-y-1/2 rounded-full border border-emerald-200/15 bg-white/10 shadow-[inset_0_1px_4px_rgba(0,0,0,0.25)]" />
                 <div
-                  className="absolute left-0 top-1/2 h-[9px] -translate-y-1/2 rounded-full bg-[linear-gradient(90deg,rgba(45,212,191,0.9)_0%,rgba(16,185,129,0.95)_100%)] shadow-[0_0_14px_rgba(45,212,191,0.42)] transition-all duration-200"
+                  className="absolute left-0 top-1/2 h-[9px] -translate-y-1/2 rounded-full bg-[linear-gradient(90deg,rgba(45,212,191,0.9)_0%,rgba(16,185,129,0.95)_100%)] shadow-[0_0_14px_rgba(45,212,191,0.42)]"
                   style={{
-                    width:
-                      deviceLimits.length > 1
-                        ? `${(selectedDeviceIndex / (deviceLimits.length - 1)) * 100}%`
-                        : '0%',
+                    width: `${sliderProgressPercent}%`,
                   }}
                 />
                 <span
-                  className="absolute top-1/2 z-20 h-5 w-5 -translate-y-1/2 rounded-full border border-emerald-100/70 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.75),rgba(45,212,191,0.9)_45%,rgba(6,38,31,0.95)_100%)] shadow-[0_0_16px_rgba(52,211,153,0.55)] transition-all duration-200"
+                  className="absolute top-1/2 z-20 h-5 w-5 -translate-y-1/2 rounded-full border border-emerald-100/70 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.75),rgba(45,212,191,0.9)_45%,rgba(6,38,31,0.95)_100%)] shadow-[0_0_16px_rgba(52,211,153,0.55)]"
                   style={{
-                    left:
-                      deviceLimits.length > 1
-                        ? `calc(${(selectedDeviceIndex / (deviceLimits.length - 1)) * 100}% - 10px)`
-                        : '0px',
+                    left: `calc(${sliderProgressPercent}% - 10px)`,
                   }}
                 />
                 <input
@@ -784,7 +781,9 @@ export function UltimaSubscription() {
                   max={Math.max(0, deviceLimits.length - 1)}
                   step={1}
                   value={selectedDeviceIndex}
-                  onChange={(event) => applyDeviceIndex(Number(event.target.value))}
+                  onChange={(event) =>
+                    applyDeviceIndex(Number(event.target.value), { withHaptic: false })
+                  }
                   className="absolute inset-0 z-10 h-9 w-full cursor-pointer opacity-0"
                   aria-label="devices-slider-input"
                 />
