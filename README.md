@@ -326,10 +326,10 @@ cabinet-frontend/
 ## Связанные проекты
 
 - [Remnawave Bedolaga Telegram Bot](https://github.com/PEDZEO/remnawave-bedolaga-telegram-bot) — Backend бота
-- [Bedolaga Chat](https://t.me/+wTdMtSWq8YdmZmVi) — Чат поддержки
+- [Bedolaga Chat](https://t.me/+0SeZ_EpPkSthMGM6) — Чат поддержки
 
 ## Контакты
 
 - Telegram: [@fringg](https://t.me/fringg)
 - Telegram: [@pedzeo](https://t.me/pedzeo)
-- Чат: [Bedolaga Chat](https://t.me/+wTdMtSWq8YdmZmVi)
+- Чат: [Bedolaga Chat](https://t.me/+0SeZ_EpPkSthMGM6)
