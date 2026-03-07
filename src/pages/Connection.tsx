@@ -11,6 +11,8 @@ import { useAuthStore } from '../store/auth';
 import type { AppConfig, RemnawavePlatformData } from '../types';
 import InstallationGuide from '../components/connection/InstallationGuide';
 import { markLiteOnboardingStep } from '@/features/lite/onboardingFlow';
+import { useUltimaMode } from '@/hooks/useUltimaMode';
+import { UltimaConnection } from './UltimaConnection';
 
 export default function Connection() {
   const { t, i18n } = useTranslation();
@@ -18,6 +20,7 @@ export default function Connection() {
   const user = useAuthStore((state) => state.user);
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const { isTelegramWebApp } = useTelegramSDK();
+  const { isUltimaMode } = useUltimaMode();
   const { impact: hapticImpact } = useHaptic();
 
   const hapticRef = useRef(hapticImpact);
@@ -217,6 +220,16 @@ export default function Connection() {
           {t('lite.tariffs')}
         </button>
       </div>
+    );
+  }
+
+  if (isUltimaMode) {
+    return (
+      <UltimaConnection
+        appConfig={appConfig}
+        onOpenDeepLink={openDeepLink}
+        onGoBack={handleGoBack}
+      />
     );
   }
 

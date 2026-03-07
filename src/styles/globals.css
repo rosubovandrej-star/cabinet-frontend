@@ -134,6 +134,20 @@
   will-change: transform, opacity;
 }
 
+@keyframes ultima-confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(0deg) translateY(-12px) scale(0.5);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(220deg) translateY(-140px) scale(0.95);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ultima-content-enter {
     animation: none;
