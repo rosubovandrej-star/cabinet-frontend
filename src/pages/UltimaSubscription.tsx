@@ -8,6 +8,7 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { useCloseOnSuccessNotification } from '@/store/successNotification';
 import { useHaptic, usePlatform } from '@/platform';
 import type { PaymentMethod, Tariff, TariffPeriod } from '@/types';
+import { UltimaBottomNav } from '@/components/ultima/UltimaBottomNav';
 
 const ULTIMA_PENDING_PURCHASE_KEY = 'ultima_pending_purchase_v1';
 
@@ -724,15 +725,17 @@ export function UltimaSubscription() {
 
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-transparent px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
-      <div className="relative z-10 mx-auto flex h-full max-w-md flex-col">
+      <div className="relative z-10 mx-auto flex h-full min-h-0 max-w-md flex-col">
         <header className="mb-3">
-          <h1 className="text-[42px] font-semibold leading-[0.95] text-white">Покупка подписки</h1>
-          <p className="mt-2 text-[16px] leading-tight text-white/75">
+          <h1 className="text-[clamp(32px,8.4vw,42px)] font-semibold leading-[0.95] text-white">
+            Покупка подписки
+          </h1>
+          <p className="mt-1.5 text-[clamp(13px,3.8vw,16px)] leading-tight text-white/75">
             Подключайте больше устройств и пользуйтесь сервисом вместе с друзьями и близкими
           </p>
         </header>
 
-        <section className="mb-4 rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+        <section className="mb-3 rounded-3xl border border-white/10 bg-white/5 p-3.5 backdrop-blur">
           <div className="mb-3 flex items-center gap-3">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/90">
               {selectedDeviceLimit}
@@ -743,7 +746,7 @@ export function UltimaSubscription() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-emerald-200/10 bg-[linear-gradient(180deg,rgba(10,49,43,0.42)_0%,rgba(8,25,29,0.46)_100%)] p-3">
+          <div className="rounded-2xl border border-emerald-200/10 bg-[linear-gradient(180deg,rgba(10,49,43,0.42)_0%,rgba(8,25,29,0.46)_100%)] p-2.5">
             <div
               ref={deviceTrackRef}
               role="button"
@@ -839,50 +842,54 @@ export function UltimaSubscription() {
           </div>
         </section>
 
-        <section className="grid auto-rows-fr grid-cols-2 gap-3">
-          {displayPeriods.map((period) => {
-            const active = period.days === selectedPeriod.days;
-            return (
-              <button
-                key={period.days}
-                type="button"
-                onClick={() => {
-                  haptic.impact('light');
-                  setSelectedPeriodDays(period.days);
-                }}
-                className={`h-full min-h-[176px] rounded-3xl border p-4 text-left transition-colors ${
-                  active
-                    ? 'border-emerald-400 bg-[#0a2522] shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_0_0_1px_rgba(16,185,129,0.25)]'
-                    : 'border-white/12 bg-black/20 hover:border-white/25'
-                }`}
-              >
-                <div className="mb-4 flex items-center justify-between">
-                  <span className="text-[19px] font-medium text-white">{periodLabel(period)}</span>
-                  <span className={`text-emerald-300 ${active ? 'opacity-100' : 'opacity-0'}`}>
-                    ★
-                  </span>
-                </div>
-                <p className="text-[32px] font-semibold leading-none text-white">
-                  {formatPrice(calculatePeriodPrice(period))}
-                </p>
-                <p
-                  className={`mt-1 text-[13px] ${
-                    period.original_price_kopeks &&
-                    period.original_price_kopeks > period.price_kopeks
-                      ? 'text-white/70'
-                      : 'invisible'
+        <section className="ultima-scrollbar min-h-0 flex-1 overflow-y-auto pb-1">
+          <div className="grid auto-rows-fr grid-cols-2 gap-3">
+            {displayPeriods.map((period) => {
+              const active = period.days === selectedPeriod.days;
+              return (
+                <button
+                  key={period.days}
+                  type="button"
+                  onClick={() => {
+                    haptic.impact('light');
+                    setSelectedPeriodDays(period.days);
+                  }}
+                  className={`h-full min-h-[152px] rounded-3xl border p-3.5 text-left transition-colors ${
+                    active
+                      ? 'border-emerald-400 bg-[#0a2522] shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_0_0_1px_rgba(16,185,129,0.25)]'
+                      : 'border-white/12 bg-black/20 hover:border-white/25'
                   }`}
                 >
-                  {period.price_per_month_kopeks > 0
-                    ? `${formatPrice(period.price_per_month_kopeks)} / мес`
-                    : '0'}
-                </p>
-              </button>
-            );
-          })}
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="text-[clamp(16px,4.4vw,19px)] font-medium text-white">
+                      {periodLabel(period)}
+                    </span>
+                    <span className={`text-emerald-300 ${active ? 'opacity-100' : 'opacity-0'}`}>
+                      ★
+                    </span>
+                  </div>
+                  <p className="text-[clamp(28px,8.6vw,32px)] font-semibold leading-none text-white">
+                    {formatPrice(calculatePeriodPrice(period))}
+                  </p>
+                  <p
+                    className={`mt-1 text-[12px] ${
+                      period.original_price_kopeks &&
+                      period.original_price_kopeks > period.price_kopeks
+                        ? 'text-white/70'
+                        : 'invisible'
+                    }`}
+                  >
+                    {period.price_per_month_kopeks > 0
+                      ? `${formatPrice(period.price_per_month_kopeks)} / мес`
+                      : '0'}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
         </section>
 
-        <div className="mt-auto pt-4">
+        <div className="pt-3">
           {error && <p className="mb-3 text-center text-[18px] text-red-300">{error}</p>}
           <button
             type="button"
@@ -905,6 +912,9 @@ export function UltimaSubscription() {
               ) : null}
             </span>
           </button>
+          <div className="mt-3">
+            <UltimaBottomNav active="home" />
+          </div>
         </div>
       </div>
     </div>
