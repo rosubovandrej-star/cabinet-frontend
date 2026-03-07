@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router';
 import { BlockingOverlay } from './components/routing/RouteShells';
 import { useAnalyticsCounters } from './hooks/useAnalyticsCounters';
@@ -7,6 +8,23 @@ import { publicRoutes } from './pages/routes/publicRoutes';
 
 function App() {
   useAnalyticsCounters();
+
+  useEffect(() => {
+    const prefetch = () => {
+      void import('./pages/Subscription');
+      void import('./pages/TopUpAmount');
+      void import('./pages/TopUpMethodSelect');
+      void import('./pages/Connection');
+      void import('./pages/Balance');
+    };
+
+    const idle = window.requestIdleCallback?.(() => prefetch(), { timeout: 1800 });
+    if (idle) {
+      return () => window.cancelIdleCallback?.(idle);
+    }
+    const timeoutId = window.setTimeout(prefetch, 600);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   return (
     <>

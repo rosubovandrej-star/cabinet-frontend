@@ -53,20 +53,23 @@
 
 @keyframes ultima-ring-wave {
   0% {
-    transform: translate(-50%, -50%) scale(0.08);
+    transform: translate(-50%, -50%) scale(0.04);
     opacity: 0;
   }
-  20% {
-    opacity: 0.48;
+  14% {
+    opacity: 0.34;
+  }
+  58% {
+    opacity: 0.14;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1.08);
+    transform: translate(-50%, -50%) scale(1.16);
     opacity: 0;
   }
 }
 
 .ultima-ring-wave {
-  animation: ultima-ring-wave 4.4s ease-out infinite;
+  animation: ultima-ring-wave 5.8s cubic-bezier(0.19, 0.82, 0.33, 1) infinite;
   will-change: transform, opacity;
 }
 

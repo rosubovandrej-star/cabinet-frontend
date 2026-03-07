@@ -233,8 +233,13 @@ export function UltimaSubscription() {
       ]);
       navigate('/');
     },
-    onError: (err: { response?: { data?: { detail?: string; message?: string } } }) => {
-      setError(err.response?.data?.detail || err.response?.data?.message || t('common.error'));
+    onError: (err: { response?: { data?: { detail?: unknown; message?: unknown } } }) => {
+      const detail = err.response?.data?.detail;
+      const message = err.response?.data?.message;
+      const resolvedMessage =
+        typeof detail === 'string' ? detail : typeof message === 'string' ? message : null;
+      // Не показываем generic "Ошибка" в Ultima-потоке — только конкретный текст
+      setError(resolvedMessage);
     },
   });
 
@@ -314,7 +319,7 @@ export function UltimaSubscription() {
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-[radial-gradient(circle_at_76%_58%,rgba(16,185,129,0.34),rgba(4,17,26,0.98)_58%)] px-4 pb-[calc(14px+env(safe-area-inset-bottom,0px))] pt-4">
       <div className="pointer-events-none absolute inset-0">
-        {[0, 1.45, 2.9].map((delay) => (
+        {[0, 0.95, 1.9, 2.85, 3.8, 4.75].map((delay) => (
           <div
             key={delay}
             className="ultima-ring-wave absolute left-1/2 top-[36%] h-[140vmax] w-[140vmax] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/35"

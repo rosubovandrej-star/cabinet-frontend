@@ -1,9 +1,10 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { balanceApi } from '@/api/balance';
 import { subscriptionApi } from '@/api/subscription';
+import { useCurrency } from '@/hooks/useCurrency';
 import { useAuthStore } from '@/store/auth';
 
 const ShieldIcon = () => (
@@ -111,6 +112,7 @@ export function UltimaDashboard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t, i18n } = useTranslation();
+  const { currencySymbol } = useCurrency();
   const isAdmin = useAuthStore((state) => state.isAdmin);
 
   const { data: subscriptionResponse } = useQuery({
@@ -118,10 +120,39 @@ export function UltimaDashboard() {
     queryFn: subscriptionApi.getSubscription,
     refetchOnMount: 'always',
   });
+  const { data: purchaseOptions } = useQuery({
+    queryKey: ['purchase-options'],
+    queryFn: subscriptionApi.getPurchaseOptions,
+    staleTime: 60000,
+  });
 
   const subscription = subscriptionResponse?.subscription ?? null;
   const isActive = Boolean(subscription?.is_active && !subscription?.is_expired);
   const statusLabel = isActive ? t('subscription.active') : t('subscription.expired');
+  const buyFromLabel = useMemo(() => {
+    if (!purchaseOptions || purchaseOptions.sales_mode !== 'tariffs')
+      return `от 199 ${currencySymbol}`;
+    const periods = purchaseOptions.tariffs
+      .filter((tariff) => tariff.is_available)
+      .flatMap((tariff) => tariff.periods);
+    if (!periods.length) return `от 199 ${currencySymbol}`;
+
+    const discountedPerMonth = periods
+      .filter(
+        (period) =>
+          (period.original_price_kopeks ?? 0) > period.price_kopeks &&
+          period.price_per_month_kopeks > 0,
+      )
+      .map((period) => period.price_per_month_kopeks);
+
+    if (discountedPerMonth.length) {
+      const minPerMonth = Math.min(...discountedPerMonth);
+      return `от ${Math.round(minPerMonth / 100)} ${currencySymbol}`;
+    }
+
+    const minTariff = Math.min(...periods.map((period) => period.price_kopeks));
+    return `от ${Math.round(minTariff / 100)} ${currencySymbol}`;
+  }, [purchaseOptions, currencySymbol]);
 
   const expiryLabel = (() => {
     if (!subscription?.end_date) return t('subscription.notActive');
@@ -153,7 +184,7 @@ export function UltimaDashboard() {
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-[radial-gradient(circle_at_76%_58%,rgba(16,185,129,0.34),rgba(4,17,26,0.98)_58%)] pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2">
       <div className="pointer-events-none absolute inset-0">
-        {[0, 1.45, 2.9].map((delay) => (
+        {[0, 0.95, 1.9, 2.85, 3.8, 4.75].map((delay) => (
           <div
             key={delay}
             className="ultima-ring-wave absolute left-1/2 top-[36%] h-[140vmax] w-[140vmax] -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/35"
@@ -175,7 +206,7 @@ export function UltimaDashboard() {
 
       <div className="relative z-10 mx-auto flex h-[calc(100dvh-26px)] w-full flex-col px-4 sm:px-6">
         <section className="pt-[30vh]">
-          <div className="mx-auto mb-[7vh] flex h-24 w-24 items-center justify-center rounded-full bg-black/15">
+          <div className="mx-auto mb-[12vh] flex h-24 w-24 items-center justify-center rounded-full bg-black/15">
             <ShieldIcon />
           </div>
 
@@ -195,21 +226,19 @@ export function UltimaDashboard() {
         <section className="mt-auto">
           <button
             type="button"
-            onClick={async () => {
-              await Promise.all([
-                queryClient.prefetchQuery({
-                  queryKey: ['purchase-options'],
-                  queryFn: subscriptionApi.getPurchaseOptions,
-                }),
-                queryClient.prefetchQuery({
-                  queryKey: ['payment-methods'],
-                  queryFn: balanceApi.getPaymentMethods,
-                }),
-                queryClient.prefetchQuery({
-                  queryKey: ['device-price', 'ultima-max'],
-                  queryFn: () => subscriptionApi.getDevicePrice(1),
-                }),
-              ]);
+            onClick={() => {
+              void queryClient.prefetchQuery({
+                queryKey: ['purchase-options'],
+                queryFn: subscriptionApi.getPurchaseOptions,
+              });
+              void queryClient.prefetchQuery({
+                queryKey: ['payment-methods'],
+                queryFn: balanceApi.getPaymentMethods,
+              });
+              void queryClient.prefetchQuery({
+                queryKey: ['device-price', 'ultima-max'],
+                queryFn: () => subscriptionApi.getDevicePrice(1),
+              });
               navigate('/subscription');
             }}
             className="mb-3 flex w-full items-center justify-between rounded-full border border-[#4ceac2]/45 bg-[#14cf9a] px-5 py-4 text-[18px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_16px_rgba(7,146,108,0.24)] transition hover:bg-[#16d8a1]"
@@ -218,7 +247,7 @@ export function UltimaDashboard() {
               <GlobeIcon />
               {t('lite.buySubscription', { defaultValue: 'Купить подписку' })}
             </span>
-            <span className="text-[18px] text-white/90">от 199 ₽</span>
+            <span className="text-[18px] text-white/90">{buyFromLabel}</span>
           </button>
 
           <button
