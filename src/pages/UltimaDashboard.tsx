@@ -313,8 +313,8 @@ export function UltimaDashboard() {
         <section
           className={
             hasSetupReminder
-              ? 'pt-[clamp(74px,16vh,160px)] lg:pt-20'
-              : 'pb-[clamp(14px,2.8vh,24px)] pt-[clamp(86px,19vh,198px)] lg:pb-5 lg:pt-24'
+              ? 'flex min-h-0 flex-col pt-[clamp(74px,16vh,160px)] lg:pt-20'
+              : 'flex min-h-0 flex-1 flex-col pb-[clamp(14px,2.8vh,24px)] pt-[clamp(86px,19vh,198px)] lg:pb-5 lg:pt-24'
           }
         >
           <button
@@ -342,7 +342,7 @@ export function UltimaDashboard() {
           </button>
 
           <div
-            className={`${hasSetupReminder ? 'mb-5 lg:mb-4' : 'mb-3 lg:mb-2'} flex items-center justify-between text-white`}
+            className={`${hasSetupReminder ? 'mb-5 lg:mb-4' : 'mb-3 mt-auto lg:mb-2 lg:mt-0'} flex items-center justify-between text-white`}
           >
             <div>
               <p className="text-[32px] font-semibold leading-none tracking-[-0.02em] sm:text-[36px] lg:text-[34px]">
