@@ -62,6 +62,18 @@ const CheckIcon = () => (
   </svg>
 );
 
+const StepDoneIcon = () => (
+  <svg viewBox="0 0 20 20" fill="none" className="h-3.5 w-3.5 text-emerald-100">
+    <path
+      d="m4.8 10.2 3.1 3.1 7.3-7.2"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 const getLocalizedText = (text: LocalizedText | undefined, lang: string): string => {
   if (!text) return '';
   return text[lang] || text.en || text.ru || Object.values(text)[0] || '';
@@ -251,20 +263,40 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
         </button>
 
         <section className="flex min-h-0 flex-1 flex-col">
-          <div className="pt-2 text-center">
-            <h1 className="text-[52px] font-semibold leading-[0.92] text-white sm:text-[56px]">
+          <div key={step} className="ultima-step-enter pt-2 text-center">
+            <h1 className="text-[46px] font-semibold leading-[0.96] text-white sm:text-[50px]">
               {title}
             </h1>
-            <p className="mx-auto mt-2 max-w-[330px] text-[26px] leading-[1.16] text-white/75">
+            <p className="mx-auto mt-2 max-w-[330px] text-[18px] leading-[1.2] text-white/70">
               {subtitle}
             </p>
+            <div className="mx-auto mt-4 flex w-fit items-center gap-2">
+              {[1, 2, 3].map((index) => {
+                const done = step > index;
+                const active = step === index;
+                return (
+                  <span
+                    key={index}
+                    className={`inline-flex h-7 min-w-7 items-center justify-center rounded-full border px-2 text-xs font-medium ${
+                      active
+                        ? 'border-emerald-200/70 bg-emerald-300/20 text-white'
+                        : done
+                          ? 'border-emerald-200/55 bg-emerald-400/35 text-emerald-50'
+                          : 'border-white/18 bg-white/8 text-white/60'
+                    } ${done ? 'ultima-step-done-pop' : ''}`}
+                  >
+                    {done ? <StepDoneIcon /> : index}
+                  </span>
+                );
+              })}
+            </div>
           </div>
 
           <div className="relative mt-10 flex flex-1 items-center justify-center">
-            <div className="pointer-events-none absolute h-[340px] w-[340px] rounded-full border border-emerald-200/25" />
-            <div className="pointer-events-none absolute h-[250px] w-[250px] rounded-full border border-emerald-200/20" />
-            <div className="pointer-events-none absolute h-[170px] w-[170px] rounded-full border border-emerald-300/70" />
-            <div className="relative flex h-[130px] w-[130px] items-center justify-center rounded-full bg-black/10">
+            <div className="border-emerald-200/22 pointer-events-none absolute h-[360px] w-[360px] rounded-full border" />
+            <div className="pointer-events-none absolute h-[270px] w-[270px] rounded-full border border-emerald-200/20" />
+            <div className="pointer-events-none absolute h-[188px] w-[188px] rounded-full border border-emerald-300/65" />
+            <div className="bg-black/8 relative flex h-[132px] w-[132px] items-center justify-center rounded-full">
               {icon}
               {step === 3 && (
                 <div className="pointer-events-none absolute inset-0 overflow-visible">
@@ -296,8 +328,9 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             <button
               type="button"
               onClick={openInstall}
-              className="mb-3 flex w-full items-center justify-center rounded-full border border-[#4ceac2]/45 bg-[#14cf9a] px-5 py-4 text-[18px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_16px_rgba(7,146,108,0.24)]"
+              className="mb-3 flex w-full items-center justify-center gap-2 rounded-full border border-[#4ceac2]/45 bg-[#14cf9a] px-5 py-4 text-[18px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_16px_rgba(7,146,108,0.24)]"
             >
+              <span aria-hidden>⟳</span>
               {t('subscription.connection.installApp', { defaultValue: 'Установить приложение' })}
             </button>
           )}
@@ -305,8 +338,9 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             <button
               type="button"
               onClick={openAddSubscription}
-              className="mb-3 flex w-full items-center justify-center rounded-full border border-[#4ceac2]/45 bg-[#14cf9a] px-5 py-4 text-[18px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_16px_rgba(7,146,108,0.24)]"
+              className="mb-3 flex w-full items-center justify-center gap-2 rounded-full border border-[#4ceac2]/45 bg-[#14cf9a] px-5 py-4 text-[18px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_16px_rgba(7,146,108,0.24)]"
             >
+              <span aria-hidden>◌</span>
               {t('subscription.connection.addSubscription', { defaultValue: 'Добавить подписку' })}
             </button>
           )}
@@ -323,9 +357,12 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
           <button
             type="button"
             onClick={advanceStep}
-            className="mb-3 flex w-full items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 py-4 text-[18px] font-medium text-white/95"
+            className="mb-3 flex w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-4 text-[18px] font-medium text-white/95"
           >
             {t('subscription.connection.nextStep', { defaultValue: 'Следующий шаг' })}
+            <span aria-hidden className="text-white/70">
+              →
+            </span>
           </button>
 
           <UltimaBottomNav active="connection" />
@@ -333,9 +370,9 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
       </div>
 
       {step === 1 && showInfo && (
-        <div className="absolute inset-x-4 bottom-[140px] z-20 rounded-[28px] border border-white/10 bg-black/85 p-5 text-white shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+        <div className="ultima-step-enter absolute inset-x-4 bottom-[140px] z-20 rounded-[28px] border border-white/10 bg-black/85 p-5 text-white shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl">
           <div className="mb-3 flex items-start justify-between gap-3">
-            <h3 className="text-[30px] font-semibold leading-[1.04]">
+            <h3 className="text-[34px] font-semibold leading-[1.04]">
               {t('subscription.connection.importantInfo', { defaultValue: 'Важная информация' })}
             </h3>
             <button
@@ -347,7 +384,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
               ×
             </button>
           </div>
-          <p className="text-[22px] leading-[1.24] text-white/85">
+          <p className="text-[18px] leading-[1.24] text-white/85">
             {t('subscription.connection.importantInfoDesc', {
               defaultValue:
                 'После установки приложения Happ, обязательно вернитесь на этот экран и нажмите «Следующий шаг», чтобы добавить конфигурацию в приложение.',
