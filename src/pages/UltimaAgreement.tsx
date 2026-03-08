@@ -82,8 +82,8 @@ export function UltimaAgreement() {
     <div className="ultima-shell ultima-flat-frames">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(95%_70%_at_50%_45%,rgba(33,208,154,0.14),rgba(7,20,46,0.02)_62%,rgba(7,20,46,0)_100%)]" />
       <div className="ultima-shell-inner">
-        <section className="mb-3 rounded-[28px] border border-emerald-200/10 bg-[linear-gradient(180deg,rgba(69,186,142,0.18),rgba(18,79,64,0.3))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md">
-          <div className="border-white/12 bg-white/6 flex h-11 w-11 items-center justify-center rounded-2xl border text-white/80">
+        <section className="mb-3 rounded-[24px] border border-emerald-200/10 bg-[linear-gradient(180deg,rgba(69,186,142,0.16),rgba(18,79,64,0.26))] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] backdrop-blur-md">
+          <div className="bg-white/6 flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 text-white/80">
             <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
               <path
                 d="M8 3.5h7l4 4v12A1.5 1.5 0 0 1 17.5 21h-9A1.5 1.5 0 0 1 7 19.5v-14A1.5 1.5 0 0 1 8.5 4"
@@ -102,10 +102,10 @@ export function UltimaAgreement() {
               />
             </svg>
           </div>
-          <h1 className="mt-3 text-[clamp(32px,8.6vw,39px)] font-semibold leading-[0.92] tracking-[-0.015em] text-white">
+          <h1 className="mt-2 text-[clamp(27px,7.4vw,34px)] font-semibold leading-[0.95] tracking-[-0.015em] text-white">
             {t('profile.termsTitle', { defaultValue: 'Пользовательское соглашение' })}
           </h1>
-          <p className="text-white/52 mt-1.5 text-[14px]">
+          <p className="mt-1 text-[12px] text-white/55">
             {updatedAtLabel
               ? t('common.updatedAtDate', {
                   defaultValue: `Обновлено ${updatedAtLabel}`,

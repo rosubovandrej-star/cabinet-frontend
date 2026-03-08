@@ -778,8 +778,8 @@ export function UltimaSubscription() {
         </header>
 
         <section
-          className={`rounded-3xl border border-white/10 bg-white/5 backdrop-blur ${
-            isUltraCompactHeight ? 'mb-2 p-3' : 'mb-3 p-3.5'
+          className={`mx-auto w-full max-w-[360px] rounded-3xl border border-white/10 bg-white/5 backdrop-blur ${
+            isUltraCompactHeight ? 'mb-2 p-2.5' : 'mb-3 p-3'
           }`}
         >
           <div className={`flex items-center gap-3 ${isUltraCompactHeight ? 'mb-2' : 'mb-3'}`}>
@@ -806,7 +806,7 @@ export function UltimaSubscription() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-emerald-200/10 bg-[linear-gradient(180deg,rgba(10,49,43,0.42)_0%,rgba(8,25,29,0.46)_100%)] p-2.5">
+          <div className="rounded-2xl border border-emerald-200/10 bg-[linear-gradient(180deg,rgba(10,49,43,0.42)_0%,rgba(8,25,29,0.46)_100%)] p-2">
             <div
               ref={deviceTrackRef}
               role="button"
@@ -826,16 +826,16 @@ export function UltimaSubscription() {
               className="relative"
             >
               <div className="relative h-9 w-full">
-                <div className="absolute left-0 right-0 top-1/2 h-[9px] -translate-y-1/2 rounded-full border border-emerald-200/15 bg-white/10 shadow-[inset_0_1px_4px_rgba(0,0,0,0.25)]" />
+                <div className="absolute left-0 right-0 top-1/2 h-[8px] -translate-y-1/2 rounded-full border border-emerald-200/15 bg-white/10 shadow-[inset_0_1px_4px_rgba(0,0,0,0.25)]" />
                 <div
-                  className="absolute left-0 top-1/2 h-[9px] -translate-y-1/2 rounded-full bg-[linear-gradient(90deg,rgba(45,212,191,0.9)_0%,rgba(16,185,129,0.95)_100%)] shadow-[0_0_14px_rgba(45,212,191,0.42)]"
+                  className="absolute left-0 top-1/2 h-[8px] -translate-y-1/2 rounded-full bg-[linear-gradient(90deg,rgba(45,212,191,0.9)_0%,rgba(16,185,129,0.95)_100%)] shadow-[0_0_14px_rgba(45,212,191,0.42)]"
                   style={{
                     width: `${sliderProgressPercent}%`,
                     boxShadow: `0 0 ${12 + sliderProgressPercent * 0.13}px rgba(45,212,191,${Math.min(0.72, sliderVisualPower)})`,
                   }}
                 />
                 <div
-                  className="ultima-slider-glow pointer-events-none absolute left-0 top-1/2 h-[9px] -translate-y-1/2 rounded-full bg-[linear-gradient(90deg,rgba(162,255,233,0)_0%,rgba(162,255,233,0.65)_45%,rgba(162,255,233,0)_100%)]"
+                  className="ultima-slider-glow pointer-events-none absolute left-0 top-1/2 h-[8px] -translate-y-1/2 rounded-full bg-[linear-gradient(90deg,rgba(162,255,233,0)_0%,rgba(162,255,233,0.65)_45%,rgba(162,255,233,0)_100%)]"
                   style={{
                     width: `${Math.max(18, sliderProgressPercent)}%`,
                     filter: `blur(${2 + sliderProgressPercent * 0.02}px)`,
@@ -875,7 +875,13 @@ export function UltimaSubscription() {
                         event.preventDefault();
                         applyDeviceIndex(index);
                       }}
-                      className="absolute top-1/2 z-30 -translate-x-1/2 -translate-y-1/2"
+                      className={`absolute top-1/2 z-30 -translate-y-1/2 ${
+                        index === 0
+                          ? 'translate-x-0'
+                          : index === deviceLimits.length - 1
+                            ? '-translate-x-full'
+                            : '-translate-x-1/2'
+                      }`}
                       style={{ left }}
                     >
                       <span
