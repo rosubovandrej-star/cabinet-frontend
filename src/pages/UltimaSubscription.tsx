@@ -778,8 +778,8 @@ export function UltimaSubscription() {
         </header>
 
         <section
-          className={`mx-auto w-full max-w-[360px] rounded-3xl border border-white/10 bg-white/5 backdrop-blur ${
-            isUltraCompactHeight ? 'mb-2 p-2.5' : 'mb-3 p-3'
+          className={`mx-auto w-full max-w-[336px] rounded-3xl border border-white/10 bg-white/5 backdrop-blur ${
+            isUltraCompactHeight ? 'mb-2 p-2.5' : 'mb-3 p-2.5'
           }`}
         >
           <div className={`flex items-center gap-3 ${isUltraCompactHeight ? 'mb-2' : 'mb-3'}`}>
@@ -796,7 +796,7 @@ export function UltimaSubscription() {
                       : 'text-[22px]'
                 } font-medium leading-none text-white`}
               >
-                Устройств
+                Устройство
               </p>
               <p
                 className={`${isUltraCompactHeight ? 'mt-0.5 text-[13px]' : 'mt-1 text-[14px]'} text-white/70`}
@@ -845,7 +845,13 @@ export function UltimaSubscription() {
                 <span
                   className="absolute top-1/2 z-20 h-5 w-5 -translate-y-1/2 rounded-full border border-emerald-100/70 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.75),rgba(45,212,191,0.9)_45%,rgba(6,38,31,0.95)_100%)] shadow-[0_0_16px_rgba(52,211,153,0.55)]"
                   style={{
-                    left: `calc(${sliderProgressPercent}% - 10px)`,
+                    left: `calc(${sliderProgressPercent}% - 10px + ${
+                      selectedDeviceIndex === 0
+                        ? '4px'
+                        : selectedDeviceIndex === deviceLimits.length - 1
+                          ? '-4px'
+                          : '0px'
+                    })`,
                     transform: `translateY(-50%) scale(${1 + sliderProgressPercent / 500})`,
                     boxShadow: `0 0 ${16 + sliderProgressPercent * 0.16}px rgba(52,211,153,${Math.min(0.86, 0.44 + sliderProgressPercent / 220)})`,
                   }}
@@ -875,14 +881,12 @@ export function UltimaSubscription() {
                         event.preventDefault();
                         applyDeviceIndex(index);
                       }}
-                      className={`absolute top-1/2 z-30 -translate-y-1/2 ${
-                        index === 0
-                          ? 'translate-x-0'
-                          : index === deviceLimits.length - 1
-                            ? '-translate-x-full'
-                            : '-translate-x-1/2'
-                      }`}
-                      style={{ left }}
+                      className="absolute top-1/2 z-30 -translate-x-1/2 -translate-y-1/2"
+                      style={{
+                        left: `calc(${left} + ${
+                          index === 0 ? '4px' : index === deviceLimits.length - 1 ? '-4px' : '0px'
+                        })`,
+                      }}
                     >
                       <span
                         className={`block rounded-full transition ${
@@ -900,10 +904,6 @@ export function UltimaSubscription() {
                   );
                 })}
               </div>
-            </div>
-            <div className="mt-2 flex items-center justify-between text-[11px] text-white/55">
-              <span>{deviceLimits[0]}</span>
-              <span>{deviceLimits[deviceLimits.length - 1]}</span>
             </div>
           </div>
         </section>
