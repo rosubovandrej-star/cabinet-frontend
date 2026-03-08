@@ -188,12 +188,35 @@
   animation: ultima-step-done-pop 300ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
+@keyframes ultima-success-wave {
+  0% {
+    transform: scale(0.15);
+    opacity: 0.72;
+  }
+  70% {
+    opacity: 0.22;
+  }
+  100% {
+    transform: scale(1.16);
+    opacity: 0;
+  }
+}
+
+.ultima-success-wave {
+  animation: ultima-success-wave 1.05s cubic-bezier(0.16, 0.84, 0.24, 1) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ultima-content-enter {
     animation: none;
   }
 
   .ultima-tap-ring {
+    animation: none;
+    opacity: 0;
+  }
+
+  .ultima-success-wave {
     animation: none;
     opacity: 0;
   }

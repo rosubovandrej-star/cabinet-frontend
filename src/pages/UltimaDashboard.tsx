@@ -122,6 +122,55 @@ export function UltimaDashboard() {
     isSubscriptionFetched || Boolean(subscriptionResponse) || isSubscriptionError;
   const isActive = Boolean(subscription?.is_active && !subscription?.is_expired);
   const statusLabel = isActive ? t('subscription.active') : t('subscription.expired');
+  const daysLeft = useMemo(() => {
+    if (!subscription?.end_date) return null;
+    const end = new Date(subscription.end_date).getTime();
+    if (Number.isNaN(end)) return null;
+    const diff = end - Date.now();
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  }, [subscription?.end_date]);
+  const statusTone = !isActive
+    ? {
+        dot: 'bg-rose-300/95',
+        halo: 'bg-rose-400/45',
+        pill: 'border-rose-200/25 bg-rose-400/16 text-rose-100/95',
+        pulse: 'from-rose-400/32 via-rose-300/22 to-transparent',
+      }
+    : (daysLeft ?? 99) <= 3
+      ? {
+          dot: 'bg-amber-200/95',
+          halo: 'bg-amber-300/42',
+          pill: 'border-amber-200/30 bg-amber-300/16 text-amber-50/95',
+          pulse: 'from-amber-300/30 via-amber-200/20 to-transparent',
+        }
+      : {
+          dot: 'bg-emerald-200/95',
+          halo: 'bg-emerald-300/45',
+          pill: 'border-emerald-200/28 bg-emerald-300/16 text-emerald-50/95',
+          pulse: 'from-emerald-300/34 via-emerald-200/24 to-transparent',
+        };
+  const buyCtaLabel = useMemo(() => {
+    if (!hasAnySubscription) {
+      return t('ultima.buySubscriptionActivate', { defaultValue: 'Активировать подписку' });
+    }
+    if (!isActive) {
+      return t('ultima.buySubscriptionRenew', { defaultValue: 'Продлить подписку' });
+    }
+    if ((daysLeft ?? 99) <= 3) {
+      const dayWord =
+        i18n.language?.startsWith('ru') && daysLeft === 1
+          ? 'день'
+          : i18n.language?.startsWith('ru') && (daysLeft === 2 || daysLeft === 3 || daysLeft === 4)
+            ? 'дня'
+            : i18n.language?.startsWith('ru')
+              ? 'дней'
+              : 'days';
+      return t('ultima.buySubscriptionDaysLeft', {
+        defaultValue: `Продлить (${daysLeft ?? 0} ${dayWord})`,
+      });
+    }
+    return t('lite.buySubscription', { defaultValue: 'Купить подписку' });
+  }, [daysLeft, hasAnySubscription, i18n.language, isActive, t]);
   const buyFromLabel = useMemo(() => {
     if (!purchaseOptions || purchaseOptions.sales_mode !== 'tariffs')
       return `от 199 ${currencySymbol}`;
@@ -362,10 +411,19 @@ export function UltimaDashboard() {
               </p>
               <p className="mt-2 text-base text-emerald-300/90">online</p>
             </div>
-            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs text-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+            <span
+              className={`relative inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${statusTone.pill}`}
+            >
+              <span
+                className={`absolute left-1.5 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full blur-[4px] ${statusTone.halo}`}
+              />
+              <span className={`relative h-1.5 w-1.5 rounded-full ${statusTone.dot}`} />
               {statusLabel}
             </span>
           </div>
+          <div
+            className={`mb-3 h-[2px] w-full rounded-full bg-gradient-to-r ${statusTone.pulse} lg:mb-2`}
+          />
         </section>
 
         <section className="mt-auto pb-0 lg:mt-5 lg:pb-0">
@@ -391,7 +449,7 @@ export function UltimaDashboard() {
           >
             <span className="flex items-center gap-2">
               <GlobeIcon />
-              {t('lite.buySubscription', { defaultValue: 'Купить подписку' })}
+              {buyCtaLabel}
             </span>
             <span className="text-[16px] text-white/90">{buyFromLabel}</span>
           </button>

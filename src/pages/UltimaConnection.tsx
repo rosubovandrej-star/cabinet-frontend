@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHaptic } from '@/platform';
 import { useAuthStore } from '@/store/auth';
 import type { AppConfig, LocalizedText, RemnawaveAppClient } from '@/types';
 import { UltimaBottomNav } from '@/components/ultima/UltimaBottomNav';
@@ -157,11 +158,14 @@ const findSetupUrls = (
 
 export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: UltimaConnectionProps) {
   const { t, i18n } = useTranslation();
+  const haptic = useHaptic();
   const user = useAuthStore((state) => state.user);
   const [step, setStep] = useState<Step>(1);
   const [showInfo, setShowInfo] = useState(true);
   const [burst, setBurst] = useState(0);
   const [showReturnConfetti, setShowReturnConfetti] = useState(false);
+  const [showFinishSuccess, setShowFinishSuccess] = useState(false);
+  const stepInitRef = useRef(false);
 
   const setupUrls = useMemo(
     () => findSetupUrls(appConfig, i18n.language || 'ru'),
@@ -224,6 +228,14 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
     }
   }, [step, user?.id]);
 
+  useEffect(() => {
+    if (!stepInitRef.current) {
+      stepInitRef.current = true;
+      return;
+    }
+    haptic.impact('light');
+  }, [haptic, step]);
+
   const title =
     step === 1
       ? t('subscription.connection.stepInstallTitle', { defaultValue: 'Приложение' })
@@ -246,6 +258,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
 
   const icon = step === 1 ? <DownloadIcon /> : step === 2 ? <PlusIcon /> : <CheckIcon />;
   const progressRatio = step === 1 ? 0.34 : step === 2 ? 0.67 : 1;
+  const stepProgressPercent = step === 1 ? 0 : step === 2 ? 50 : 100;
   const ringRadius = 90;
   const ringCircumference = 2 * Math.PI * ringRadius;
   const ringOffset = ringCircumference * (1 - progressRatio);
@@ -285,9 +298,15 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
   };
 
   const finishFlow = () => {
-    setStep(1);
-    setShowInfo(false);
-    onGoBack();
+    setShowFinishSuccess(true);
+    setBurst((prev) => prev + 1);
+    haptic.notification('success');
+    window.setTimeout(() => {
+      setShowFinishSuccess(false);
+      setStep(1);
+      setShowInfo(false);
+      onGoBack();
+    }, 1200);
   };
 
   return (
@@ -312,8 +331,8 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             )}
             <div className="mx-auto mt-4 flex w-fit items-center gap-2">
               {[1, 2, 3].map((index) => {
-                const done = step > index;
-                const active = step === index;
+                const done = step > index || (step === 3 && index === 3);
+                const active = step === index && !done;
                 return (
                   <span
                     key={index}
@@ -329,6 +348,12 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
                   </span>
                 );
               })}
+            </div>
+            <div className="mx-auto mt-2 h-1 w-[168px] overflow-hidden rounded-full bg-white/15">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-emerald-200/85 via-emerald-300/90 to-emerald-200/85 transition-[width] duration-500 ease-out"
+                style={{ width: `${stepProgressPercent}%` }}
+              />
             </div>
           </div>
 
@@ -438,6 +463,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             <button
               type="button"
               onClick={finishFlow}
+              disabled={showFinishSuccess}
               className="border-[#66ebc9]/42 mb-3 flex w-full items-center justify-center rounded-full border bg-[#14cf9a] px-5 py-2.5 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)]"
             >
               {t('subscription.connection.finishSetup', { defaultValue: 'Завершить настройку' })}
@@ -499,6 +525,14 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             </button>
           </div>
         </>
+      )}
+      {showFinishSuccess && (
+        <div className="pointer-events-none absolute inset-0 z-40 flex items-center justify-center">
+          <div className="ultima-success-wave absolute h-[54vmax] w-[54vmax] rounded-full border border-emerald-200/40" />
+          <div className="bg-emerald-300/18 rounded-2xl border border-emerald-200/30 px-5 py-2 text-sm font-semibold text-emerald-50 shadow-[0_12px_34px_rgba(8,34,29,0.42)] backdrop-blur-md">
+            {t('subscription.connection.vpnReady', { defaultValue: 'VPN готов к запуску' })}
+          </div>
+        </div>
       )}
     </div>
   );
