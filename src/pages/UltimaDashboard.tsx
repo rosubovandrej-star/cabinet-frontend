@@ -376,7 +376,7 @@ export function UltimaDashboard() {
           )}
         </section>
 
-        <section className="mt-auto pb-1 lg:mt-5 lg:pb-1">
+        <section className="mt-auto pb-0 lg:mt-5 lg:pb-0">
           <button
             type="button"
             onClick={() => {
