@@ -342,7 +342,7 @@ export function UltimaDashboard() {
           </button>
 
           {hasSetupReminder && (
-            <div className="border-emerald-200/24 mb-4 mt-auto rounded-2xl border bg-[rgba(12,45,42,0.38)] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_24px_rgba(3,14,24,0.28)] backdrop-blur-md lg:mt-0">
+            <div className="border-emerald-200/24 mb-4 rounded-2xl border bg-[rgba(12,45,42,0.38)] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_24px_rgba(3,14,24,0.28)] backdrop-blur-md">
               <p className="text-[16px] font-semibold leading-tight text-white/95">
                 {t('ultima.setupNotFinishedTitle', { defaultValue: 'Установка не завершена' })}
               </p>
