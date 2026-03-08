@@ -636,6 +636,19 @@ export function UltimaSubscription() {
     const baseTariffPrice = period.base_tariff_price_kopeks ?? period.price_kopeks;
     return baseTariffPrice + selectedExtraDevices * extraDevicePricePerMonth * months;
   };
+  const bestDealPeriodDays = (() => {
+    if (displayPeriods.length < 2) return null;
+    let bestDays: number | null = null;
+    let bestPerDay = Number.POSITIVE_INFINITY;
+    for (const period of displayPeriods) {
+      const perDay = calculatePeriodPrice(period) / Math.max(1, period.days);
+      if (perDay < bestPerDay) {
+        bestPerDay = perDay;
+        bestDays = period.days;
+      }
+    }
+    return bestDays;
+  })();
   const selectedPriceKopeks = calculatePeriodPrice(selectedPeriod);
   const currentBalanceKopeks = Math.max(0, balanceData?.balance_kopeks ?? 0);
   const payableAmountKopeks = Math.max(0, selectedPriceKopeks - currentBalanceKopeks);
@@ -952,9 +965,15 @@ export function UltimaSubscription() {
                     >
                       {periodLabel(period)}
                     </span>
-                    <span className={`text-emerald-300 ${active ? 'opacity-100' : 'opacity-0'}`}>
-                      ★
-                    </span>
+                    {period.days === bestDealPeriodDays ? (
+                      <span className="rounded-full border border-emerald-200/45 bg-emerald-300/25 px-2 py-[1px] text-[11px] font-semibold text-emerald-100">
+                        Выгодно
+                      </span>
+                    ) : (
+                      <span className={`text-emerald-300 ${active ? 'opacity-100' : 'opacity-0'}`}>
+                        ★
+                      </span>
+                    )}
                   </div>
                   <p
                     className={`font-semibold leading-none text-white ${

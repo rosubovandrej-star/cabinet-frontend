@@ -1,3 +1,4 @@
+import { type CSSProperties, type PointerEvent, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 type UltimaBottomNavTab = 'home' | 'connection' | 'profile' | 'support';
@@ -59,11 +60,42 @@ export function UltimaBottomNav({
   onSupportClick,
 }: UltimaBottomNavProps) {
   const navigate = useNavigate();
+  const [magnetOffset, setMagnetOffset] = useState<
+    Record<UltimaBottomNavTab, { x: number; y: number }>
+  >({
+    home: { x: 0, y: 0 },
+    connection: { x: 0, y: 0 },
+    profile: { x: 0, y: 0 },
+    support: { x: 0, y: 0 },
+  });
 
   const getButtonClassName = (isActive: boolean) =>
     isActive
       ? 'flex h-11 items-center justify-center rounded-[16px] border border-[#7af4d4]/35 bg-[#1bd29f] text-white shadow-[0_8px_20px_rgba(20,209,157,0.32),inset_0_1px_0_rgba(255,255,255,0.24)] translate-y-[-1px] transition-all duration-200 active:translate-y-0 active:scale-[0.985]'
       : 'flex h-11 items-center justify-center rounded-[16px] text-white/78 transition-all duration-200 hover:bg-white/8 hover:translate-y-[-1px] active:translate-y-0 active:scale-[0.985]';
+
+  const handlePointerMove =
+    (tab: UltimaBottomNavTab) => (event: PointerEvent<HTMLButtonElement>) => {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const x = Math.max(-3, Math.min(3, (event.clientX - centerX) * 0.16));
+      const y = Math.max(-2.4, Math.min(2.4, (event.clientY - centerY) * 0.14));
+      setMagnetOffset((prev) => ({ ...prev, [tab]: { x, y } }));
+    };
+
+  const resetMagnet = (tab: UltimaBottomNavTab) => () => {
+    setMagnetOffset((prev) => ({ ...prev, [tab]: { x: 0, y: 0 } }));
+  };
+
+  const getButtonStyle = (tab: UltimaBottomNavTab, isActive: boolean): CSSProperties => {
+    const offset = magnetOffset[tab] ?? { x: 0, y: 0 };
+    const baseY = isActive ? -1 : 0;
+    return {
+      transform: `translate3d(${offset.x}px, ${baseY + offset.y}px, 0)`,
+      willChange: 'transform',
+    };
+  };
 
   return (
     <nav className="ultima-bottom-nav grid grid-cols-4 gap-1.5 rounded-[22px] bg-[linear-gradient(180deg,rgba(24,92,76,0.76),rgba(10,48,40,0.92))] p-1.5 text-white/80 shadow-[0_14px_34px_rgba(3,9,18,0.45),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl">
@@ -71,7 +103,11 @@ export function UltimaBottomNav({
         type="button"
         data-ultima-nav-btn="1"
         className={getButtonClassName(active === 'home')}
+        style={getButtonStyle('home', active === 'home')}
         onClick={onHomeClick ?? (() => navigate('/'))}
+        onPointerMove={handlePointerMove('home')}
+        onPointerLeave={resetMagnet('home')}
+        onPointerUp={resetMagnet('home')}
         aria-label="ultima-nav-home"
       >
         <GridIcon />
@@ -80,7 +116,11 @@ export function UltimaBottomNav({
         type="button"
         data-ultima-nav-btn="1"
         className={getButtonClassName(active === 'connection')}
+        style={getButtonStyle('connection', active === 'connection')}
         onClick={onConnectionClick ?? (() => navigate('/connection'))}
+        onPointerMove={handlePointerMove('connection')}
+        onPointerLeave={resetMagnet('connection')}
+        onPointerUp={resetMagnet('connection')}
         aria-label="ultima-nav-connection"
       >
         <GearIcon />
@@ -89,7 +129,11 @@ export function UltimaBottomNav({
         type="button"
         data-ultima-nav-btn="1"
         className={getButtonClassName(active === 'profile')}
+        style={getButtonStyle('profile', active === 'profile')}
         onClick={onProfileClick ?? (() => navigate('/profile'))}
+        onPointerMove={handlePointerMove('profile')}
+        onPointerLeave={resetMagnet('profile')}
+        onPointerUp={resetMagnet('profile')}
         aria-label="ultima-nav-profile"
       >
         <ProfileIcon />
@@ -98,7 +142,11 @@ export function UltimaBottomNav({
         type="button"
         data-ultima-nav-btn="1"
         className={getButtonClassName(active === 'support')}
+        style={getButtonStyle('support', active === 'support')}
         onClick={onSupportClick ?? (() => navigate('/support'))}
+        onPointerMove={handlePointerMove('support')}
+        onPointerLeave={resetMagnet('support')}
+        onPointerUp={resetMagnet('support')}
         aria-label="ultima-nav-support"
       >
         <SupportIcon />
