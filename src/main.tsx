@@ -10,7 +10,7 @@ import {
   mountViewport,
   expandViewport,
   mountSwipeBehavior,
-  disableVerticalSwipes,
+  enableVerticalSwipes,
   mountClosingBehavior,
   disableClosingConfirmation,
   mountBackButton,
@@ -56,7 +56,7 @@ if (!alreadyInitialized) {
     }
     try {
       mountSwipeBehavior();
-      disableVerticalSwipes();
+      enableVerticalSwipes();
     } catch {
       /* already mounted */
     }
