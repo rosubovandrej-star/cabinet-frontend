@@ -341,22 +341,8 @@ export function UltimaDashboard() {
             <ShieldIcon />
           </button>
 
-          <div
-            className={`${hasSetupReminder ? 'mb-5 lg:mb-4' : 'mb-3 mt-auto lg:mb-2 lg:mt-0'} flex items-center justify-between text-white`}
-          >
-            <div>
-              <p className="text-[32px] font-semibold leading-none tracking-[-0.02em] sm:text-[36px] lg:text-[34px]">
-                {expiryLabel}
-              </p>
-              <p className="mt-2 text-base text-emerald-300/90">online</p>
-            </div>
-            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs text-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-              {statusLabel}
-            </span>
-          </div>
-
           {hasSetupReminder && (
-            <div className="bg-black/24 mb-4 rounded-2xl border border-amber-300/30 p-3.5 backdrop-blur">
+            <div className="bg-black/24 mb-4 mt-auto rounded-2xl border border-amber-300/30 p-3.5 backdrop-blur lg:mt-0">
               <p className="text-[16px] font-semibold leading-tight text-amber-100">
                 {t('ultima.setupNotFinishedTitle', { defaultValue: 'Установка не завершена' })}
               </p>
@@ -374,6 +360,20 @@ export function UltimaDashboard() {
               </button>
             </div>
           )}
+
+          <div
+            className={`${hasSetupReminder ? 'mb-5 lg:mb-4' : 'mb-3 mt-auto lg:mb-2 lg:mt-0'} flex items-center justify-between text-white`}
+          >
+            <div>
+              <p className="text-[32px] font-semibold leading-none tracking-[-0.02em] sm:text-[36px] lg:text-[34px]">
+                {expiryLabel}
+              </p>
+              <p className="mt-2 text-base text-emerald-300/90">online</p>
+            </div>
+            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs text-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+              {statusLabel}
+            </span>
+          </div>
         </section>
 
         <section className="mt-auto pb-0 lg:mt-5 lg:pb-0">
