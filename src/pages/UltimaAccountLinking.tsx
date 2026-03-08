@@ -352,7 +352,7 @@ export default function UltimaAccountLinking() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(95%_70%_at_50%_45%,rgba(33,208,154,0.14),rgba(7,20,46,0.02)_62%,rgba(7,20,46,0)_100%)]" />
       <div className="ultima-shell-inner">
         <header className="mb-3">
-          <h1 className="text-[38px] font-semibold leading-[0.95] tracking-[-0.01em] text-white">
+          <h1 className="text-[clamp(32px,8.5vw,38px)] font-semibold leading-[0.95] tracking-[-0.01em] text-white">
             Привязка аккаунтов
           </h1>
           <p className="text-white/62 mt-1.5 text-[13px]">

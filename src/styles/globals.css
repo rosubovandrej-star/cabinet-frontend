@@ -282,7 +282,7 @@
     width: min(100%, 430px);
     max-width: 430px;
     height: min(860px, calc(100svh - 36px - env(safe-area-inset-bottom, 0px)));
-    min-height: 740px;
+    min-height: 620px;
     max-height: calc(100svh - 24px - env(safe-area-inset-bottom, 0px));
   }
 }

@@ -102,7 +102,7 @@ export function UltimaAgreement() {
               />
             </svg>
           </div>
-          <h1 className="mt-3 text-[39px] font-semibold leading-[0.92] tracking-[-0.015em] text-white">
+          <h1 className="mt-3 text-[clamp(32px,8.6vw,39px)] font-semibold leading-[0.92] tracking-[-0.015em] text-white">
             {t('profile.termsTitle', { defaultValue: 'Пользовательское соглашение' })}
           </h1>
           <p className="text-white/52 mt-1.5 text-[14px]">
