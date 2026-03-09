@@ -275,6 +275,16 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
     }
   };
 
+  const startAddSubscriptionFlow = () => {
+    try {
+      localStorage.setItem(`${ULTIMA_CONNECTION_PENDING_STEP3_KEY}:${user?.id ?? 'guest'}`, '1');
+      localStorage.setItem(ULTIMA_CONNECTION_PENDING_STEP3_KEY, '1');
+    } catch {
+      // ignore localStorage errors
+    }
+    openAddSubscription();
+  };
+
   const openToggleVpn = () => {
     onOpenDeepLink('happ://toggle');
   };
@@ -285,13 +295,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
       return;
     }
     if (step === 2) {
-      try {
-        localStorage.setItem(`${ULTIMA_CONNECTION_PENDING_STEP3_KEY}:${user?.id ?? 'guest'}`, '1');
-        localStorage.setItem(ULTIMA_CONNECTION_PENDING_STEP3_KEY, '1');
-      } catch {
-        // ignore localStorage errors
-      }
-      openAddSubscription();
+      startAddSubscriptionFlow();
       return;
     }
     setStep(1);
@@ -405,10 +409,21 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
               ) : step === 2 ? (
                 <button
                   type="button"
-                  onClick={openAddSubscription}
+                  onClick={startAddSubscriptionFlow}
                   className="group relative z-10 inline-flex h-[110px] w-[110px] items-center justify-center rounded-full transition-transform duration-200 hover:scale-[1.02] active:scale-[0.97]"
                   aria-label={t('subscription.connection.addSubscription', {
                     defaultValue: 'Добавить подписку',
+                  })}
+                >
+                  {icon}
+                </button>
+              ) : step === 1 ? (
+                <button
+                  type="button"
+                  onClick={openInstall}
+                  className="group relative z-10 inline-flex h-[110px] w-[110px] items-center justify-center rounded-full transition-transform duration-200 hover:scale-[1.02] active:scale-[0.97]"
+                  aria-label={t('subscription.connection.installApp', {
+                    defaultValue: 'Установить приложение',
                   })}
                 >
                   {icon}
@@ -466,7 +481,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
           {step === 2 && (
             <button
               type="button"
-              onClick={openAddSubscription}
+              onClick={startAddSubscriptionFlow}
               className="border-[#66ebc9]/42 mb-3 flex w-full items-center justify-center gap-2 rounded-full border bg-[#14cf9a] px-5 py-2.5 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)]"
             >
               <span aria-hidden>◌</span>
