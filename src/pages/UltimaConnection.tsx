@@ -321,8 +321,8 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
               {subtitle}
             </p>
             {step === 3 && (
-              <div className="mx-auto mt-3 w-full max-w-[360px] rounded-2xl border border-emerald-200/35 bg-[linear-gradient(120deg,rgba(26,164,133,0.22),rgba(10,36,31,0.45))] px-4 py-2.5 shadow-[0_10px_26px_rgba(5,18,15,0.35),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
-                <p className="text-[13px] font-medium leading-[1.25] text-emerald-50/95">
+              <div className="mx-auto mt-1.5 w-full max-w-[372px] rounded-2xl border border-emerald-100/50 bg-[linear-gradient(120deg,rgba(31,194,156,0.34),rgba(7,24,21,0.76))] px-4 py-2.5 shadow-[0_12px_30px_rgba(5,18,15,0.42),inset_0_1px_0_rgba(255,255,255,0.22)] backdrop-blur-md">
+                <p className="text-[13px] font-semibold leading-[1.25] text-white">
                   {t('subscription.connection.tapCheckHint', {
                     defaultValue: 'Можно нажать и здесь: галочка в центре тоже переключает VPN.',
                   })}
@@ -527,11 +527,8 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
         </>
       )}
       {showFinishSuccess && (
-        <div className="pointer-events-none absolute inset-0 z-40 flex items-center justify-center">
+        <div className="pointer-events-none absolute inset-0 z-40 flex items-center justify-center pb-[12vh]">
           <div className="ultima-success-wave absolute h-[54vmax] w-[54vmax] rounded-full border border-emerald-200/40" />
-          <div className="bg-emerald-300/18 rounded-2xl border border-emerald-200/30 px-5 py-2 text-sm font-semibold text-emerald-50 shadow-[0_12px_34px_rgba(8,34,29,0.42)] backdrop-blur-md">
-            {t('subscription.connection.vpnReady', { defaultValue: 'VPN готов к запуску' })}
-          </div>
         </div>
       )}
     </div>
