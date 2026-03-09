@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 import { useHaptic } from '@/platform';
 import { useAuthStore } from '@/store/auth';
 import type { AppConfig, LocalizedText, RemnawaveAppClient } from '@/types';
@@ -15,6 +16,7 @@ type UltimaConnectionProps = {
 };
 
 const ULTIMA_CONNECTION_STATE_KEY = 'ultima_connection_flow_v1';
+const ULTIMA_CONNECTION_PENDING_STEP2_KEY = 'ultima_connection_pending_step2_v1';
 const ULTIMA_CONNECTION_PENDING_STEP3_KEY = 'ultima_connection_pending_step3_v1';
 
 const DownloadIcon = () => (
@@ -158,6 +160,7 @@ const findSetupUrls = (
 
 export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: UltimaConnectionProps) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const haptic = useHaptic();
   const user = useAuthStore((state) => state.user);
   const [step, setStep] = useState<Step>(1);
@@ -187,7 +190,9 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
   }, [user?.id]);
 
   useEffect(() => {
+    const pendingStep2Key = `${ULTIMA_CONNECTION_PENDING_STEP2_KEY}:${user?.id ?? 'guest'}`;
     const pendingKey = `${ULTIMA_CONNECTION_PENDING_STEP3_KEY}:${user?.id ?? 'guest'}`;
+    const pendingStep2GlobalKey = ULTIMA_CONNECTION_PENDING_STEP2_KEY;
     const pendingGlobalKey = ULTIMA_CONNECTION_PENDING_STEP3_KEY;
 
     const applyPendingReturn = () => {
@@ -198,13 +203,24 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
         const pending =
           localStorage.getItem(pendingKey) === '1' ||
           localStorage.getItem(pendingGlobalKey) === '1';
-        if (!pending) return;
-        localStorage.removeItem(pendingKey);
-        localStorage.removeItem(pendingGlobalKey);
-        setStep(3);
-        setShowReturnConfetti(true);
-        setBurst((prev) => prev + 1);
-        window.setTimeout(() => setShowReturnConfetti(false), 2400);
+        const pendingStep2 =
+          localStorage.getItem(pendingStep2Key) === '1' ||
+          localStorage.getItem(pendingStep2GlobalKey) === '1';
+        if (pending) {
+          localStorage.removeItem(pendingKey);
+          localStorage.removeItem(pendingGlobalKey);
+          setStep(3);
+          setShowReturnConfetti(true);
+          setBurst((prev) => prev + 1);
+          window.setTimeout(() => setShowReturnConfetti(false), 2400);
+          return;
+        }
+        if (pendingStep2) {
+          localStorage.removeItem(pendingStep2Key);
+          localStorage.removeItem(pendingStep2GlobalKey);
+          setStep(2);
+          return;
+        }
       } catch {
         // ignore localStorage errors
       }
@@ -267,6 +283,16 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
     if (setupUrls.installUrl) {
       onOpenDeepLink(setupUrls.installUrl);
     }
+  };
+
+  const startInstallFlow = () => {
+    try {
+      localStorage.setItem(`${ULTIMA_CONNECTION_PENDING_STEP2_KEY}:${user?.id ?? 'guest'}`, '1');
+      localStorage.setItem(ULTIMA_CONNECTION_PENDING_STEP2_KEY, '1');
+    } catch {
+      // ignore localStorage errors
+    }
+    openInstall();
   };
 
   const openAddSubscription = () => {
@@ -420,7 +446,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
               ) : step === 1 ? (
                 <button
                   type="button"
-                  onClick={openInstall}
+                  onClick={startInstallFlow}
                   className="group relative z-10 inline-flex h-[110px] w-[110px] items-center justify-center rounded-full transition-transform duration-200 hover:scale-[1.02] active:scale-[0.97]"
                   aria-label={t('subscription.connection.installApp', {
                     defaultValue: 'Установить приложение',
@@ -471,7 +497,7 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
           {step === 1 && (
             <button
               type="button"
-              onClick={openInstall}
+              onClick={startInstallFlow}
               className="border-[#66ebc9]/42 mb-3 flex w-full items-center justify-center gap-2 rounded-full border bg-[#14cf9a] px-5 py-2.5 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)]"
             >
               <span aria-hidden>⟳</span>
@@ -489,14 +515,23 @@ export function UltimaConnection({ appConfig, onOpenDeepLink, onGoBack }: Ultima
             </button>
           )}
           {step === 3 && (
-            <button
-              type="button"
-              onClick={finishFlow}
-              disabled={showFinishSuccess}
-              className="border-[#66ebc9]/42 mb-3 flex w-full items-center justify-center rounded-full border bg-[#14cf9a] px-5 py-2.5 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)]"
-            >
-              {t('subscription.connection.finishSetup', { defaultValue: 'Завершить настройку' })}
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={finishFlow}
+                disabled={showFinishSuccess}
+                className="border-[#66ebc9]/42 mb-3 flex w-full items-center justify-center rounded-full border bg-[#14cf9a] px-5 py-2.5 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)]"
+              >
+                {t('subscription.connection.finishSetup', { defaultValue: 'Завершить настройку' })}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/support')}
+                className="border-emerald-200/22 text-white/92 mb-3 flex w-full items-center justify-center rounded-full border bg-[rgba(12,45,42,0.34)] px-5 py-2.5 text-[15px] font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] backdrop-blur-md transition hover:bg-[rgba(16,58,52,0.44)]"
+              >
+                {t('subscription.connection.needHelp', { defaultValue: 'Не получилось?' })}
+              </button>
+            </>
           )}
 
           {step !== 3 && (
