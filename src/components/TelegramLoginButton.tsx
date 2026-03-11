@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface TelegramLoginButtonProps {
@@ -12,10 +12,14 @@ export default function TelegramLoginButton({
 }: TelegramLoginButtonProps) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [widgetState, setWidgetState] = useState<'idle' | 'loading' | 'ready' | 'failed'>('idle');
+  const normalizedBotUsername = useMemo(() => botUsername.replace(/^@+/, '').trim(), [botUsername]);
 
   // Load widget script
   useEffect(() => {
-    if (!containerRef.current || !botUsername) return;
+    if (!containerRef.current || !normalizedBotUsername) return;
+
+    setWidgetState('loading');
 
     // Clear previous widget using safe DOM API
     while (containerRef.current.firstChild) {
@@ -28,17 +32,36 @@ export default function TelegramLoginButton({
     // Create script element for Telegram Login Widget
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
-    script.setAttribute('data-telegram-login', botUsername);
+    script.setAttribute('data-telegram-login', normalizedBotUsername);
     script.setAttribute('data-size', 'large');
     script.setAttribute('data-radius', '8');
     script.setAttribute('data-auth-url', redirectUrl);
     script.setAttribute('data-request-access', 'write');
     script.async = true;
 
-    containerRef.current.appendChild(script);
-  }, [botUsername]);
+    const timeoutId = window.setTimeout(() => {
+      setWidgetState((prev) => (prev === 'loading' ? 'failed' : prev));
+    }, 6000);
 
-  if (!botUsername || botUsername === 'your_bot') {
+    script.onload = () => {
+      window.clearTimeout(timeoutId);
+      setWidgetState('ready');
+    };
+
+    script.onerror = () => {
+      window.clearTimeout(timeoutId);
+      setWidgetState('failed');
+    };
+
+    containerRef.current.appendChild(script);
+    return () => {
+      window.clearTimeout(timeoutId);
+      script.onload = null;
+      script.onerror = null;
+    };
+  }, [normalizedBotUsername]);
+
+  if (!normalizedBotUsername || normalizedBotUsername === 'your_bot') {
     return (
       <div className="py-4 text-center text-sm text-gray-500">
         {t('auth.telegramNotConfigured')}
@@ -50,6 +73,21 @@ export default function TelegramLoginButton({
     <div className="flex flex-col items-center space-y-4">
       {/* Telegram Widget will be inserted here */}
       <div ref={containerRef} className="flex justify-center" />
+      {widgetState === 'loading' && (
+        <p className="text-center text-xs text-gray-400">
+          {t('auth.telegramWidgetLoading', {
+            defaultValue: 'Загружаем Telegram вход…',
+          })}
+        </p>
+      )}
+      {widgetState === 'failed' && (
+        <p className="max-w-sm text-center text-xs text-amber-400">
+          {t('auth.telegramWidgetUnavailable', {
+            defaultValue:
+              'Вход через Telegram Widget недоступен в вашей сети. Используйте кнопку ниже.',
+          })}
+        </p>
+      )}
 
       {/* Fallback link for mobile */}
       <div className="text-center">
@@ -57,8 +95,8 @@ export default function TelegramLoginButton({
         <a
           href={
             referralCode
-              ? `https://t.me/${botUsername}?start=${encodeURIComponent(referralCode)}`
-              : `https://t.me/${botUsername}`
+              ? `https://t.me/${normalizedBotUsername}?start=${encodeURIComponent(referralCode)}`
+              : `https://t.me/${normalizedBotUsername}`
           }
           target="_blank"
           rel="noopener noreferrer"
