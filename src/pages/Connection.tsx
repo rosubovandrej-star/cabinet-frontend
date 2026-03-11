@@ -184,6 +184,16 @@ export default function Connection() {
     );
   }
 
+  if (isUltimaMode) {
+    return (
+      <UltimaConnection
+        appConfig={appConfig}
+        onOpenDeepLink={openDeepLink}
+        onGoBack={handleGoBack}
+      />
+    );
+  }
+
   // No subscription
   if (!appConfig.hasSubscription) {
     return (
@@ -220,16 +230,6 @@ export default function Connection() {
           {t('lite.tariffs')}
         </button>
       </div>
-    );
-  }
-
-  if (isUltimaMode) {
-    return (
-      <UltimaConnection
-        appConfig={appConfig}
-        onOpenDeepLink={openDeepLink}
-        onGoBack={handleGoBack}
-      />
     );
   }
 

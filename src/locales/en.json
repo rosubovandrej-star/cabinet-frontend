@@ -428,6 +428,9 @@
       "notConfiguredUser": "Connection setup is in progress. Please check back later.",
       "notConfiguredAdmin": "No connection apps have been configured. Set them up in the Apps settings.",
       "goToApps": "Go to Apps settings",
+      "goChooseTariff": "Choose a tariff",
+      "goTopUp": "Top up balance",
+      "activateTrialOnDashboard": "Activate trial on dashboard",
       "qrTitle": "Subscription QR Code",
       "qrScanHint": "Scan to connect",
       "qrButton": "QR Code"
