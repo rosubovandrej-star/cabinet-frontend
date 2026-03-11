@@ -41,6 +41,14 @@ function ScrollToTop() {
 const DEFAULT_TOP_LEVEL_PATHS = ['/', '/connection', '/balance', '/referral', '/support', '/wheel'];
 const ULTIMA_TOP_LEVEL_PATHS = ['/', '/connection', '/profile', '/support'];
 
+const getBackFallbackPath = (pathname: string): string | null => {
+  if (/^\/admin\/users\/[^/]+$/.test(pathname)) {
+    return '/admin/users';
+  }
+
+  return null;
+};
+
 function TelegramBackButton() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -64,8 +72,13 @@ function TelegramBackButton() {
 
   // Stable handler — ref prevents re-subscription on every render
   const handler = useCallback(() => {
+    const fallbackPath = getBackFallbackPath(location.pathname);
+    if (fallbackPath) {
+      navigateRef.current(fallbackPath);
+      return;
+    }
     navigateRef.current(-1);
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     try {
