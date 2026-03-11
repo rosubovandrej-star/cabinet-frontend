@@ -12,13 +12,14 @@ import { authApi } from '../api/auth';
 import Onboarding, { useOnboarding } from '../components/Onboarding';
 import PromoOffersSection from '../components/PromoOffersSection';
 import { useLiteMode } from '../hooks/useLiteMode';
-import { useUltimaMode } from '../hooks/useUltimaMode';
+import { getCachedUltimaMode, useUltimaMode } from '../hooks/useUltimaMode';
 import { LiteDashboard } from './LiteDashboard';
 import { UltimaDashboard } from './UltimaDashboard';
 import SubscriptionCardExpired from '../components/dashboard/SubscriptionCardExpired';
 import TrialOfferCard from '../components/dashboard/TrialOfferCard';
 import StatsGrid from '../components/dashboard/StatsGrid';
 import { API } from '../config/constants';
+import PageLoader from '../components/common/PageLoader';
 
 const ChevronRightIcon = () => (
   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -60,8 +61,16 @@ function getTrafficColor(percent: number): string {
 }
 
 export default function Dashboard() {
-  const { isLiteMode } = useLiteMode();
-  const { isUltimaMode } = useUltimaMode();
+  const { i18n } = useTranslation();
+  const { isLiteMode, isLiteModeReady } = useLiteMode();
+  const { isUltimaMode, isUltimaModeReady } = useUltimaMode();
+  const isI18nReady =
+    i18n.isInitialized &&
+    (typeof i18n.hasLoadedNamespace !== 'function' || i18n.hasLoadedNamespace('translation'));
+
+  if (!isLiteModeReady || !isUltimaModeReady || !isI18nReady) {
+    return <PageLoader variant={getCachedUltimaMode() ? 'ultima' : 'dark'} />;
+  }
 
   if (isUltimaMode) {
     return <UltimaDashboard />;

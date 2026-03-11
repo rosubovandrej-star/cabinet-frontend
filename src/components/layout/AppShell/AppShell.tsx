@@ -12,7 +12,7 @@ import { useBranding } from '@/hooks/useBranding';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { useScrollRestoration } from '@/hooks/useScrollRestoration';
 import { useLiteMode } from '@/hooks/useLiteMode';
-import { useUltimaMode } from '@/hooks/useUltimaMode';
+import { getCachedUltimaMode, useUltimaMode } from '@/hooks/useUltimaMode';
 import { themeColorsApi } from '@/api/themeColors';
 import { isLogoPreloaded } from '@/api/branding';
 import { cn } from '@/lib/utils';
@@ -23,6 +23,7 @@ import CampaignBonusNotifier from '@/components/CampaignBonusNotifier';
 import SuccessNotificationModal from '@/components/SuccessNotificationModal';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import TicketNotificationBell from '@/components/TicketNotificationBell';
+import PageLoader from '@/components/common/PageLoader';
 import { BackgroundRenderer } from '@/components/backgrounds/BackgroundRenderer';
 import { SubscriptionIcon } from '@/components/icons';
 
@@ -347,6 +348,15 @@ export function AppShell({ children }: AppShellProps) {
     void import('@/pages/TopUpAmount');
     void import('@/pages/AccountLinking');
   }, [isUltimaMode]);
+
+  if (!isLiteModeReady || !isUltimaModeReady) {
+    return (
+      <div className="min-h-screen">
+        <BackgroundRenderer />
+        <PageLoader variant={getCachedUltimaMode() ? 'ultima' : 'dark'} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">

@@ -2,7 +2,9 @@ import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { AxiosError } from 'axios';
 import { tariffsApi, TariffListItem } from '../api/tariffs';
+import { adminSettingsApi } from '../api/adminSettings';
 import { useDestructiveConfirm, useNotify } from '@/platform';
 import { usePlatform } from '../platform/hooks/usePlatform';
 import {
@@ -102,6 +104,19 @@ const SaveIcon = () => (
     />
   </svg>
 );
+
+const TRIAL_DURATION_KEY = 'TRIAL_DURATION_DAYS';
+const TRIAL_TRAFFIC_KEY = 'TRIAL_TRAFFIC_LIMIT_GB';
+
+const toIntValue = (value: unknown, fallback: number): number => {
+  const parsed =
+    typeof value === 'number'
+      ? value
+      : typeof value === 'string'
+        ? Number.parseInt(value, 10)
+        : Number.NaN;
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
 
 // ============ Sortable Tariff Card ============
 
@@ -255,11 +270,33 @@ export default function AdminTariffs() {
 
   const [localTariffs, setLocalTariffs] = useState<TariffListItem[]>([]);
   const [orderChanged, setOrderChanged] = useState(false);
+  const [trialDaysInput, setTrialDaysInput] = useState<string>('');
+  const [trialTrafficInput, setTrialTrafficInput] = useState<string>('');
 
   // Queries
   const { data: tariffsData, isLoading } = useQuery({
     queryKey: ['admin-tariffs'],
     queryFn: () => tariffsApi.getTariffs(true),
+  });
+  const {
+    data: trialSettings,
+    isLoading: isTrialSettingsLoading,
+    isError: isTrialSettingsError,
+    error: trialSettingsError,
+  } = useQuery({
+    queryKey: ['admin-trial-settings-inline'],
+    queryFn: async () => {
+      const [durationSetting, trafficSetting] = await Promise.all([
+        adminSettingsApi.getSetting(TRIAL_DURATION_KEY),
+        adminSettingsApi.getSetting(TRIAL_TRAFFIC_KEY),
+      ]);
+
+      return {
+        duration: toIntValue(durationSetting.current, 0),
+        traffic: toIntValue(trafficSetting.current, 0),
+      };
+    },
+    retry: false,
   });
 
   // Sync fetched data to local state
@@ -268,6 +305,12 @@ export default function AdminTariffs() {
       setLocalTariffs(tariffsData.tariffs);
     }
   }, [tariffsData, orderChanged]);
+
+  useEffect(() => {
+    if (!trialSettings) return;
+    setTrialDaysInput(String(trialSettings.duration));
+    setTrialTrafficInput(String(trialSettings.traffic));
+  }, [trialSettings]);
 
   // Save order mutation
   const saveOrderMutation = useMutation({
@@ -326,6 +369,27 @@ export default function AdminTariffs() {
       queryClient.invalidateQueries({ queryKey: ['admin-tariffs'] });
     },
   });
+  const saveTrialSettingsMutation = useMutation({
+    mutationFn: async ({ days, traffic }: { days: number; traffic: number }) => {
+      await Promise.all([
+        adminSettingsApi.updateSetting(TRIAL_DURATION_KEY, days),
+        adminSettingsApi.updateSetting(TRIAL_TRAFFIC_KEY, traffic),
+      ]);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-trial-settings-inline'] });
+      notify.success(
+        t('admin.tariffs.trialQuickSaved', { defaultValue: 'Параметры триала сохранены' }),
+      );
+    },
+    onError: () => {
+      notify.error(
+        t('admin.tariffs.trialQuickSaveError', {
+          defaultValue: 'Не удалось сохранить параметры триала',
+        }),
+      );
+    },
+  });
 
   // DnD sensors
   const sensors = useSensors(
@@ -348,6 +412,28 @@ export default function AdminTariffs() {
 
   const handleSaveOrder = () => {
     saveOrderMutation.mutate(localTariffs.map((t) => t.id));
+  };
+
+  const trialTariff = localTariffs.find((tariff) => tariff.is_trial_available) || null;
+  const trialDays = Number.parseInt(trialDaysInput, 10);
+  const trialTraffic = Number.parseInt(trialTrafficInput, 10);
+  const trialFormValid =
+    Number.isFinite(trialDays) &&
+    Number.isFinite(trialTraffic) &&
+    trialDays >= 0 &&
+    trialTraffic >= 0;
+  const trialFormDirty =
+    trialSettings !== undefined &&
+    (trialSettings.duration !== trialDays || trialSettings.traffic !== trialTraffic);
+  const trialSettingsForbidden =
+    trialSettingsError instanceof AxiosError && trialSettingsError.response?.status === 403;
+
+  const handleSaveTrialSettings = () => {
+    if (!trialFormValid || !trialFormDirty) return;
+    saveTrialSettingsMutation.mutate({
+      days: trialDays,
+      traffic: trialTraffic,
+    });
   };
 
   return (
@@ -393,6 +479,111 @@ export default function AdminTariffs() {
           </button>
         </div>
       </div>
+
+      {!trialSettingsForbidden && (
+        <div className="mb-5 rounded-xl border border-dark-700 bg-dark-800/70 p-4">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="text-base font-semibold text-dark-100">
+                {t('admin.tariffs.trialQuickTitle', {
+                  defaultValue: 'Быстрые параметры триала',
+                })}
+              </h2>
+              <p className="text-xs text-dark-400">
+                {t('admin.tariffs.trialQuickDescription', {
+                  defaultValue: 'Меняйте длительность и лимит трафика триала прямо из тарифов.',
+                })}
+              </p>
+            </div>
+            {trialTariff && (
+              <button
+                type="button"
+                onClick={() => navigate(`/admin/tariffs/${trialTariff.id}/edit`)}
+                className="rounded-lg border border-accent-500/40 bg-accent-500/10 px-3 py-1.5 text-xs text-accent-300 transition hover:bg-accent-500/20"
+              >
+                {t('admin.tariffs.trialQuickEditTariff', {
+                  defaultValue: 'Редактировать триальный тариф',
+                })}
+              </button>
+            )}
+          </div>
+
+          {isTrialSettingsLoading ? (
+            <div className="h-10 w-full animate-pulse rounded-lg bg-dark-700/60" />
+          ) : isTrialSettingsError ? (
+            <p className="text-sm text-error-400">
+              {t('admin.tariffs.trialQuickLoadError', {
+                defaultValue: 'Не удалось загрузить параметры триала',
+              })}
+            </p>
+          ) : (
+            <div className="space-y-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="space-y-1.5">
+                  <span className="text-xs font-medium uppercase tracking-wide text-dark-300">
+                    {t('admin.tariffs.trialQuickDays', { defaultValue: 'Дней триала' })}
+                  </span>
+                  <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={trialDaysInput}
+                    onChange={(event) => setTrialDaysInput(event.target.value)}
+                    className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-sm text-dark-100 outline-none transition focus:border-accent-500"
+                  />
+                </label>
+                <label className="space-y-1.5">
+                  <span className="text-xs font-medium uppercase tracking-wide text-dark-300">
+                    {t('admin.tariffs.trialQuickTraffic', {
+                      defaultValue: 'Трафик триала (ГБ)',
+                    })}
+                  </span>
+                  <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={trialTrafficInput}
+                    onChange={(event) => setTrialTrafficInput(event.target.value)}
+                    className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-sm text-dark-100 outline-none transition focus:border-accent-500"
+                  />
+                </label>
+              </div>
+
+              <p className="text-xs text-dark-500">
+                {t('admin.tariffs.trialQuickPriorityHint', {
+                  defaultValue:
+                    'Если выбран триальный тариф, его лимит трафика имеет приоритет над глобальным значением.',
+                })}
+              </p>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleSaveTrialSettings}
+                  disabled={
+                    !trialFormValid || !trialFormDirty || saveTrialSettingsMutation.isPending
+                  }
+                  className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {saveTrialSettingsMutation.isPending ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  ) : (
+                    <SaveIcon />
+                  )}
+                  {t('admin.tariffs.trialQuickSave', { defaultValue: 'Сохранить триал' })}
+                </button>
+                {!trialFormValid && (
+                  <span className="text-xs text-error-400">
+                    {t('admin.tariffs.trialQuickValidation', {
+                      defaultValue: 'Введите корректные значения (0 и выше)',
+                    })}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Drag hint */}
       <div className="mb-4 flex items-center gap-2 text-sm text-dark-500">
