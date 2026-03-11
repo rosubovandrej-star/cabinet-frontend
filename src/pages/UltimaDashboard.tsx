@@ -358,13 +358,13 @@ export function UltimaDashboard() {
         </button>
       )}
 
-      <div className="ultima-shell-inner lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:gap-8">
-        <section className="flex min-h-0 flex-1 flex-col pb-[clamp(14px,2.8vh,24px)] pt-[clamp(86px,19vh,198px)] lg:pb-6 lg:pr-4 lg:pt-8 xl:pb-8 xl:pt-14">
+      <div className="ultima-shell-inner lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-8">
+        <section className="flex min-h-0 flex-1 flex-col pb-[clamp(14px,2.8vh,24px)] pt-[clamp(86px,19vh,198px)] lg:pb-8 lg:pr-4 lg:pt-16">
           <button
             type="button"
             aria-label={t('nav.dashboard')}
             onPointerDown={handleShieldTap}
-            className="relative mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-black/15 focus-visible:outline-none lg:mb-5 xl:mb-8"
+            className="relative mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-black/15 focus-visible:outline-none lg:mb-8"
             style={{ WebkitTapHighlightColor: 'transparent' }}
           >
             <span aria-hidden className="pointer-events-none absolute inset-0 overflow-visible">
@@ -426,7 +426,7 @@ export function UltimaDashboard() {
           />
         </section>
 
-        <section className="mt-auto pb-0 lg:ml-auto lg:mt-0 lg:w-full lg:max-w-[420px] lg:self-end lg:pb-1">
+        <section className="mt-auto pb-0 lg:ml-auto lg:mt-auto lg:w-full lg:max-w-[420px] lg:pb-2">
           <button
             type="button"
             onClick={() => {
@@ -457,7 +457,7 @@ export function UltimaDashboard() {
           <button
             type="button"
             onClick={() => navigate('/connection')}
-            className="mb-3 flex w-full items-center justify-between rounded-full border border-emerald-200/25 bg-[rgba(12,45,42,0.36)] px-5 py-3 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_24px_rgba(3,14,24,0.32)] backdrop-blur-md transition hover:bg-[rgba(16,58,52,0.44)]"
+            className="mb-4 flex w-full items-center justify-between rounded-full border border-emerald-200/25 bg-[rgba(12,45,42,0.36)] px-5 py-3 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_24px_rgba(3,14,24,0.32)] backdrop-blur-md transition hover:bg-[rgba(16,58,52,0.44)]"
           >
             <span className="flex items-center gap-2">
               <SetupIcon />
