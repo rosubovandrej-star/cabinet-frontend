@@ -3899,7 +3899,8 @@
       "promoOffers": "Promo Offers",
       "promoOffersDesc": "Receive special offers and discounts",
       "unavailable": "Notification settings unavailable"
-    }
+    },
+    "promocodeDescription": "Activate bonuses and discounts"
   },
   "theme": {
     "colors": "Theme Colors",

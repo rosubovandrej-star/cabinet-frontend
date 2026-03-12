@@ -27,6 +27,7 @@ export async function warmUltimaStartup(
     import('@/pages/Connection'),
     import('@/pages/Support'),
     import('@/pages/Profile'),
+    import('@/pages/UltimaPromocode'),
     import('@/pages/Subscription'),
     import('@/pages/UltimaAgreement'),
 

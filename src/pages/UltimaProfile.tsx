@@ -54,6 +54,18 @@ const ReferralIcon = () => (
   </svg>
 );
 
+const PromocodeIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+    <path
+      d="M4.5 8.5A2.5 2.5 0 0 1 7 6h10a2.5 2.5 0 0 1 2.5 2.5v1.4a1.6 1.6 0 0 0 0 3.2v1.4A2.5 2.5 0 0 1 17 17H7a2.5 2.5 0 0 1-2.5-2.5v-1.4a1.6 1.6 0 0 0 0-3.2V8.5Z"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+    />
+    <path d="M9.5 9.5h5M9.5 14.5h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
 const AccessIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
     <path
@@ -188,6 +200,15 @@ export function UltimaProfile() {
       }),
       path: '/referral',
       icon: <ReferralIcon />,
+    },
+    {
+      key: 'promocode',
+      title: t('balance.promocode.title', { defaultValue: 'Промокод' }),
+      subtitle: t('profile.promocodeDescription', {
+        defaultValue: 'Активация бонусов и скидок',
+      }),
+      path: '/promocode',
+      icon: <PromocodeIcon />,
     },
     {
       key: 'linking',
@@ -342,6 +363,8 @@ export function UltimaProfile() {
             staleTime: 15000,
           }),
         );
+      } else if (path === '/promocode') {
+        tasks.push(import('./UltimaPromocode'));
       } else if (path === '/support') {
         tasks.push(import('./Support'));
         tasks.push(
