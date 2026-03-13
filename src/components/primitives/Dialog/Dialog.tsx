@@ -6,6 +6,7 @@ import {
   createContext,
   useContext,
   useState,
+  useMemo,
 } from 'react';
 import { cn } from '@/lib/utils';
 import { backdrop, backdropTransition, scale, scaleTransition } from '../../motion/transitions';
@@ -40,9 +41,11 @@ export const Dialog = ({ children, open, onOpenChange, ...props }: DialogProps) 
   const isOpen = open !== undefined ? open : internalOpen;
   const handleOpenChange = onOpenChange || setInternalOpen;
 
+  const contextValue = useMemo(() => ({ open: isOpen }), [isOpen]);
+
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={handleOpenChange} {...props}>
-      <DialogContext.Provider value={{ open: isOpen }}>{children}</DialogContext.Provider>
+      <DialogContext.Provider value={contextValue}>{children}</DialogContext.Provider>
     </DialogPrimitive.Root>
   );
 };

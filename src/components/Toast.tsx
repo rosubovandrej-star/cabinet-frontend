@@ -5,6 +5,7 @@ import {
   useCallback,
   useRef,
   useEffect,
+  useMemo,
   ReactNode,
 } from 'react';
 
@@ -91,8 +92,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const contextValue = useMemo(() => ({ showToast }), [showToast]);
+
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
 
       {/* Toast Container — safe area aware, adaptive width */}

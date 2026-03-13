@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useAuthStore } from '../store/auth';
 import { WebSocketContext, type MessageHandler, type WSMessage } from './WebSocketContext';
 import { WS } from '../config/constants';
@@ -171,8 +171,10 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const contextValue = useMemo(() => ({ isConnected, subscribe }), [isConnected, subscribe]);
+
   return (
-    <WebSocketContext.Provider value={{ isConnected, subscribe }}>
+    <WebSocketContext.Provider value={contextValue}>
       {children}
     </WebSocketContext.Provider>
   );

@@ -7,6 +7,7 @@ import {
   useContext,
   useState,
   useCallback,
+  useMemo,
 } from 'react';
 import { cn } from '@/lib/utils';
 import { usePlatform } from '@/platform';
@@ -75,9 +76,11 @@ export const Sheet = ({ children, open, onOpenChange, onClose, ...props }: Sheet
     handleOpenChange(false);
   }, [handleOpenChange]);
 
+  const contextValue = useMemo(() => ({ open: isOpen, onClose: handleClose }), [isOpen, handleClose]);
+
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={handleOpenChange} {...props}>
-      <SheetContext.Provider value={{ open: isOpen, onClose: handleClose }}>
+      <SheetContext.Provider value={contextValue}>
         {children}
       </SheetContext.Provider>
     </DialogPrimitive.Root>

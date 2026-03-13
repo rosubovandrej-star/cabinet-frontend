@@ -1,0 +1,10 @@
+﻿
+> cabinet-frontend@1.7.0 lint
+> eslint .
+
+
+C:\Users\admin\Favorites\cabinet-frontend\src\pages\GiftSubscription.tsx
+  658:20  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+тЬЦ 1 problem (0 errors, 1 warning)
+
