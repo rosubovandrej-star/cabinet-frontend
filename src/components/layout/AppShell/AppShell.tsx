@@ -210,7 +210,7 @@ export function AppShell({ children }: AppShellProps) {
 
   // Extracted hooks
   const { appName, logoLetter, hasCustomLogo, logoUrl } = useBranding();
-  const { referralEnabled, wheelEnabled, hasContests, hasPolls } = useFeatureFlags();
+  const { referralEnabled, wheelEnabled, hasContests, hasPolls, giftEnabled } = useFeatureFlags();
   const { isLiteMode, isLiteModeReady } = useLiteMode();
   const { isUltimaMode, isUltimaModeReady } = useUltimaMode();
   const isCompactMode = isLiteMode || isUltimaMode;
@@ -275,6 +275,9 @@ export function AppShell({ children }: AppShellProps) {
   const desktopNavItems = [
     { path: '/', label: t('nav.dashboard'), icon: HomeIcon },
     { path: '/subscription', label: t('nav.subscription'), icon: SubscriptionIcon },
+    ...(giftEnabled
+      ? [{ path: '/gift', label: t('nav.gift', 'Подарок'), icon: SubscriptionIcon }]
+      : []),
     { path: '/balance', label: t('nav.balance'), icon: CreditCardIcon },
     { path: '/support', label: t('nav.support'), icon: ChatIcon },
     { path: '/info', label: t('nav.info'), icon: InfoIcon },
@@ -546,6 +549,7 @@ export function AppShell({ children }: AppShellProps) {
           referralEnabled={referralEnabled}
           hasContests={hasContests}
           hasPolls={hasPolls}
+          giftEnabled={giftEnabled}
         />
       )}
 

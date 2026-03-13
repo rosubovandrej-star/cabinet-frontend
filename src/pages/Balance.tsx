@@ -102,6 +102,7 @@ function FullBalance() {
       refreshUser();
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      queryClient.invalidateQueries({ queryKey: ['purchase-options'] });
 
       showToast({
         type: 'success',
@@ -188,6 +189,7 @@ function FullBalance() {
         await refetchBalance();
         await refreshUser();
         queryClient.invalidateQueries({ queryKey: ['transactions'] });
+        queryClient.invalidateQueries({ queryKey: ['purchase-options'] });
       }
     } catch (error: unknown) {
       const axiosError = error as { response?: { data?: { detail?: string } } };
@@ -367,10 +369,15 @@ function FullBalance() {
                       animate="animate"
                     >
                       {transactions.items.map((tx) => {
-                        const isPositive = tx.amount_rubles >= 0;
+                        const isZero = tx.amount_rubles === 0;
+                        const isPositive = tx.amount_rubles > 0;
                         const displayAmount = Math.abs(tx.amount_rubles);
-                        const sign = isPositive ? '+' : '-';
-                        const colorClass = isPositive ? 'text-success-400' : 'text-error-400';
+                        const sign = isZero ? '' : isPositive ? '+' : '-';
+                        const colorClass = isZero
+                          ? 'text-dark-400'
+                          : isPositive
+                            ? 'text-success-400'
+                            : 'text-error-400';
 
                         return (
                           <motion.div

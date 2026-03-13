@@ -16,6 +16,8 @@ import { UltimaPromocode } from '../UltimaPromocode';
 const Dashboard = lazy(() => import('../Dashboard'));
 const Subscription = lazy(() => import('../Subscription'));
 const SubscriptionPurchase = lazy(() => import('../SubscriptionPurchase'));
+const GiftSubscription = lazy(() => import('../GiftSubscription'));
+const GiftResult = lazy(() => import('../GiftResult'));
 const Contests = lazy(() => import('../Contests'));
 const Polls = lazy(() => import('../Polls'));
 const Info = lazy(() => import('../Info'));
@@ -51,6 +53,26 @@ export const protectedRoutes: RouteConfig[] = [
       <ProtectedRoute>
         <LazyPage>
           <SubscriptionPurchase />
+        </LazyPage>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/gift',
+    element: (
+      <ProtectedRoute>
+        <LazyPage>
+          <GiftSubscription />
+        </LazyPage>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/gift/result',
+    element: (
+      <ProtectedRoute>
+        <LazyPage>
+          <GiftResult />
         </LazyPage>
       </ProtectedRoute>
     ),

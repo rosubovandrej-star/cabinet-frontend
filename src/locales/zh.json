@@ -1401,7 +1401,8 @@
         "referral": "推荐",
         "support": "支持",
         "info": "信息",
-        "admin": "管理面板"
+        "admin": "管理面板",
+        "language": "语言"
       },
       "descriptions": {
         "home": "个人中心按钮",
@@ -1410,7 +1411,8 @@
         "referral": "推荐计划",
         "support": "支持工单",
         "info": "信息板块",
-        "admin": "网页管理面板"
+        "admin": "网页管理面板",
+        "language": "机器人语言选择"
       },
       "styles": {
         "default": "无颜色",
@@ -1418,6 +1420,21 @@
         "success": "绿色",
         "danger": "红色"
       }
+    },
+    "menuEditor": {
+      "dragHint": "拖拽行以重新排序",
+      "dragToReorder": "拖拽排序",
+      "row": "行",
+      "addRow": "添加行",
+      "addButton": "添加按钮",
+      "addUrlButton": "URL按钮（链接）",
+      "builtinButtons": "内置栏目",
+      "resetConfirm": "将菜单重置为默认设置？所有更改将丢失。",
+      "buttonTextPlaceholder": "按钮文本",
+      "customLabelsHint": "每种语言的按钮文本",
+      "moveUp": "上移",
+      "moveDown": "下移",
+      "invalidUrl": "请为所有自定义按钮提供有效的URL（http:// 或 https://）"
     },
     "apps": {
       "title": "应用管理",
@@ -1646,6 +1663,9 @@
       "statusTitle": "套餐状态",
       "isActiveLabel": "已激活",
       "isActiveHint": "未激活的套餐不会显示给用户",
+      "showInGiftLabel": "在礼物中显示",
+      "showInGiftHint": "套餐将在礼物区域中可供购买",
+      "giftBadge": "礼物",
       "isTrialLabel": "试用套餐",
       "isTrialHint": "可用于免费试用期",
       "validation": {
@@ -2137,6 +2157,7 @@
       "form": {
         "name": "组名称",
         "namePlaceholder": "VIP客户",
+        "nameRequired": "请输入组名称",
         "categoryDiscounts": "分类折扣",
         "periodDiscounts": "期间折扣",
         "add": "添加",
@@ -2148,6 +2169,7 @@
         "rub": "卢布",
         "autoAssignHint": "0 = 不自动分配",
         "applyToAddons": "应用于附加服务",
+        "isDefault": "默认组",
         "cancel": "取消",
         "saving": "保存中...",
         "save": "保存"
