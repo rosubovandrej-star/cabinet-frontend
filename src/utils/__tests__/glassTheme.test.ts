@@ -6,7 +6,10 @@ describe('getGlassColors', () => {
   it('should return correct tokens for dark mode', () => {
     const colors = getGlassColors(true);
 
-    assert.strictEqual(colors.cardBg, 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)');
+    assert.strictEqual(
+      colors.cardBg,
+      'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+    );
     assert.strictEqual(colors.cardBorder, 'rgba(255,255,255,0.07)');
     assert.strictEqual(colors.innerBg, 'rgba(255,255,255,0.03)');
     assert.strictEqual(colors.innerBorder, 'rgba(255,255,255,0.04)');
@@ -28,7 +31,10 @@ describe('getGlassColors', () => {
   it('should return correct tokens for light mode', () => {
     const colors = getGlassColors(false);
 
-    assert.strictEqual(colors.cardBg, 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.88) 100%)');
+    assert.strictEqual(
+      colors.cardBg,
+      'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.88) 100%)',
+    );
     assert.strictEqual(colors.cardBorder, 'rgba(0,0,0,0.1)');
     assert.strictEqual(colors.innerBg, 'rgba(0,0,0,0.03)');
     assert.strictEqual(colors.innerBorder, 'rgba(0,0,0,0.06)');
@@ -44,6 +50,9 @@ describe('getGlassColors', () => {
     assert.strictEqual(colors.codeBg, 'rgba(0,0,0,0.04)');
     assert.strictEqual(colors.codeBorder, 'rgba(0,0,0,0.06)');
     assert.strictEqual(colors.glowAlpha, '08');
-    assert.strictEqual(colors.shadow, '0 2px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)');
+    assert.strictEqual(
+      colors.shadow,
+      '0 2px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)',
+    );
   });
 });
