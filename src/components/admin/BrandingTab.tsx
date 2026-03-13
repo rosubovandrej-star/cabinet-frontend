@@ -48,6 +48,11 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
     queryFn: brandingApi.getUltimaModeEnabled,
   });
 
+  const { data: giftEnabledSettings } = useQuery({
+    queryKey: ['gift-enabled'],
+    queryFn: brandingApi.getGiftEnabled,
+  });
+
   // Mutations
   const updateBrandingMutation = useMutation({
     mutationFn: brandingApi.updateName,
@@ -102,6 +107,13 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
     onSuccess: (data) => {
       setCachedUltimaMode(data.enabled);
       queryClient.invalidateQueries({ queryKey: ['ultima-mode-enabled'] });
+    },
+  });
+
+  const updateGiftEnabledMutation = useMutation({
+    mutationFn: (enabled: boolean) => brandingApi.updateGiftEnabled(enabled),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['gift-enabled'] });
     },
   });
 
@@ -303,6 +315,20 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
                 updateUltimaModeMutation.mutate(!(ultimaModeSettings?.enabled ?? false))
               }
               disabled={updateUltimaModeMutation.isPending}
+            />
+          </div>
+
+          <div className="flex items-center justify-between rounded-xl bg-dark-700/30 p-4">
+            <div>
+              <span className="font-medium text-dark-100">{t('admin.settings.giftEnabled')}</span>
+              <p className="text-sm text-dark-400">{t('admin.settings.giftEnabledDesc')}</p>
+            </div>
+            <Toggle
+              checked={giftEnabledSettings?.enabled ?? false}
+              onChange={() =>
+                updateGiftEnabledMutation.mutate(!(giftEnabledSettings?.enabled ?? false))
+              }
+              disabled={updateGiftEnabledMutation.isPending}
             />
           </div>
         </div>
