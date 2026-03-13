@@ -71,8 +71,8 @@ export function UltimaBottomNav({
 
   const getButtonClassName = (isActive: boolean) =>
     isActive
-      ? 'flex h-11 items-center justify-center rounded-[16px] border border-[#7af4d4]/35 bg-[#1bd29f] text-white shadow-[0_8px_20px_rgba(20,209,157,0.32),inset_0_1px_0_rgba(255,255,255,0.24)] translate-y-[-1px] transition-all duration-200 active:translate-y-0 active:scale-[0.985]'
-      : 'flex h-11 items-center justify-center rounded-[16px] text-white/78 transition-all duration-200 hover:bg-white/8 hover:translate-y-[-1px] active:translate-y-0 active:scale-[0.985]';
+      ? 'flex h-11 items-center justify-center border border-[var(--ultima-accent)] bg-[var(--ultima-accent)] text-[var(--ultima-text)] shadow-[0_8px_20px_color-mix(in_srgb,var(--ultima-accent)_32%,transparent),inset_0_1px_0_rgba(255,255,255,0.24)] translate-y-[-1px] transition-all duration-200 active:translate-y-0 active:scale-[0.985]'
+      : 'flex h-11 items-center justify-center text-white/78 transition-all duration-200 hover:bg-white/8 hover:translate-y-[-1px] active:translate-y-0 active:scale-[0.985]';
 
   const handlePointerMove =
     (tab: UltimaBottomNavTab) => (event: PointerEvent<HTMLButtonElement>) => {
@@ -94,11 +94,18 @@ export function UltimaBottomNav({
     return {
       transform: `translate3d(${offset.x}px, ${baseY + offset.y}px, 0)`,
       willChange: 'transform',
+      borderRadius: 'var(--ultima-radius)',
     };
   };
 
   return (
-    <nav className="ultima-bottom-nav grid grid-cols-4 gap-1.5 rounded-[22px] bg-[linear-gradient(180deg,rgba(24,92,76,0.76),rgba(10,48,40,0.92))] p-1.5 text-white/80 shadow-[0_14px_34px_rgba(3,9,18,0.45),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl">
+    <nav 
+      className="ultima-bottom-nav grid grid-cols-4 gap-1.5 p-1.5 text-white/80 shadow-[0_14px_34px_rgba(3,9,18,0.45),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl"
+      style={{
+        borderRadius: 'calc(var(--ultima-radius) + 8px)',
+        background: 'linear-gradient(180deg, color-mix(in srgb, var(--ultima-bg) 76%, black), color-mix(in srgb, var(--ultima-bg) 92%, black))'
+      }}
+    >
       <button
         type="button"
         data-ultima-nav-btn="1"

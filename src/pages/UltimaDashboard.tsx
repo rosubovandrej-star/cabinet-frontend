@@ -1,16 +1,18 @@
+import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import { balanceApi } from '@/api/balance';
 import { infoApi } from '@/api/info';
 import { subscriptionApi } from '@/api/subscription';
 import { ticketsApi } from '@/api/tickets';
 import { UltimaBottomNav } from '@/components/ultima/UltimaBottomNav';
+import { UltimaBackgroundRenderer } from '@/components/ultima/UltimaBackgroundRenderer';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useHaptic } from '@/platform';
 import { useAuthStore } from '@/store/auth';
 import { warmUltimaStartup } from '@/features/ultima/warmup';
+import { useUltimaTheme } from '@/hooks/useUltimaTheme';
 
 const ULTIMA_CONNECTION_STATE_KEY = 'ultima_connection_flow_v1';
 
@@ -92,8 +94,10 @@ export function UltimaDashboard() {
   const rippleIdRef = useRef(0);
   const warmedLanguagesRef = useRef<Set<string>>(new Set());
   const trialAutoActivationAttemptedRef = useRef(false);
-  const [shieldRipples, setShieldRipples] = useState<ShieldRipple[]>([]);
   const [connectionStep, setConnectionStep] = useState<1 | 2 | 3>(1);
+  const [shieldRipples, setShieldRipples] = useState<ShieldRipple[]>([]);
+
+  const { theme } = useUltimaTheme(); // Load configurable ultima theme
 
   const {
     data: subscriptionResponse,
@@ -327,18 +331,22 @@ export function UltimaDashboard() {
 
   if (!isI18nReady || !isSubscriptionReady || shouldHoldForAutoTrial) {
     return (
-      <div className="ultima-shell pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2">
-        <div className="relative z-10 mx-auto flex h-[calc(100dvh-26px)] w-full flex-col px-4 sm:px-6">
+      <div className="ultima-shell bg-[var(--ultima-bg)] pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2 relative isolate overflow-hidden">
+        {/* Animated Background layer */}
+        <UltimaBackgroundRenderer config={theme.animation} />
+
+        <div className="ultima-shell-inner isolate p-5 sm:p-6 pb-28 mb-32 h-full relative">
+
           <section className="pt-[clamp(74px,16vh,160px)]">
-            <div className="mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-black/15">
+            <div className="mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-[var(--ultima-bg)] mix-blend-overlay opacity-30">
               <ShieldIcon />
             </div>
-            <div className="mb-5 h-16 animate-pulse rounded-2xl bg-white/10" />
+            <div className="mb-5 h-16 animate-pulse rounded-[var(--ultima-radius,16px)] bg-white/10" />
           </section>
           <section className="mt-auto space-y-3 pb-1">
-            <div className="h-14 animate-pulse rounded-full bg-white/10" />
-            <div className="h-14 animate-pulse rounded-full bg-white/10" />
-            <div className="h-[58px] animate-pulse rounded-full bg-white/10" />
+            <div className="h-14 animate-pulse rounded-[var(--ultima-radius,16px)] bg-white/10" />
+            <div className="h-14 animate-pulse rounded-[var(--ultima-radius,16px)] bg-white/10" />
+            <div className="h-[58px] animate-pulse rounded-[var(--ultima-radius,16px)] bg-white/10" />
           </section>
         </div>
       </div>
@@ -346,7 +354,10 @@ export function UltimaDashboard() {
   }
 
   return (
-    <div className="ultima-shell">
+    <div className="ultima-shell bg-[var(--ultima-bg)] relative isolate overflow-hidden">
+      {/* Animated Background layer */}
+      <UltimaBackgroundRenderer config={theme.animation} />
+
       {isAdmin && (
         <button
           type="button"
@@ -358,14 +369,14 @@ export function UltimaDashboard() {
         </button>
       )}
 
-      <div className="ultima-shell-inner">
+      <div className="ultima-shell-inner mx-auto flex min-h-[100dvh] max-w-md flex-col px-4 sm:px-6 relative z-10">
         <section className="flex min-h-0 flex-1 flex-col pb-[clamp(14px,2.8vh,24px)] pt-[clamp(86px,19vh,198px)] lg:pb-3 lg:pt-16">
           <button
             type="button"
             aria-label={t('nav.dashboard')}
             onPointerDown={handleShieldTap}
-            className="relative mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-black/15 focus-visible:outline-none lg:mb-8"
-            style={{ WebkitTapHighlightColor: 'transparent' }}
+            className="relative mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-black/15 focus-visible:outline-none lg:mb-8 transition-colors"
+            style={{ WebkitTapHighlightColor: 'transparent', backgroundColor: 'var(--ultima-bg)', opacity: 0.85 }}
           >
             <span aria-hidden className="pointer-events-none absolute inset-0 overflow-visible">
               {shieldRipples.map((ripple) => (
@@ -397,7 +408,8 @@ export function UltimaDashboard() {
               <button
                 type="button"
                 onClick={() => navigate('/connection')}
-                className="border-[#66ebc9]/42 mt-2.5 flex w-full items-center justify-center rounded-full border bg-[#14cf9a] px-4 py-2.5 text-[15px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_14px_rgba(7,146,108,0.24)] transition hover:bg-[#16d8a1]"
+                className="mt-2.5 flex w-full items-center justify-center border bg-[var(--ultima-accent)] px-4 py-2.5 text-[15px] font-medium text-[var(--ultima-text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_14px_rgba(7,146,108,0.24)] transition hover:bg-[var(--ultima-accent-hover)]"
+                style={{ borderRadius: 'var(--ultima-radius)', borderColor: 'color-mix(in srgb, var(--ultima-accent) 42%, transparent)' }}
               >
                 {t('ultima.finishSetup', { defaultValue: 'Завершить установку' })}
               </button>
@@ -445,7 +457,8 @@ export function UltimaDashboard() {
               void import('./Subscription');
               navigate('/subscription');
             }}
-            className="border-[#66ebc9]/42 mb-3 flex w-full items-center justify-between rounded-full border bg-[#14cf9a] px-5 py-3 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)] transition hover:bg-[#16d8a1]"
+            className="mb-3 flex w-full items-center justify-between border bg-[var(--ultima-accent)] px-5 py-3 text-[16px] font-medium text-[var(--ultima-text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)] transition hover:bg-[var(--ultima-accent-hover)]"
+            style={{ borderRadius: 'var(--ultima-radius)', borderColor: 'color-mix(in srgb, var(--ultima-accent) 42%, transparent)' }}
           >
             <span className="flex items-center gap-2">
               <GlobeIcon />
@@ -457,7 +470,8 @@ export function UltimaDashboard() {
           <button
             type="button"
             onClick={() => navigate('/connection')}
-            className="mb-4 flex w-full items-center justify-between rounded-full border border-emerald-200/25 bg-[rgba(12,45,42,0.36)] px-5 py-3 text-[16px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_24px_rgba(3,14,24,0.32)] backdrop-blur-md transition hover:bg-[rgba(16,58,52,0.44)]"
+            className="mb-4 flex w-full items-center justify-between border border-emerald-200/25 bg-[color-mix(in_srgb,var(--ultima-bg)_36%,transparent)] px-5 py-3 text-[16px] font-medium text-[var(--ultima-text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_24px_rgba(3,14,24,0.32)] backdrop-blur-md transition hover:bg-[color-mix(in_srgb,var(--ultima-bg)_44%,transparent)]"
+            style={{ borderRadius: 'var(--ultima-radius)' }}
           >
             <span className="flex items-center gap-2">
               <SetupIcon />
