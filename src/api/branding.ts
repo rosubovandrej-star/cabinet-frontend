@@ -31,6 +31,10 @@ export interface UltimaModeEnabled {
   enabled: boolean;
 }
 
+export interface GiftEnabled {
+  enabled: boolean;
+}
+
 export interface AnalyticsCounters {
   yandex_metrika_id: string;
   google_ads_id: string;
@@ -334,6 +338,24 @@ export const brandingApi = {
   // Update ultima mode enabled (admin only)
   updateUltimaModeEnabled: async (enabled: boolean): Promise<UltimaModeEnabled> => {
     const response = await apiClient.patch<UltimaModeEnabled>('/cabinet/branding/ultima-mode', {
+      enabled,
+    });
+    return response.data;
+  },
+
+  // Get gift enabled (public, no auth required)
+  getGiftEnabled: async (): Promise<GiftEnabled> => {
+    try {
+      const response = await apiClient.get<GiftEnabled>('/cabinet/branding/gift-enabled');
+      return response.data;
+    } catch {
+      return { enabled: false };
+    }
+  },
+
+  // Update gift enabled (admin only)
+  updateGiftEnabled: async (enabled: boolean): Promise<GiftEnabled> => {
+    const response = await apiClient.patch<GiftEnabled>('/cabinet/branding/gift-enabled', {
       enabled,
     });
     return response.data;
