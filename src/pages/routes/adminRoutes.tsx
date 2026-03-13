@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { lazy } from 'react';
+import React, { lazy } from 'react';
 import { AdminRoute, LazyPage } from '../../components/routing/RouteShells';
 import type { RouteConfig } from './types';
 
@@ -66,6 +66,7 @@ const AdminPolicyEdit = lazy(() => import('../AdminPolicyEdit'));
 const AdminAuditLog = lazy(() => import('../AdminAuditLog'));
 const AdminUltimaSettings = lazy(() => import('../AdminUltimaSettings'));
 const AdminUltimaAgreement = lazy(() => import('../AdminUltimaAgreement'));
+const AdminUltimaThemeEditor = lazy(() => import('../AdminUltimaThemeEditor'));
 
 const withAdminLayout = (element: React.ReactNode) => (
   <AdminRoute>
@@ -80,6 +81,10 @@ export const adminRoutes: RouteConfig[] = [
   { path: '/admin/tickets/settings', element: withAdminLayout(<AdminTicketSettings />) },
   { path: '/admin/settings', element: withAdminLayout(<AdminSettings />) },
   { path: '/admin/ultima-settings', element: withAdminLayout(<AdminUltimaSettings />) },
+  {
+    path: '/admin/ultima-settings/theme',
+    element: withAdminLayout(<AdminUltimaThemeEditor />),
+  },
   {
     path: '/admin/ultima-settings/agreement',
     element: withAdminLayout(<AdminUltimaAgreement />),

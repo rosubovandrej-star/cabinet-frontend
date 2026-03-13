@@ -98,7 +98,7 @@ export default function AdminUltimaSettings() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
         <Link
           to="/admin/main-menu-buttons"
           className="group rounded-2xl border border-dark-700/50 bg-dark-800/40 p-4 transition-colors hover:border-violet-400/40 hover:bg-dark-800/70"
@@ -113,6 +113,26 @@ export default function AdminUltimaSettings() {
             {t('admin.ultimaSettings.buttonsDesc', {
               defaultValue:
                 'Редактор кнопок и порядка главного меню для режима Ultima и старта бота.',
+            })}
+          </p>
+        </Link>
+
+        <Link
+          to="/admin/ultima-settings/theme"
+          className="group rounded-2xl border border-dark-700/50 bg-dark-800/40 p-4 transition-colors hover:border-violet-400/40 hover:bg-dark-800/70"
+        >
+          <div className="mb-2 flex items-center gap-2 text-violet-300">
+            <UltimaIcon />
+            <span className="text-sm font-medium">
+              {t('admin.ultimaSettings.themeTitle', {
+                defaultValue: 'Редактор дизайна',
+              })}
+            </span>
+          </div>
+          <p className="text-sm text-dark-400">
+            {t('admin.ultimaSettings.themeDesc', {
+              defaultValue:
+                'Настройка цветов, скруглений, фонов и макета главной страницы Ultima.',
             })}
           </p>
         </Link>
