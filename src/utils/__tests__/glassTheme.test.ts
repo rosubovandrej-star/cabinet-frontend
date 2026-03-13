@@ -50,9 +50,6 @@ describe('getGlassColors', () => {
     assert.strictEqual(colors.codeBg, 'rgba(0,0,0,0.04)');
     assert.strictEqual(colors.codeBorder, 'rgba(0,0,0,0.06)');
     assert.strictEqual(colors.glowAlpha, '08');
-    assert.strictEqual(
-      colors.shadow,
-      '0 2px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)',
-    );
+    assert.strictEqual(colors.shadow, '0 2px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)');
   });
 });
