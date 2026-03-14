@@ -140,21 +140,21 @@
     transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateY(-8px) scale(0.45);
   }
 
-.ultima-shell {
-  background-image: var(--ultima-bg-image, none);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  transition: all 0.3s ease;
-}
+  .ultima-shell {
+    background-image: var(--ultima-bg-image, none);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    transition: all 0.3s ease;
+  }
 
-.ultima-layout-full .ultima-shell-inner {
-  max-width: 100% !important;
-  margin: 0 !important;
-  padding-left: clamp(1rem, 5vw, 3rem);
-  padding-right: clamp(1rem, 5vw, 3rem);
-}
+  .ultima-layout-full .ultima-shell-inner {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-left: clamp(1rem, 5vw, 3rem);
+    padding-right: clamp(1rem, 5vw, 3rem);
+  }
   8% {
     opacity: 1;
   }

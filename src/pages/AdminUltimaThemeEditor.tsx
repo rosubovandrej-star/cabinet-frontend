@@ -52,7 +52,10 @@ export default function AdminUltimaThemeEditor() {
       try {
         const jsonSetting = allSettings.find((s) => s.key === 'ULTIMA_THEME_JSON');
         if (jsonSetting?.current) {
-          const parsed = typeof jsonSetting.current === 'string' ? JSON.parse(jsonSetting.current) : jsonSetting.current;
+          const parsed =
+            typeof jsonSetting.current === 'string'
+              ? JSON.parse(jsonSetting.current)
+              : jsonSetting.current;
           setThemeConfig({ ...DEFAULT_THEME, ...parsed });
         }
       } catch (e) {
@@ -130,7 +133,8 @@ export default function AdminUltimaThemeEditor() {
             </h1>
             <p className="text-sm text-dark-400">
               {t('admin.ultimaSettings.themeDesc', {
-                defaultValue: 'Настройка цветов, скруглений, фонов и макета главной страницы Ultima.',
+                defaultValue:
+                  'Настройка цветов, скруглений, фонов и макета главной страницы Ultima.',
               })}
             </p>
           </div>
@@ -140,14 +144,16 @@ export default function AdminUltimaThemeEditor() {
           disabled={isSaving}
           className="rounded-xl bg-violet-500 px-4 py-2 font-medium text-white transition-colors hover:bg-violet-600 disabled:opacity-50"
         >
-          {isSaving ? t('common.saving', { defaultValue: 'Сохранение...' }) : t('common.save', { defaultValue: 'Сохранить' })}
+          {isSaving
+            ? t('common.saving', { defaultValue: 'Сохранение...' })
+            : t('common.save', { defaultValue: 'Сохранить' })}
         </button>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-4 rounded-2xl border border-dark-700/50 bg-dark-800/30 p-6">
           <h2 className="text-lg font-medium text-dark-100">Цвета</h2>
-          
+
           <div className="space-y-2">
             <label className="text-sm text-dark-300">Основной цвет (Accent)</label>
             <div className="flex gap-2">
@@ -223,7 +229,7 @@ export default function AdminUltimaThemeEditor() {
 
         <div className="space-y-4 rounded-2xl border border-dark-700/50 bg-dark-800/30 p-6">
           <h2 className="text-lg font-medium text-dark-100">Макет и Стили</h2>
-          
+
           <div className="space-y-2">
             <label className="text-sm text-dark-300">Скругление кнопок (Border Radius)</label>
             <select
@@ -239,14 +245,16 @@ export default function AdminUltimaThemeEditor() {
           </div>
 
           <div className="space-y-2">
-             <label className="text-sm text-dark-300">Фоновое изображение / Градиент (CSS value)</label>
-             <input
-                type="text"
-                value={themeConfig.bgImage}
-                onChange={(e) => setThemeConfig({ ...themeConfig, bgImage: e.target.value })}
-                placeholder="url(...) или linear-gradient(...) или none"
-                className="w-full rounded-xl border border-dark-600 bg-dark-700 px-3 py-2 text-white outline-none focus:border-violet-500"
-              />
+            <label className="text-sm text-dark-300">
+              Фоновое изображение / Градиент (CSS value)
+            </label>
+            <input
+              type="text"
+              value={themeConfig.bgImage}
+              onChange={(e) => setThemeConfig({ ...themeConfig, bgImage: e.target.value })}
+              placeholder="url(...) или linear-gradient(...) или none"
+              className="w-full rounded-xl border border-dark-600 bg-dark-700 px-3 py-2 text-white outline-none focus:border-violet-500"
+            />
           </div>
 
           <div className="space-y-2">
@@ -259,8 +267,9 @@ export default function AdminUltimaThemeEditor() {
               <option value="centered">По центру (Centered)</option>
               <option value="full">На весь экран (Full-screen)</option>
             </select>
-            <p className="text-xs text-dark-400 mt-1">
-              "На весь экран" позволяет растянуть контент Ultima на мобильных и ПК без ограничения по ширине.
+            <p className="mt-1 text-xs text-dark-400">
+              "На весь экран" позволяет растянуть контент Ultima на мобильных и ПК без ограничения
+              по ширине.
             </p>
           </div>
         </div>
@@ -270,7 +279,9 @@ export default function AdminUltimaThemeEditor() {
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-medium text-dark-100">Анимация фона</h2>
-            <p className="text-sm text-dark-400">Настройка интерактивного/динамичного фона для режима Ultima</p>
+            <p className="text-sm text-dark-400">
+              Настройка интерактивного/динамичного фона для режима Ultima
+            </p>
           </div>
           <Toggle
             checked={themeConfig.animation.enabled}
@@ -285,7 +296,7 @@ export default function AdminUltimaThemeEditor() {
                 <label className="mb-2 block text-sm font-medium text-dark-300">
                   {t('admin.backgrounds.selectType')}
                 </label>
-                
+
                 <button
                   onClick={() => handleAnimationTypeChange('none')}
                   className={cn(
@@ -319,7 +330,9 @@ export default function AdminUltimaThemeEditor() {
                             <span className="block text-sm font-medium text-dark-200">
                               {t(def.labelKey)}
                             </span>
-                            <span className="block text-xs text-dark-400">{t(def.descriptionKey)}</span>
+                            <span className="block text-xs text-dark-400">
+                              {t(def.descriptionKey)}
+                            </span>
                           </button>
                         ))}
                       </div>
@@ -356,7 +369,7 @@ export default function AdminUltimaThemeEditor() {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="rounded-xl border border-dark-700/50 bg-dark-800/30 p-4">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between gap-4">
@@ -368,7 +381,9 @@ export default function AdminUltimaThemeEditor() {
                           max={1}
                           step={0.05}
                           value={themeConfig.animation.opacity}
-                          onChange={(e) => updateAnimationConfig({ opacity: parseFloat(e.target.value) })}
+                          onChange={(e) =>
+                            updateAnimationConfig({ opacity: parseFloat(e.target.value) })
+                          }
                           className="w-24 accent-accent-500"
                         />
                         <span className="w-14 text-right text-xs tabular-nums text-dark-400">
@@ -385,7 +400,9 @@ export default function AdminUltimaThemeEditor() {
                           max={20}
                           step={1}
                           value={themeConfig.animation.blur}
-                          onChange={(e) => updateAnimationConfig({ blur: parseInt(e.target.value) })}
+                          onChange={(e) =>
+                            updateAnimationConfig({ blur: parseInt(e.target.value) })
+                          }
                           className="w-24 accent-accent-500"
                         />
                         <span className="w-14 text-right text-xs tabular-nums text-dark-400">

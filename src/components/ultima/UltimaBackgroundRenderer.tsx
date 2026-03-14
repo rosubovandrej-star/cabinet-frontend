@@ -21,7 +21,9 @@ export interface UltimaBackgroundRendererProps {
 
 export function UltimaBackgroundRenderer({ config }: UltimaBackgroundRendererProps) {
   const prefersReducedMotion = useMemo(
-    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     [],
   );
 
@@ -36,14 +38,12 @@ export function UltimaBackgroundRenderer({ config }: UltimaBackgroundRendererPro
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const settings =
-    config.reducedOnMobile && isMobile
-      ? reduceMobileSettings(config.settings)
-      : config.settings;
+    config.reducedOnMobile && isMobile ? reduceMobileSettings(config.settings) : config.settings;
 
   // Render behind the dashboard but above the solid background
   return (
     <div
-      className="pointer-events-none absolute inset-0 overflow-hidden rounded-inherit"
+      className="rounded-inherit pointer-events-none absolute inset-0 overflow-hidden"
       style={{
         zIndex: 0,
         opacity: config.opacity !== undefined ? config.opacity : 1,

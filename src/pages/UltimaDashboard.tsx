@@ -331,14 +331,13 @@ export function UltimaDashboard() {
 
   if (!isI18nReady || !isSubscriptionReady || shouldHoldForAutoTrial) {
     return (
-      <div className="ultima-shell bg-[var(--ultima-bg)] pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2 relative isolate overflow-hidden">
+      <div className="ultima-shell relative isolate overflow-hidden bg-[var(--ultima-bg)] pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2">
         {/* Animated Background layer */}
         <UltimaBackgroundRenderer config={theme.animation} />
 
-        <div className="ultima-shell-inner isolate p-5 sm:p-6 pb-28 mb-32 h-full relative">
-
+        <div className="ultima-shell-inner relative isolate mb-32 h-full p-5 pb-28 sm:p-6">
           <section className="pt-[clamp(74px,16vh,160px)]">
-            <div className="mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-[var(--ultima-bg)] mix-blend-overlay opacity-30">
+            <div className="mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-[var(--ultima-bg)] opacity-30 mix-blend-overlay">
               <ShieldIcon />
             </div>
             <div className="mb-5 h-16 animate-pulse rounded-[var(--ultima-radius,16px)] bg-white/10" />
@@ -354,7 +353,7 @@ export function UltimaDashboard() {
   }
 
   return (
-    <div className="ultima-shell bg-[var(--ultima-bg)] relative isolate overflow-hidden">
+    <div className="ultima-shell relative isolate overflow-hidden bg-[var(--ultima-bg)]">
       {/* Animated Background layer */}
       <UltimaBackgroundRenderer config={theme.animation} />
 
@@ -369,14 +368,18 @@ export function UltimaDashboard() {
         </button>
       )}
 
-      <div className="ultima-shell-inner mx-auto flex min-h-[100dvh] max-w-md flex-col px-4 sm:px-6 relative z-10">
+      <div className="ultima-shell-inner relative z-10 mx-auto flex min-h-[100dvh] max-w-md flex-col px-4 sm:px-6">
         <section className="flex min-h-0 flex-1 flex-col pb-[clamp(14px,2.8vh,24px)] pt-[clamp(86px,19vh,198px)] lg:pb-3 lg:pt-16">
           <button
             type="button"
             aria-label={t('nav.dashboard')}
             onPointerDown={handleShieldTap}
-            className="relative mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-black/15 focus-visible:outline-none lg:mb-8 transition-colors"
-            style={{ WebkitTapHighlightColor: 'transparent', backgroundColor: 'var(--ultima-bg)', opacity: 0.85 }}
+            className="relative mx-auto mb-[clamp(24px,5vh,56px)] flex h-24 w-24 items-center justify-center rounded-full bg-black/15 transition-colors focus-visible:outline-none lg:mb-8"
+            style={{
+              WebkitTapHighlightColor: 'transparent',
+              backgroundColor: 'var(--ultima-bg)',
+              opacity: 0.85,
+            }}
           >
             <span aria-hidden className="pointer-events-none absolute inset-0 overflow-visible">
               {shieldRipples.map((ripple) => (
@@ -409,7 +412,10 @@ export function UltimaDashboard() {
                 type="button"
                 onClick={() => navigate('/connection')}
                 className="mt-2.5 flex w-full items-center justify-center border bg-[var(--ultima-accent)] px-4 py-2.5 text-[15px] font-medium text-[var(--ultima-text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_14px_rgba(7,146,108,0.24)] transition hover:bg-[var(--ultima-accent-hover)]"
-                style={{ borderRadius: 'var(--ultima-radius)', borderColor: 'color-mix(in srgb, var(--ultima-accent) 42%, transparent)' }}
+                style={{
+                  borderRadius: 'var(--ultima-radius)',
+                  borderColor: 'color-mix(in srgb, var(--ultima-accent) 42%, transparent)',
+                }}
               >
                 {t('ultima.finishSetup', { defaultValue: 'Завершить установку' })}
               </button>
@@ -458,7 +464,10 @@ export function UltimaDashboard() {
               navigate('/subscription');
             }}
             className="mb-3 flex w-full items-center justify-between border bg-[var(--ultima-accent)] px-5 py-3 text-[16px] font-medium text-[var(--ultima-text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(7,146,108,0.2)] transition hover:bg-[var(--ultima-accent-hover)]"
-            style={{ borderRadius: 'var(--ultima-radius)', borderColor: 'color-mix(in srgb, var(--ultima-accent) 42%, transparent)' }}
+            style={{
+              borderRadius: 'var(--ultima-radius)',
+              borderColor: 'color-mix(in srgb, var(--ultima-accent) 42%, transparent)',
+            }}
           >
             <span className="flex items-center gap-2">
               <GlobeIcon />
