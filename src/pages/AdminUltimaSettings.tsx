@@ -131,8 +131,7 @@ export default function AdminUltimaSettings() {
           </div>
           <p className="text-sm text-dark-400">
             {t('admin.ultimaSettings.themeDesc', {
-              defaultValue:
-                'Настройка цветов, скруглений, фонов и макета главной страницы Ultima.',
+              defaultValue: 'Настройка цветов, скруглений, фонов и макета главной страницы Ultima.',
             })}
           </p>
         </Link>

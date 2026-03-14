@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, memo } from 'react';
 
 interface SparklineProps {
   data: number[];
@@ -8,7 +8,8 @@ interface SparklineProps {
   className?: string;
 }
 
-export default function Sparkline({
+// Memoized to prevent re-renders during continuous parent animations (e.g., useAnimatedNumber)
+const Sparkline = memo(function Sparkline({
   data,
   width = 200,
   height = 40,
@@ -66,4 +67,6 @@ export default function Sparkline({
       />
     </svg>
   );
-}
+});
+
+export default Sparkline;

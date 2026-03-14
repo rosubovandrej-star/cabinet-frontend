@@ -36,7 +36,10 @@ function parseThemeSettings(settings: SettingDefinition[]): UltimaThemeConfig {
   try {
     const jsonSetting = settings.find((s) => s.key === 'ULTIMA_THEME_JSON');
     if (jsonSetting?.current) {
-      const parsed = typeof jsonSetting.current === 'string' ? JSON.parse(jsonSetting.current) : jsonSetting.current;
+      const parsed =
+        typeof jsonSetting.current === 'string'
+          ? JSON.parse(jsonSetting.current)
+          : jsonSetting.current;
       return { ...theme, ...parsed };
     }
   } catch (e) {
@@ -63,7 +66,7 @@ export function useUltimaTheme() {
     root.style.setProperty('--ultima-bg', theme.bg);
     root.style.setProperty('--ultima-bg-image', theme.bgImage);
     root.style.setProperty('--ultima-radius', theme.borderRadius);
-    
+
     if (theme.layout === 'full') {
       root.classList.add('ultima-layout-full');
     } else {

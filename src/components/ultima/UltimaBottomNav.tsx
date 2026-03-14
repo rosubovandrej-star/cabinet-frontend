@@ -99,11 +99,12 @@ export function UltimaBottomNav({
   };
 
   return (
-    <nav 
+    <nav
       className="ultima-bottom-nav grid grid-cols-4 gap-1.5 p-1.5 text-white/80 shadow-[0_14px_34px_rgba(3,9,18,0.45),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl"
       style={{
         borderRadius: 'calc(var(--ultima-radius) + 8px)',
-        background: 'linear-gradient(180deg, color-mix(in srgb, var(--ultima-bg) 76%, black), color-mix(in srgb, var(--ultima-bg) 92%, black))'
+        background:
+          'linear-gradient(180deg, color-mix(in srgb, var(--ultima-bg) 76%, black), color-mix(in srgb, var(--ultima-bg) 92%, black))',
       }}
     >
       <button

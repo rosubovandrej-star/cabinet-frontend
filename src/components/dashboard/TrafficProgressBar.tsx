@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTrafficZone } from '../../hooks/useTrafficZone';
 import { formatTraffic } from '../../utils/formatTraffic';
@@ -15,7 +15,8 @@ interface TrafficProgressBarProps {
 
 const THRESHOLDS = [50, 75, 90];
 
-export default function TrafficProgressBar({
+// Memoized to prevent re-renders when parent continuously animates traffic percentages
+const TrafficProgressBar = memo(function TrafficProgressBar({
   usedGb,
   limitGb,
   percent,
@@ -216,4 +217,6 @@ export default function TrafficProgressBar({
       )}
     </div>
   );
-}
+});
+
+export default TrafficProgressBar;
