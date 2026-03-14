@@ -41,12 +41,14 @@ export default function LanguageSwitcher() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-2 text-sm transition-all ${
+        className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-2 text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-950 ${
           isOpen
             ? 'border-dark-600 bg-dark-700'
             : 'border-dark-700/50 bg-dark-800/50 hover:border-dark-600 hover:bg-dark-700'
         }`}
         aria-label="Change language"
+        aria-expanded={isOpen}
+        aria-controls="language-menu"
       >
         <span>{currentLang.flag}</span>
         <span className="font-medium text-dark-200">{currentLang.name}</span>
@@ -61,12 +63,17 @@ export default function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-2 w-40 animate-fade-in rounded-xl border border-dark-700/50 bg-dark-800 py-1 shadow-lg">
+        <div
+          id="language-menu"
+          role="menu"
+          className="absolute right-0 z-50 mt-2 w-40 animate-fade-in rounded-xl border border-dark-700/50 bg-dark-800 py-1 shadow-lg"
+        >
           {languages.map((lang) => (
             <button
               key={lang.code}
+              role="menuitem"
               onClick={() => changeLanguage(lang.code)}
-              className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+              className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500/50 ${
                 lang.code === i18n.language
                   ? 'bg-accent-500/10 text-accent-400'
                   : 'text-dark-300 hover:bg-dark-700/50'
