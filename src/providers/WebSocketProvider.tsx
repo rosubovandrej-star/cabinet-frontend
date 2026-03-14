@@ -173,9 +173,5 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
   const contextValue = useMemo(() => ({ isConnected, subscribe }), [isConnected, subscribe]);
 
-  return (
-    <WebSocketContext.Provider value={contextValue}>
-      {children}
-    </WebSocketContext.Provider>
-  );
+  return <WebSocketContext.Provider value={contextValue}>{children}</WebSocketContext.Provider>;
 }

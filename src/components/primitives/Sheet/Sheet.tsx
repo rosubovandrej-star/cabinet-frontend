@@ -76,13 +76,14 @@ export const Sheet = ({ children, open, onOpenChange, onClose, ...props }: Sheet
     handleOpenChange(false);
   }, [handleOpenChange]);
 
-  const contextValue = useMemo(() => ({ open: isOpen, onClose: handleClose }), [isOpen, handleClose]);
+  const contextValue = useMemo(
+    () => ({ open: isOpen, onClose: handleClose }),
+    [isOpen, handleClose],
+  );
 
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={handleOpenChange} {...props}>
-      <SheetContext.Provider value={contextValue}>
-        {children}
-      </SheetContext.Provider>
+      <SheetContext.Provider value={contextValue}>{children}</SheetContext.Provider>
     </DialogPrimitive.Root>
   );
 };

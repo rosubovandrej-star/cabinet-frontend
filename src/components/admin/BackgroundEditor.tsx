@@ -5,10 +5,7 @@ import { brandingApi } from '@/api/branding';
 import { setCachedAnimationConfig } from '@/components/backgrounds/animationConfigCache';
 import { backgroundRegistry } from '@/components/ui/backgrounds/registry';
 import { BackgroundPreview } from '@/components/backgrounds/BackgroundPreview';
-import type {
-  AnimationConfig,
-  BackgroundType,
-} from '@/components/ui/backgrounds/types';
+import type { AnimationConfig, BackgroundType } from '@/components/ui/backgrounds/types';
 import { DEFAULT_ANIMATION_CONFIG } from '@/components/ui/backgrounds/types';
 import { Toggle } from './Toggle';
 import { cn } from '@/lib/utils';
