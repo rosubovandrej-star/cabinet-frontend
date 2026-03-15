@@ -5,7 +5,11 @@ interface PageLoaderProps {
 export default function PageLoader({ variant = 'dark' }: PageLoaderProps) {
   if (variant === 'ultima') {
     return (
-      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_72%_56%,rgba(16,185,129,0.34),rgba(4,17,26,0.98)_58%)]">
+      <div
+        className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_72%_56%,rgba(16,185,129,0.34),rgba(4,17,26,0.98)_58%)]"
+        role="status"
+        aria-label="Loading"
+      >
         {[0, 1.2, 2.4].map((delay) => (
           <div
             key={delay}
@@ -17,6 +21,7 @@ export default function PageLoader({ variant = 'dark' }: PageLoaderProps) {
           />
         ))}
         <div className="relative z-10 h-10 w-10 animate-spin rounded-full border-[3px] border-emerald-300 border-t-transparent" />
+        <span className="sr-only">Loading...</span>
       </div>
     );
   }
@@ -28,10 +33,15 @@ export default function PageLoader({ variant = 'dark' }: PageLoaderProps) {
       : 'bg-gradient-to-b from-white via-slate-50 to-slate-100';
 
   return (
-    <div className={`flex min-h-screen items-center justify-center ${bgClass}`}>
+    <div
+      className={`flex min-h-screen items-center justify-center ${bgClass}`}
+      role="status"
+      aria-label="Loading"
+    >
       <div
         className={`h-10 w-10 border-[3px] ${spinnerColor} animate-spin rounded-full border-t-transparent`}
       />
+      <span className="sr-only">Loading...</span>
     </div>
   );
 }
