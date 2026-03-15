@@ -24,6 +24,12 @@ interface SubscriptionCardActiveProps {
   connectedDevices: number;
 }
 
+// Изолируем анимированное число, чтобы предотвратить перерисовку всей карточки при 60 кадрах в секунду
+const AnimatedPercentage = ({ target }: { target: number }) => {
+  const animatedPercent = useAnimatedNumber(target);
+  return <>{animatedPercent.toFixed(0)}</>;
+};
+
 const RefreshIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
   <svg
     className={className}
@@ -57,7 +63,6 @@ export default function SubscriptionCardActive({
   const usedGb = trafficData?.traffic_used_gb ?? subscription.traffic_used_gb;
   const isUnlimited = trafficData?.is_unlimited ?? subscription.traffic_limit_gb === 0;
   const zone = useTrafficZone(usedPercent);
-  const animatedPercent = useAnimatedNumber(usedPercent);
 
   const formattedDate = new Date(subscription.end_date).toLocaleDateString();
   const daysLeft = subscription.days_left;
@@ -175,7 +180,7 @@ export default function SubscriptionCardActive({
           ) : (
             <>
               <div className="font-display text-[38px] font-extrabold leading-none tracking-tight text-dark-50">
-                {animatedPercent.toFixed(0)}
+                <AnimatedPercentage target={usedPercent} />
                 <span className="ml-px text-lg font-medium text-dark-50/35">%</span>
               </div>
               <div className="mt-0.5 font-mono text-[11px] text-dark-50/30">
