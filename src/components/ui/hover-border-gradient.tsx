@@ -18,7 +18,7 @@ interface HoverBorderGradientProps extends React.HTMLAttributes<HTMLElement> {
  *
  * Fallback: browsers without `@property` show a static gradient border.
  */
-export function HoverBorderGradient({
+export const HoverBorderGradient = React.memo(function HoverBorderGradient({
   children,
   className,
   as: Tag = 'div',
@@ -48,4 +48,4 @@ export function HoverBorderGradient({
       {children}
     </Tag>
   );
-}
+});
