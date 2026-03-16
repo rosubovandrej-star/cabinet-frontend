@@ -35,7 +35,9 @@ export function SimpleAreaChart({
   const { t, i18n } = useTranslation();
   const colors = useChartColors();
   const strokeColor = color || colors.earnings;
-  const maxValue = useMemo(() => Math.max(...data.map((item) => item.value), 0), [data]);
+  // Оптимизация Bolt ⚡: Использование reduce вместо spread оператора предотвращает ошибку RangeError: Maximum call stack size exceeded
+  // при больших массивах данных, а также экономит память, избегая создания промежуточного массива через map().
+  const maxValue = useMemo(() => data.reduce((max, item) => Math.max(max, item.value), 0), [data]);
 
   const chartData = useMemo(
     () =>
