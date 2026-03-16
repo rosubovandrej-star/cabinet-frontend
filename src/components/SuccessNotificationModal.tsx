@@ -221,6 +221,7 @@ export default function SuccessNotificationModal() {
         <button
           onClick={handleClose}
           className="absolute right-3 top-3 z-10 rounded-xl p-2 text-dark-400 transition-colors hover:bg-dark-800 hover:text-dark-200"
+          aria-label={t('common.close', 'Close')}
         >
           <CloseIcon />
         </button>
