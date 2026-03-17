@@ -18,6 +18,7 @@ import { UltimaDashboard } from './UltimaDashboard';
 import SubscriptionCardExpired from '../components/dashboard/SubscriptionCardExpired';
 import TrialOfferCard from '../components/dashboard/TrialOfferCard';
 import StatsGrid from '../components/dashboard/StatsGrid';
+import TrafficRefreshButton from '../components/dashboard/TrafficRefreshButton';
 import { API } from '../config/constants';
 import PageLoader from '../components/common/PageLoader';
 
@@ -39,16 +40,6 @@ const SparklesIcon = () => (
       strokeLinecap="round"
       strokeLinejoin="round"
       d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"
-    />
-  </svg>
-);
-
-const RefreshIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M16.023 9.348h4.992V4.356m-1.5 14.294A9 9 0 1 1 21 12"
     />
   </svg>
 );
@@ -162,7 +153,7 @@ function FullDashboard() {
   });
 
   // Traffic refresh state and mutation
-  const [trafficRefreshCooldown, setTrafficRefreshCooldown] = useState(0);
+  const [trafficRefreshAvailableAt, setTrafficRefreshAvailableAt] = useState(0);
   const [trafficData, setTrafficData] = useState<{
     traffic_used_gb: number;
     traffic_used_percent: number;
@@ -179,30 +170,26 @@ function FullDashboard() {
       });
       localStorage.setItem('traffic_refresh_ts', Date.now().toString());
       if (data.rate_limited && data.retry_after_seconds) {
-        setTrafficRefreshCooldown(data.retry_after_seconds);
+        setTrafficRefreshAvailableAt(Date.now() + data.retry_after_seconds * 1000);
       } else {
-        setTrafficRefreshCooldown(30);
+        setTrafficRefreshAvailableAt(Date.now() + 30000);
       }
       queryClient.invalidateQueries({ queryKey: ['subscription'] });
     },
     onError: (error: {
-      response?: { status?: number; headers?: { get?: (key: string) => string } };
+      response?: {
+        status?: number;
+        headers?: { get?: (key: string) => string };
+      };
     }) => {
       if (error.response?.status === 429) {
         const retryAfter = error.response.headers?.get?.('Retry-After');
-        setTrafficRefreshCooldown(retryAfter ? parseInt(retryAfter, 10) : 30);
+        setTrafficRefreshAvailableAt(
+          Date.now() + (retryAfter ? parseInt(retryAfter, 10) : 30) * 1000,
+        );
       }
     },
   });
-
-  // Cooldown timer
-  useEffect(() => {
-    if (trafficRefreshCooldown <= 0) return;
-    const timer = setInterval(() => {
-      setTrafficRefreshCooldown((prev) => Math.max(0, prev - 1));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [trafficRefreshCooldown]);
 
   // Auto-refresh traffic on mount (with 30s caching)
   const hasAutoRefreshed = useRef(false);
@@ -220,7 +207,7 @@ function FullDashboard() {
       const elapsed = now - parseInt(lastRefresh, 10);
       const remaining = Math.ceil((cacheMs - elapsed) / 1000);
       if (remaining > 0) {
-        setTrafficRefreshCooldown(remaining);
+        setTrafficRefreshAvailableAt(now + remaining * 1000);
       }
       return;
     }
@@ -282,7 +269,9 @@ function FullDashboard() {
       {/* Header */}
       <div data-onboarding="welcome">
         <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">
-          {t('dashboard.welcome', { name: user?.first_name || user?.username || '' })}
+          {t('dashboard.welcome', {
+            name: user?.first_name || user?.username || '',
+          })}
         </h1>
         <p className="mt-1 text-dark-400">{t('dashboard.yourSubscription')}</p>
       </div>
@@ -358,7 +347,9 @@ function FullDashboard() {
                     {t('subscription.trialBanner.title')}
                   </div>
                   <div className="mt-1 text-sm text-dark-400">
-                    {t('subscription.trialBanner.description', { days: subscription.days_left })}
+                    {t('subscription.trialBanner.description', {
+                      days: subscription.days_left,
+                    })}
                   </div>
                   <Link
                     to="/subscription/purchase"
@@ -382,18 +373,11 @@ function FullDashboard() {
             <div>
               <div className="mb-1 flex items-center gap-2">
                 <span className="text-sm text-dark-500">{t('subscription.traffic')}</span>
-                <button
-                  onClick={() => refreshTrafficMutation.mutate()}
-                  disabled={refreshTrafficMutation.isPending || trafficRefreshCooldown > 0}
-                  className="rounded-full p-1 text-dark-400 transition-colors hover:bg-dark-700/50 hover:text-accent-400 disabled:cursor-not-allowed disabled:opacity-50"
-                  title={
-                    trafficRefreshCooldown > 0 ? `${trafficRefreshCooldown}s` : t('common.refresh')
-                  }
-                >
-                  <RefreshIcon
-                    className={`h-3.5 w-3.5 ${refreshTrafficMutation.isPending ? 'animate-spin' : ''}`}
-                  />
-                </button>
+                <TrafficRefreshButton
+                  onRefresh={refreshTrafficMutation.mutate}
+                  isPending={refreshTrafficMutation.isPending}
+                  availableAt={trafficRefreshAvailableAt}
+                />
               </div>
               <div className="font-medium text-dark-100">
                 {(trafficData?.traffic_used_gb ?? subscription.traffic_used_gb).toFixed(1)} /{' '}
