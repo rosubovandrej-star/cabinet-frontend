@@ -177,11 +177,16 @@ function FullDashboard() {
       queryClient.invalidateQueries({ queryKey: ['subscription'] });
     },
     onError: (error: {
-      response?: { status?: number; headers?: { get?: (key: string) => string } };
+      response?: {
+        status?: number;
+        headers?: { get?: (key: string) => string };
+      };
     }) => {
       if (error.response?.status === 429) {
         const retryAfter = error.response.headers?.get?.('Retry-After');
-        setTrafficRefreshAvailableAt(Date.now() + (retryAfter ? parseInt(retryAfter, 10) : 30) * 1000);
+        setTrafficRefreshAvailableAt(
+          Date.now() + (retryAfter ? parseInt(retryAfter, 10) : 30) * 1000,
+        );
       }
     },
   });
@@ -264,7 +269,9 @@ function FullDashboard() {
       {/* Header */}
       <div data-onboarding="welcome">
         <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">
-          {t('dashboard.welcome', { name: user?.first_name || user?.username || '' })}
+          {t('dashboard.welcome', {
+            name: user?.first_name || user?.username || '',
+          })}
         </h1>
         <p className="mt-1 text-dark-400">{t('dashboard.yourSubscription')}</p>
       </div>
@@ -340,7 +347,9 @@ function FullDashboard() {
                     {t('subscription.trialBanner.title')}
                   </div>
                   <div className="mt-1 text-sm text-dark-400">
-                    {t('subscription.trialBanner.description', { days: subscription.days_left })}
+                    {t('subscription.trialBanner.description', {
+                      days: subscription.days_left,
+                    })}
                   </div>
                   <Link
                     to="/subscription/purchase"
