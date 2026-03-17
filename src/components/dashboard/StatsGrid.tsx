@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import type { Subscription } from '../../types';
@@ -47,63 +48,81 @@ export default function StatsGrid({
 
   const zone = useTrafficZone(subscription?.traffic_used_percent ?? 0);
 
-  const cards = [
-    {
-      label: t('dashboard.stats.balance'),
-      value: `${formatAmount(balanceRubles)} ${currencySymbol}`,
-      valueColor: zone.mainHex,
-      to: '/balance',
-      icon: (color: string) => (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={color}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <rect x="2" y="6" width="20" height="14" rx="2" />
-          <path d="M2 10h20" />
-          <path d="M6 14h.01M10 14h.01" />
-        </svg>
-      ),
-      iconBg: `${zone.mainHex}12`,
-      iconColor: zone.mainHex,
-      loading: false,
-      onboarding: 'balance',
-    },
-    {
-      label: t('dashboard.stats.referrals'),
-      value: `${referralCount}`,
-      valueColor: g.text,
-      subtitle: `+${formatAmount(earningsRubles)} ${currencySymbol}`,
-      subtitleColor: zone.mainHex,
-      to: '/referral',
-      icon: (color: string) => (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={color}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-        </svg>
-      ),
-      iconBg: g.trackBg,
-      iconColor: g.textSecondary,
-      loading: refLoading,
-    },
-  ];
+  // ⚡ Bolt: Мемоизация массива карточек предотвращает его создание
+  // на каждый рендер StatsGrid, что экономит ресурсы при частых
+  // обновлениях дашборда (например, при анимации трафика).
+  const cards = useMemo(
+    () => [
+      {
+        label: t('dashboard.stats.balance'),
+        value: `${formatAmount(balanceRubles)} ${currencySymbol}`,
+        valueColor: zone.mainHex,
+        to: '/balance',
+        icon: (color: string) => (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={color}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="2" y="6" width="20" height="14" rx="2" />
+            <path d="M2 10h20" />
+            <path d="M6 14h.01M10 14h.01" />
+          </svg>
+        ),
+        iconBg: `${zone.mainHex}12`,
+        iconColor: zone.mainHex,
+        loading: false,
+        onboarding: 'balance',
+      },
+      {
+        label: t('dashboard.stats.referrals'),
+        value: `${referralCount}`,
+        valueColor: g.text,
+        subtitle: `+${formatAmount(earningsRubles)} ${currencySymbol}`,
+        subtitleColor: zone.mainHex,
+        to: '/referral',
+        icon: (color: string) => (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={color}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+          </svg>
+        ),
+        iconBg: g.trackBg,
+        iconColor: g.textSecondary,
+        loading: refLoading,
+      },
+    ],
+    [
+      t,
+      formatAmount,
+      balanceRubles,
+      currencySymbol,
+      zone.mainHex,
+      referralCount,
+      g.text,
+      earningsRubles,
+      g.trackBg,
+      g.textSecondary,
+      refLoading,
+    ],
+  );
 
   return (
     <div className="grid grid-cols-2 gap-2.5">
