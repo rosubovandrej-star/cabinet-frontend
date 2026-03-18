@@ -247,6 +247,9 @@ export default function TicketNotificationBell({ isAdmin = false }: TicketNotifi
             : 'border-dark-700/50 bg-dark-800/50 text-dark-400 hover:bg-dark-700 hover:text-accent-400'
         }`}
         title={t('notifications.ticketNotifications', 'Ticket notifications')}
+        aria-label={t('notifications.ticketNotifications', 'Ticket notifications')}
+        aria-expanded={isOpen}
+        aria-controls="notification-menu"
       >
         <BellIcon />
         {unreadCount > 0 && (
@@ -259,6 +262,8 @@ export default function TicketNotificationBell({ isAdmin = false }: TicketNotifi
       {/* Dropdown */}
       {isOpen && (
         <div
+          id="notification-menu"
+          role="menu"
           className={`fixed left-4 right-4 z-50 mt-0 w-auto animate-scale-in overflow-hidden rounded-2xl border border-dark-700/50 bg-dark-900/95 shadow-2xl shadow-black/30 backdrop-blur-xl sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-96 ${
             !isFullscreen ? 'top-16' : ''
           }`}
@@ -273,6 +278,7 @@ export default function TicketNotificationBell({ isAdmin = false }: TicketNotifi
               <button
                 onClick={() => markAllReadMutation.mutate()}
                 disabled={markAllReadMutation.isPending}
+                role="menuitem"
                 className="flex items-center gap-1.5 text-xs text-accent-400 transition-colors hover:text-accent-300 disabled:opacity-50"
               >
                 <CheckIcon />
@@ -292,6 +298,7 @@ export default function TicketNotificationBell({ isAdmin = false }: TicketNotifi
                 <button
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
+                  role="menuitem"
                   className={`w-full border-b border-dark-800/50 px-4 py-3 text-left transition-all duration-200 last:border-b-0 hover:bg-dark-800/50 ${
                     !notification.is_read ? 'bg-accent-500/5' : ''
                   }`}
@@ -338,6 +345,7 @@ export default function TicketNotificationBell({ isAdmin = false }: TicketNotifi
                   setIsOpen(false);
                   navigate(isAdmin ? '/admin/tickets' : '/support');
                 }}
+                role="menuitem"
                 className="w-full py-1 text-center text-sm text-accent-400 transition-colors hover:text-accent-300"
               >
                 {t('notifications.viewAll', 'View all tickets')}
