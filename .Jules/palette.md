@@ -1,3 +1,7 @@
-## 2024-05-24 - Language Switcher Keyboard Accessibility
-**Learning:** The existing headless language switcher components relying on `react-use` (e.g., `useClickAway`) often lack proper internal focus management and ARIA bindings by default. When building dropdowns with simple state (`isOpen`), the trigger and the menu items need explicit ARIA ties (`aria-expanded`, `aria-controls`, `role="menu"`, `role="menuitem"`) and visible focus states, as tailwind doesn't apply `focus-visible` styles automatically to custom generic components unless specified.
-**Action:** When auditing or implementing custom dropdowns (like switchers or user menus), explicitly add `focus-visible:ring-2 focus-visible:ring-accent-500/50` or the corresponding token focus class, and ensure the basic `aria-` menu pattern is implemented.
+## 2024-05-24 - Обозначение состояний и ролей в icon-only кнопках
+**Learning:** Пользователи скринридеров могут терять контекст для кнопок-иконок (например, колокольчик уведомлений), если они не имеют четкого `aria-label` и правильных атрибутов состояния (таких как `aria-expanded` для дропдаунов и `aria-haspopup`). Добавление `aria-haspopup="dialog"` (или `"menu"`) и `aria-expanded` значительно улучшает навигацию.
+**Action:** Всегда добавлять описательный `aria-label`, а также `aria-expanded` (если кнопка открывает выпадающее меню) и `aria-haspopup` к кнопкам-иконкам без текстового контента.
+
+## 2024-05-24 - Индикация загрузки для асинхронных действий
+**Learning:** Отсутствие визуальной обратной связи (например, спиннера) при клике на кнопки, запускающие асинхронные мутации (например, "Mark all read"), вызывает путаницу и множественные случайные клики, даже если кнопка переходит в состояние `disabled`. Замена иконки действия на спиннер загрузки является отличным UX-паттерном, который дает мгновенную обратную связь.
+**Action:** При использовании React Query mutations или других асинхронных операций всегда заменять статичную иконку в кнопке на спиннер (`animate-spin`), если `mutation.isPending` имеет значение `true`.
