@@ -247,6 +247,9 @@ export default function TicketNotificationBell({ isAdmin = false }: TicketNotifi
             : 'border-dark-700/50 bg-dark-800/50 text-dark-400 hover:bg-dark-700 hover:text-accent-400'
         }`}
         title={t('notifications.ticketNotifications', 'Ticket notifications')}
+        aria-label={t('notifications.ticketNotifications', 'Ticket notifications')}
+        aria-expanded={isOpen}
+        aria-haspopup="dialog"
       >
         <BellIcon />
         {unreadCount > 0 && (
@@ -275,7 +278,11 @@ export default function TicketNotificationBell({ isAdmin = false }: TicketNotifi
                 disabled={markAllReadMutation.isPending}
                 className="flex items-center gap-1.5 text-xs text-accent-400 transition-colors hover:text-accent-300 disabled:opacity-50"
               >
-                <CheckIcon />
+                {markAllReadMutation.isPending ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : (
+                  <CheckIcon />
+                )}
                 {t('notifications.markAllRead', 'Mark all read')}
               </button>
             )}
