@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { rbacApi, type AdminRole, type AssignRolePayload } from '@/api/rbac';
 import { adminUsersApi, type UserListItem } from '@/api/adminUsers';
+import { useDebounce } from '@/hooks/useDebounce';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { usePermissionStore } from '@/store/permissions';
 import { usePlatform } from '@/platform/hooks/usePlatform';
@@ -99,11 +100,12 @@ function UserSearchDropdown({
 }: UserSearchDropdownProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   const { data: searchResults, isLoading: searching } = useQuery({
-    queryKey: ['admin-user-search', searchQuery],
-    queryFn: () => adminUsersApi.getUsers({ search: searchQuery, limit: 10 }),
-    enabled: searchQuery.length >= 2 && !selectedUser,
+    queryKey: ['admin-user-search', debouncedSearchQuery],
+    queryFn: () => adminUsersApi.getUsers({ search: debouncedSearchQuery, limit: 10 }),
+    enabled: debouncedSearchQuery.length >= 2 && !selectedUser,
     staleTime: 30_000,
   });
 
