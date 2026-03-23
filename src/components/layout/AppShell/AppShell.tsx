@@ -456,6 +456,7 @@ export function AppShell({ children }: AppShellProps) {
                 key={item.path}
                 to={item.path}
                 onClick={handleNavClick}
+                aria-current={isActive(item.path) ? 'page' : undefined}
                 className={cn(
                   'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                   isActive(item.path)
@@ -471,6 +472,7 @@ export function AppShell({ children }: AppShellProps) {
               <Link
                 to="/referral"
                 onClick={handleNavClick}
+                aria-current={isActive('/referral') ? 'page' : undefined}
                 className={cn(
                   'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                   isActive('/referral')

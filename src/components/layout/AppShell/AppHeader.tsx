@@ -404,6 +404,7 @@ export function AppHeader({
                     key={item.path}
                     to={item.path}
                     onClick={() => setMobileMenuOpen(false)}
+                    aria-current={isActive(item.path) ? 'page' : undefined}
                     className={isActive(item.path) ? 'nav-item-active' : 'nav-item'}
                   >
                     <item.icon className="h-5 w-5" />
@@ -438,6 +439,7 @@ export function AppHeader({
                 <Link
                   to="/profile"
                   onClick={() => setMobileMenuOpen(false)}
+                  aria-current={isActive('/profile') ? 'page' : undefined}
                   className={isActive('/profile') ? 'nav-item-active' : 'nav-item'}
                 >
                   <UserIcon className="h-5 w-5" />
@@ -448,6 +450,7 @@ export function AppHeader({
                   <Link
                     to="/account-linking"
                     onClick={() => setMobileMenuOpen(false)}
+                    aria-current={isActive('/account-linking') ? 'page' : undefined}
                     className={isActive('/account-linking') ? 'nav-item-active' : 'nav-item'}
                   >
                     <ClipboardIcon className="h-5 w-5" />

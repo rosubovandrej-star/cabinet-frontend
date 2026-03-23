@@ -104,6 +104,7 @@ export function LiteMobileBottomNav({ isKeyboardOpen }: LiteMobileBottomNavProps
             key={item.path}
             to={item.path}
             onClick={() => haptic.impact('light')}
+            aria-current={isActive(item.path) ? 'page' : undefined}
             className={cn(
               'relative flex min-h-[58px] flex-col items-center justify-center rounded-xl px-1 py-1.5 text-[10px] font-medium transition-colors',
               isActive(item.path) ? 'text-accent-300' : 'text-dark-400',
