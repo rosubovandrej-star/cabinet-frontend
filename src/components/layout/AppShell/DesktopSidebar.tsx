@@ -176,6 +176,7 @@ export function DesktopSidebar({
             key={item.path}
             to={item.path}
             onClick={handleNavClick}
+            aria-current={isActive(item.path) ? 'page' : undefined}
             className={cn(
               'group flex items-center gap-3 rounded-linear px-3 py-2.5 text-sm font-medium transition-all duration-200',
               isActive(item.path)
@@ -221,6 +222,7 @@ export function DesktopSidebar({
         <Link
           to="/profile"
           onClick={handleNavClick}
+          aria-current={isActive('/profile') ? 'page' : undefined}
           className={cn(
             'group flex items-center gap-3 rounded-linear px-3 py-2.5 transition-all duration-200',
             isActive('/profile') ? 'bg-dark-800/80' : 'hover:bg-dark-800/50',
@@ -243,6 +245,7 @@ export function DesktopSidebar({
           <Link
             to="/account-linking"
             onClick={handleNavClick}
+            aria-current={isActive('/account-linking') ? 'page' : undefined}
             className={cn(
               'group mt-2 flex items-center gap-3 rounded-linear px-3 py-2.5 text-sm transition-all duration-200',
               isActive('/account-linking')
